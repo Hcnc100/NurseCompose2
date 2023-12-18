@@ -1,4 +1,4 @@
-package com.nullpointer.nourseCompose.ui.models.types
+package com.nullpointer.nourseCompose.models.types
 
 enum class MeasureType(
     val maxValue: Double? = null,

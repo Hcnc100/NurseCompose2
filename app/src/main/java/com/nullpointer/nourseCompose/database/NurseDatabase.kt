@@ -1,8 +1,8 @@
-package com.nullpointer.nourseCompose.ui.database
+package com.nullpointer.nourseCompose.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.nullpointer.nourseCompose.ui.models.entity.MeasureEntity
+import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 
 
 @Database(
@@ -11,4 +11,6 @@ import com.nullpointer.nourseCompose.ui.models.entity.MeasureEntity
     exportSchema = true
 )
 abstract class NurseDatabase : RoomDatabase() {
+
+    abstract fun getMeasureDAO(): MeasureDAO
 }

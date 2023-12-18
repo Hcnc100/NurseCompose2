@@ -1,7 +1,7 @@
-package com.nullpointer.nourseCompose.ui.datasource.measure.local
+package com.nullpointer.nourseCompose.local
 
-import com.nullpointer.nourseCompose.ui.models.data.MeasureData
-import com.nullpointer.nourseCompose.ui.models.types.MeasureType
+import com.nullpointer.nourseCompose.models.data.MeasureData
+import com.nullpointer.nourseCompose.models.types.MeasureType
 import kotlinx.coroutines.flow.Flow
 
 interface MeasureLocalDataSource {

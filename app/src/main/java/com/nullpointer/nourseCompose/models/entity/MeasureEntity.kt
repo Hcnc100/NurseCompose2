@@ -1,9 +1,9 @@
-package com.nullpointer.nourseCompose.ui.models.entity
+package com.nullpointer.nourseCompose.models.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nullpointer.nourseCompose.ui.models.data.MeasureData
-import com.nullpointer.nourseCompose.ui.models.types.MeasureType
+import com.nullpointer.nourseCompose.models.data.MeasureData
+import com.nullpointer.nourseCompose.models.types.MeasureType
 
 @Entity(tableName = "measures")
 data class MeasureEntity(

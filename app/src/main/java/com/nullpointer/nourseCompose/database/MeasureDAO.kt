@@ -1,18 +1,18 @@
-package com.nullpointer.nourseCompose.ui.database
+package com.nullpointer.nourseCompose.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.nullpointer.nourseCompose.ui.models.entity.MeasureEntity
-import com.nullpointer.nourseCompose.ui.models.types.MeasureType
+import com.nullpointer.nourseCompose.models.entity.MeasureEntity
+import com.nullpointer.nourseCompose.models.types.MeasureType
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface MeasureDAO {
 
-    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY dateInMillis DESC LIMIT (:limit)")
+    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt DESC LIMIT (:limit)")
     fun getListMeasureByTypes(type: MeasureType, limit: Int): Flow<List<MeasureEntity>>
 
     @Insert

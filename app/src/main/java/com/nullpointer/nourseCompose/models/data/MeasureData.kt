@@ -1,7 +1,7 @@
-package com.nullpointer.nourseCompose.ui.models.data
+package com.nullpointer.nourseCompose.models.data
 
-import com.nullpointer.nourseCompose.ui.models.entity.MeasureEntity
-import com.nullpointer.nourseCompose.ui.models.types.MeasureType
+import com.nullpointer.nourseCompose.models.entity.MeasureEntity
+import com.nullpointer.nourseCompose.models.types.MeasureType
 
 data class MeasureData(
     val id: Int,
