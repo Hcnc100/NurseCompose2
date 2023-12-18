@@ -1,4 +1,4 @@
-package com.nullpointer.nourseCompose.local
+package com.nullpointer.nourseCompose.datasource.measure.local
 
 import com.nullpointer.nourseCompose.database.MeasureDAO
 import com.nullpointer.nourseCompose.models.data.MeasureData
@@ -10,17 +10,19 @@ import kotlinx.coroutines.flow.map
 class MeasureLocalDataSourceImpl(
     private val measureDAO: MeasureDAO
 ) : MeasureLocalDataSource {
-    override fun getListMeasureByType(type: MeasureType, limit: Int): Flow<List<MeasureData>> =
-        measureDAO.getListMeasureByTypes(type, limit).map { measureList ->
-            measureList.map {
-                MeasureData.fromMeasureEntity(it)
-            }
+    override fun getListMeasureByType(type: MeasureType): Flow<List<MeasureData>> =
+        measureDAO.getListMeasureByTypes(type).map { measureList ->
+            measureList.map(MeasureData::fromMeasureEntity)
         }
 
-    override suspend fun addMeasure(measureData: MeasureData) {
-        val measureEntity = MeasureEntity.fromMeasureData(measureData)
+    override suspend fun addMeasure(value: Float, type: MeasureType) {
+        val measureEntity = MeasureEntity(
+            value = value,
+            type = type
+        )
         measureDAO.insertMeasure(measureEntity)
     }
+
 
     override suspend fun deleterMeasureData(measureData: MeasureData) {
         val measureEntity = MeasureEntity.fromMeasureData(measureData)

@@ -2,10 +2,10 @@ package com.nullpointer.nourseCompose.inject.measure
 
 import com.nullpointer.nourseCompose.database.MeasureDAO
 import com.nullpointer.nourseCompose.database.NurseDatabase
-import com.nullpointer.nourseCompose.local.MeasureLocalDataSource
-import com.nullpointer.nourseCompose.local.MeasureLocalDataSourceImpl
-import com.nullpointer.nourseCompose.measure.MeasureRepoImpl
-import com.nullpointer.nourseCompose.measure.MeasureRepository
+import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSource
+import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSourceImpl
+import com.nullpointer.nourseCompose.domain.measure.MeasureRepoImpl
+import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

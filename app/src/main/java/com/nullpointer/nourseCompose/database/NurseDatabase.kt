@@ -6,7 +6,7 @@ import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [MeasureEntity::class],
     exportSchema = true
 )

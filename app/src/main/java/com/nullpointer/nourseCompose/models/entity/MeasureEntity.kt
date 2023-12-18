@@ -9,7 +9,7 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 data class MeasureEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val value: Double,
+    val value: Float,
     val type: MeasureType,
     val createAt: Long = System.currentTimeMillis(),
 ) {
@@ -18,8 +18,6 @@ data class MeasureEntity(
             return MeasureEntity(
                 value = measureData.value,
                 type = measureData.type,
-                createAt = measureData.createAt,
-                id = measureData.id
             )
         }
     }

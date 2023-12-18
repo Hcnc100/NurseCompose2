@@ -1,23 +1,23 @@
 package com.nullpointer.nourseCompose.models.types
 
 enum class MeasureType(
-    val maxValue: Double? = null,
-    val minValue: Double? = null,
+    val maxValue: Float? = null,
+    val minValue: Float? = null,
     val prefix: String
 ) {
     TEMPERATURE(
-        maxValue = 38.0,
-        minValue = 34.0,
+        maxValue = 37.2f,
+        minValue = 36.1f,
         prefix = "°"
     ),
     GLUCOSE(
-        maxValue = 80.0,
-        minValue = 120.0,
+        maxValue = 80.0f,
+        minValue = 120.0f,
         prefix = "ml"
     ),
     OXYGEN(
-        maxValue = 100.0,
-        minValue = 90.0,
+        maxValue = 100.0f,
+        minValue = 90.0f,
         prefix = "%"
     ),
     PRESSURE(

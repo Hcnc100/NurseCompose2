@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MeasureDAO {
 
-    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt DESC LIMIT (:limit)")
-    fun getListMeasureByTypes(type: MeasureType, limit: Int): Flow<List<MeasureEntity>>
+    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt DESC")
+    fun getListMeasureByTypes(type: MeasureType): Flow<List<MeasureEntity>>
 
     @Insert
     suspend fun insertMeasure(measureEntity: MeasureEntity)
