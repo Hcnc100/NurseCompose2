@@ -2,13 +2,25 @@ package com.nullpointer.nourseCompose.ui.models.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nullpointer.nourseCompose.ui.models.data.MeasureData
 import com.nullpointer.nourseCompose.ui.models.types.MeasureType
 
 @Entity(tableName = "measures")
 data class MeasureEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val createAt: Double,
+    val value: Double,
     val type: MeasureType,
-    val dateInMillis: Long = System.currentTimeMillis(),
-)
+    val createAt: Long = System.currentTimeMillis(),
+) {
+    companion object {
+        fun fromMeasureData(measureData: MeasureData): MeasureEntity {
+            return MeasureEntity(
+                value = measureData.value,
+                type = measureData.type,
+                createAt = measureData.createAt,
+                id = measureData.id
+            )
+        }
+    }
+}

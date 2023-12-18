@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface MeasureDAO {
 
     @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY dateInMillis DESC LIMIT (:limit)")
-    fun getListMeasureByTypes(type: MeasureType, limit: Int): Flow<MeasureEntity>
+    fun getListMeasureByTypes(type: MeasureType, limit: Int): Flow<List<MeasureEntity>>
 
     @Insert
     suspend fun insertMeasure(measureEntity: MeasureEntity)
