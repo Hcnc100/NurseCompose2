@@ -14,33 +14,33 @@ enum class MeasureType(
 ) {
     TEMPERATURE(
         maxValue1 = 37.0f,
-        minValue1 = 36.5f,
+        minValue1 = 36.0f,
         suffix = "°",
-        color1 = Color.GREEN
+        color1 = Color.parseColor("#ff5722")
     ),
     GLUCOSE(
-        maxValue1 = 80.0f,
-        minValue1 = 120.0f,
+        maxValue1 = 120.0f,
+        minValue1 = 80.0f,
         suffix = "mg/dl",
-        color1 = Color.MAGENTA
+        color1 = Color.parseColor("#673ab7")
     ),
     OXYGEN(
         maxValue1 = 100.0f,
         minValue1 = 95.0f,
         suffix = "%",
-        color1 = Color.BLUE
+        color1 = Color.parseColor("#03a9f4")
     ),
     PRESSURE(
         suffix = "mm Hg",
-        // * range down
-        minValue2 = 90.0f, // sistólica
-        minValue1 = 60.0f, // diastólica
 
-        // * range up
-        maxValue1 = 130.0f, // sistólica
-        maxValue2 = 80.0f, // diastólica
-        color1 = Color.CYAN,
-        color2 = Color.RED
+        minValue1 = 90.0f, // diastólica
+        maxValue1 = 129.0f, // sistólica
+
+
+        minValue2 = 60.0f, // sistólica
+        maxValue2 = 84.0f, // diastólica
+        color1 = Color.parseColor("#f44336"),
+        color2 = Color.parseColor("#673ab7")
     )
 
 }

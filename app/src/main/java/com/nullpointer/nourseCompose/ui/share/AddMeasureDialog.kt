@@ -54,15 +54,16 @@ fun AddMeasureDialog(
 
                     if (value1 == null) {
                         changeHasError1(true)
+                        return@TextButton
                     }
 
-                    if (value2 == null) {
+                    if (value2 == null && measureType == MeasureType.PRESSURE) {
                         changeHasError2(true)
+                        return@TextButton
                     }
 
-                    if (value1 != null && value2 != null) {
-                        onDismissDialog(value1, value2)
-                    }
+
+                    onDismissDialog(value1, value2)
                 }
             )
         },

@@ -8,7 +8,7 @@ import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 @Database(
     version = 3,
     entities = [MeasureEntity::class],
-    exportSchema = true
+    exportSchema = false
 )
 abstract class NurseDatabase : RoomDatabase() {
 

@@ -90,37 +90,40 @@ fun MeasureGraph(
 
                 setTouchEnabled(false)
 
-                measureType.maxValue1?.let {
-                    val limitLine = LimitLine(it).apply {
-                        lineWidth = 2f
-                        lineColor = Color.RED
-                        enableDashedLine(10f, 10f, 0f)
-                    }
-                    axisLeft.addLimitLine(limitLine)
-                }
-
                 measureType.minValue1?.let {
                     val limitLine = LimitLine(it).apply {
                         lineWidth = 2f
-                        lineColor = Color.BLUE
+                        lineColor = measureType.color1
                         enableDashedLine(10f, 10f, 0f)
                     }
                     axisLeft.addLimitLine(limitLine)
                 }
 
-                measureType.maxValue2?.let {
-                    val limitLine = LimitLine(it).apply {
+
+                measureType.maxValue1?.let {
+                    val limitLine = LimitLine(it, "").apply {
                         lineWidth = 2f
-                        lineColor = Color.RED
+                        lineColor = measureType.color1
                         enableDashedLine(10f, 10f, 0f)
                     }
                     axisLeft.addLimitLine(limitLine)
                 }
+
 
                 measureType.minValue2?.let {
                     val limitLine = LimitLine(it).apply {
                         lineWidth = 2f
-                        lineColor = Color.BLUE
+                        lineColor = measureType.color2!!
+                        enableDashedLine(10f, 10f, 0f)
+                    }
+                    axisLeft.addLimitLine(limitLine)
+                }
+
+
+                measureType.maxValue2?.let {
+                    val limitLine = LimitLine(it).apply {
+                        lineWidth = 2f
+                        lineColor = measureType.color2!!
                         enableDashedLine(10f, 10f, 0f)
                     }
                     axisLeft.addLimitLine(limitLine)
