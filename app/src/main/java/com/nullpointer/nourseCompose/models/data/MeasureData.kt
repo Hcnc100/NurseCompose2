@@ -7,13 +7,12 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class MeasureData(
+data class MeasureData(
     val id: Int,
     val value: Float,
     val createAt: String,
     val type: MeasureType,
-
-    ) {
+) {
 
     companion object {
 

@@ -65,6 +65,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.all {
+        addJavaSourceFoldersToModel(
+            File(buildDir, "generated/ksp/$name/kotlin")
+        )
+    }
 }
 
 dependencies {
@@ -97,19 +103,31 @@ dependencies {
 
     // * kotlin serialization
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
     // * dagger hilt
     implementation("com.google.dagger:hilt-android:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     // * graph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // * Desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // * navigation
+    val destinationsVersion = "1.8.42-beta"
+    implementation("io.github.raamcosta.compose-destinations:core:$destinationsVersion")
+    ksp("io.github.raamcosta.compose-destinations:ksp:$destinationsVersion")
+
+
+    // * pagination
+    val pagingVersion = "3.2.1"
+    implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
+    implementation("androidx.paging:paging-compose:3.2.1")
+    implementation("androidx.room:room-paging:$roomVersion")
 
 }
 
