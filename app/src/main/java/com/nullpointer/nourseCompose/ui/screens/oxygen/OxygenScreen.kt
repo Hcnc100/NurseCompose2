@@ -11,9 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.nullpointer.nourseCompose.measureViewModelProvider
 import com.nullpointer.nourseCompose.models.types.MeasureType
+import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
 import com.nullpointer.nourseCompose.ui.share.MeasureScreen
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
+import com.ramcosta.composedestinations.annotation.Destination
 
+@Destination
+@HomeGraph
 @Composable
 fun OxygenScreen(
     lazyListState: LazyListState = rememberLazyListState(),

@@ -13,33 +13,57 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.nullpointer.nourseCompose.models.data.MeasureData
+import com.nullpointer.nourseCompose.models.types.MeasureType
 
 @Composable
 fun MeasureGraph(
     measureList: List<MeasureData>,
     modifier: Modifier = Modifier,
+    measureType: MeasureType
 ) {
 
-    val measureType = measureList.first().type
 
-    val measureEntry = remember(measureList) {
+    val measureEntry1 = remember(measureList) {
         measureList.reversed().mapIndexed { index, measureData ->
-            Entry(index.toFloat(), measureData.value)
+            Entry(index.toFloat(), measureData.value1)
         }
     }
 
-    val measureDataSet = remember(measureEntry) {
+    val measureEntry2 = remember(measureList) {
+        measureList.mapNotNull { it.value2 }.reversed().mapIndexed { index, measureData ->
+            Entry(index.toFloat(), measureData)
+        }
+    }
+
+    val measureDataSet1 = remember(measureEntry1) {
         LineDataSet(
-            measureEntry,
+            measureEntry1,
             measureType.name
         ).apply {
             valueTextSize = 9f
             valueTypeface = Typeface.DEFAULT_BOLD
+            color = measureType.color1
+            setCircleColor(measureType.color1)
         }
     }
 
-    val measureDataGraph = remember(measureDataSet) {
-        LineData(measureDataSet)
+    val measureDataSet2 = remember(measureEntry2) {
+        LineDataSet(
+            measureEntry2,
+            measureType.name
+        ).apply {
+            valueTextSize = 9f
+            valueTypeface = Typeface.DEFAULT_BOLD
+            measureType.color2?.let { color2 ->
+                color = color2
+                setCircleColor(color2)
+            }
+        }
+    }
+
+
+    val measureDataGraph = remember(measureDataSet1) {
+        LineData(measureDataSet1, measureDataSet2)
     }
 
     AndroidView(
@@ -66,7 +90,7 @@ fun MeasureGraph(
 
                 setTouchEnabled(false)
 
-                measureType.maxValue?.let {
+                measureType.maxValue1?.let {
                     val limitLine = LimitLine(it).apply {
                         lineWidth = 2f
                         lineColor = Color.RED
@@ -75,7 +99,25 @@ fun MeasureGraph(
                     axisLeft.addLimitLine(limitLine)
                 }
 
-                measureType.minValue?.let {
+                measureType.minValue1?.let {
+                    val limitLine = LimitLine(it).apply {
+                        lineWidth = 2f
+                        lineColor = Color.BLUE
+                        enableDashedLine(10f, 10f, 0f)
+                    }
+                    axisLeft.addLimitLine(limitLine)
+                }
+
+                measureType.maxValue2?.let {
+                    val limitLine = LimitLine(it).apply {
+                        lineWidth = 2f
+                        lineColor = Color.RED
+                        enableDashedLine(10f, 10f, 0f)
+                    }
+                    axisLeft.addLimitLine(limitLine)
+                }
+
+                measureType.minValue2?.let {
                     val limitLine = LimitLine(it).apply {
                         lineWidth = 2f
                         lineColor = Color.BLUE

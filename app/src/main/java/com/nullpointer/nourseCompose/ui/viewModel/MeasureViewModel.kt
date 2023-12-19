@@ -30,6 +30,7 @@ class MeasureViewModel @AssistedInject constructor(
     @Assisted private val measureType: MeasureType
 ) : ViewModel() {
 
+
     private val _message = Channel<String>()
     val message = _message.receiveAsFlow()
 
@@ -67,14 +68,16 @@ class MeasureViewModel @AssistedInject constructor(
                 emptyList()
             )
 
-    fun addMeasureData(value: Float) = viewModelScope.launch {
+    fun addMeasureData(value1: Float, value2: Float? = null) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             measureRepository.addMeasure(
                 type = measureType,
-                value = value
+                value1 = value1,
+                value2 = value2,
             )
         }
     }
+
 
     @AssistedFactory
     interface Factory {

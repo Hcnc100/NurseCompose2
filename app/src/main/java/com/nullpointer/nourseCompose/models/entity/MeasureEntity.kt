@@ -9,14 +9,16 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 data class MeasureEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val value: Float,
+    val value1: Float,
+    val value2: Float? = null,
     val type: MeasureType,
     val createAt: Long = System.currentTimeMillis(),
 ) {
     companion object {
         fun fromMeasureData(measureData: MeasureData): MeasureEntity {
             return MeasureEntity(
-                value = measureData.value,
+                value1 = measureData.value1,
+                value2 = measureData.value2,
                 type = measureData.type,
             )
         }

@@ -9,10 +9,17 @@ import java.time.format.DateTimeFormatter
 
 data class MeasureData(
     val id: Int,
-    val value: Float,
+    val value1: Float,
+    val value2: Float?,
     val createAt: String,
     val type: MeasureType,
 ) {
+
+    val showValue
+        get() = when (type) {
+            MeasureType.PRESSURE -> "$value1/$value2 ${type.suffix}"
+            else -> "$value1 ${type.suffix}"
+        }
 
     companion object {
 
@@ -36,7 +43,8 @@ data class MeasureData(
             return MeasureData(
                 id = measureEntity.id,
                 type = measureEntity.type,
-                value = measureEntity.value,
+                value1 = measureEntity.value1,
+                value2 = measureEntity.value2,
                 createAt = dateString,
             )
         }

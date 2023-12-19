@@ -8,8 +8,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +28,7 @@ fun MeasureScreen(
     lazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     lastMeasureList: List<MeasureData>,
-    addMeasureData: (value: Float) -> Unit,
+    addMeasureData: (value1: Float, value2: Float?) -> Unit,
     pagingListMeasure: LazyPagingItems<MeasureData>,
 ) {
 
@@ -41,9 +39,6 @@ fun MeasureScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(title = { Text(text = measureType.name) })
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 isVisible = true
@@ -62,6 +57,7 @@ fun MeasureScreen(
             modifier = Modifier.padding(paddingValues),
             graphHeader = {
                 MeasureGraph(
+                    measureType = measureType,
                     measureList = lastMeasureList,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -74,9 +70,9 @@ fun MeasureScreen(
         if (isVisible) {
             AddMeasureDialog(
                 measureType = measureType,
-                onDismissDialog = { value ->
+                onDismissDialog = { value1, value2 ->
                     isVisible = false
-                    value?.let { addMeasureData(it) }
+                    value1?.let { addMeasureData(value1, value2) }
                 }
             )
         }

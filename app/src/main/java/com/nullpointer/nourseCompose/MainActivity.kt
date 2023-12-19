@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nullpointer.nourseCompose.inject.viewModel.measure.ViewModelFactoryProvider
 import com.nullpointer.nourseCompose.models.types.MeasureType
-import com.nullpointer.nourseCompose.ui.screens.temperature.TemperatureScreen
+import com.nullpointer.nourseCompose.ui.screens.home.HomeScreen
 import com.nullpointer.nourseCompose.ui.theme.MyApplicationTheme
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    TemperatureScreen()
+                    HomeScreen()
                 }
             }
         }

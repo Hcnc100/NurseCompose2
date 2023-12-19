@@ -13,8 +13,8 @@ class MeasureRepoImpl(
     override fun getListMeasureByType(type: MeasureType, limit: Int): Flow<List<MeasureData>> =
         measureLocalDataSource.getListMeasureByType(type, limit)
 
-    override suspend fun addMeasure(value: Float, type: MeasureType) =
-        measureLocalDataSource.addMeasure(value, type)
+    override suspend fun addMeasure(type: MeasureType, value1: Float, value2: Float?) =
+        measureLocalDataSource.addMeasure(type, value1, value2)
 
 
     override suspend fun deleterMeasureData(measureData: MeasureData) =

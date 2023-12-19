@@ -19,10 +19,11 @@ class MeasureLocalDataSourceImpl(
     override fun getPagingMeasureByType(type: MeasureType): PagingSource<Int, MeasureEntity> =
         measureDAO.getPagingMeasureByTypes(type)
 
-    override suspend fun addMeasure(value: Float, type: MeasureType) {
+    override suspend fun addMeasure(type: MeasureType, value1: Float, value2: Float?) {
         val measureEntity = MeasureEntity(
-            value = value,
-            type = type
+            type = type,
+            value1 = value1,
+            value2 = value2,
         )
         measureDAO.insertMeasure(measureEntity)
     }

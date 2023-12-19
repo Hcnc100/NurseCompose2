@@ -52,7 +52,7 @@ fun MeasureItem(
                 )
             }
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = "${measureData.value} ${measureData.type.prefix}")
+            Text(text = measureData.showValue)
         }
     }
 }

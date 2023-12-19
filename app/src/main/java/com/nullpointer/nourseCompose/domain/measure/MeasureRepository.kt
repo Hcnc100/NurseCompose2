@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface MeasureRepository {
     fun getListMeasureByType(type: MeasureType, limit: Int): Flow<List<MeasureData>>
 
-    suspend fun addMeasure(value: Float, type: MeasureType)
+    suspend fun addMeasure(type: MeasureType, value1: Float, value2: Float?)
 
     suspend fun deleterMeasureData(measureData: MeasureData)
 

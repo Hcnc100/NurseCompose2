@@ -23,36 +23,51 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 @Composable
 fun AddMeasureDialog(
     measureType: MeasureType,
-    onDismissDialog: (Float?) -> Unit,
+    onDismissDialog: (Float?, Float?) -> Unit,
     maxLong: Long = 7
 ) {
 
-    val (measureValue, changeMeasureValue) = rememberSaveable {
+    val (measureValue1, changeMeasureValue1) = rememberSaveable {
         mutableStateOf("")
     }
-    val (hasError, changeHasError) = rememberSaveable {
+    val (hasError1, changeHasError1) = rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val (measureValue2, changeMeasureValue2) = rememberSaveable {
+        mutableStateOf("")
+    }
+    val (hasError2, changeHasError2) = rememberSaveable {
         mutableStateOf(false)
     }
 
     AlertDialog(
-        onDismissRequest = { onDismissDialog(null) },
+        onDismissRequest = { onDismissDialog(null, null) },
         confirmButton = {
             TextButton(
                 content = {
                     Text(text = "Save")
                 },
                 onClick = {
-                    val value = measureValue.toFloatOrNull()
-                    if (value == null) {
-                        changeHasError(true)
-                    } else {
-                        onDismissDialog(value)
+                    val value1 = measureValue1.toFloatOrNull()
+                    val value2 = measureValue2.toFloatOrNull()
+
+                    if (value1 == null) {
+                        changeHasError1(true)
+                    }
+
+                    if (value2 == null) {
+                        changeHasError2(true)
+                    }
+
+                    if (value1 != null && value2 != null) {
+                        onDismissDialog(value1, value2)
                     }
                 }
             )
         },
         dismissButton = {
-            TextButton(onClick = { onDismissDialog(null) }) {
+            TextButton(onClick = { onDismissDialog(null, null) }) {
                 Text(text = "Cancel")
             }
         },
@@ -62,12 +77,23 @@ fun AddMeasureDialog(
                 Spacer(modifier = Modifier.height(10.dp))
                 MeasureInputField(
                     measureType = measureType,
-                    hasError = hasError,
-                    measureValue = measureValue,
+                    hasError = hasError1,
+                    measureValue = measureValue1,
                     maxLong = maxLong,
-                    changeHasError = changeHasError,
-                    changeMeasureValue = changeMeasureValue,
+                    changeHasError = changeHasError1,
+                    changeMeasureValue = changeMeasureValue1,
                 )
+                if (measureType == MeasureType.PRESSURE) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    MeasureInputField(
+                        measureType = measureType,
+                        hasError = hasError2,
+                        measureValue = measureValue2,
+                        maxLong = maxLong,
+                        changeHasError = changeHasError2,
+                        changeMeasureValue = changeMeasureValue2,
+                    )
+                }
             }
         }
     )
