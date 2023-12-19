@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.share
 
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun HeaderMeasureList(
@@ -33,10 +36,19 @@ fun HeaderMeasureList(
         mutableIntStateOf(0)
     }
 
+    val animatedCountItems by animateIntAsState(targetValue = countItems, label = "counter")
+
     LaunchedEffect(key1 = measureList) {
         snapshotFlow { measureList.itemCount }
-            .debounce(300)
-            .collect {
+            .takeIf {
+                measureList.loadState.refresh is LoadState.NotLoading
+            }
+            ?.map {
+                println("Change $it")
+                it
+            }
+            ?.debounce(500)
+            ?.collect {
                 countItems = it
             }
     }
@@ -49,7 +61,7 @@ fun HeaderMeasureList(
             Column(modifier = Modifier) {
                 graphHeader()
                 Text(
-                    text = "Number of measures loaded $countItems",
+                    text = "Number of measures loaded $animatedCountItems",
                     Modifier.padding(10.dp),
                     style = TextStyle(
                         fontSize = 12.sp

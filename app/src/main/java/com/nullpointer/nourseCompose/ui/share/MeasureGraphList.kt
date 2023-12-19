@@ -56,6 +56,8 @@ fun MeasureGraphList(
                     key = measureList.itemKey { it.id },
                     contentType = measureList.itemContentType { it.type },
                 ) {
+                    // * when no use place holders
+                    // * no need check if the item is null
                     MeasureItem(
                         measureData = measureList[it]!!,
 //                        modifier = Modifier.animateItemPlacement()

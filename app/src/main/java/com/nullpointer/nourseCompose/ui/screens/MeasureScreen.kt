@@ -13,13 +13,18 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.nullpointer.nourseCompose.R
+import com.nullpointer.nourseCompose.models.types.MeasureType
+import com.nullpointer.nourseCompose.ui.share.AddMeasureDialog
 import com.nullpointer.nourseCompose.ui.share.MeasureGraph
 import com.nullpointer.nourseCompose.ui.share.MeasureGraphList
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
@@ -38,18 +43,18 @@ fun MeasureScreen(
     val listTemperature = measureViewModel.listPagingTemperature.collectAsLazyPagingItems()
     val lastTemperatureList by measureViewModel.lastTemperatureList.collectAsState()
 
+    var isVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = "Measure") })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                measureViewModel.addFakeData().invokeOnCompletion {
-                    coroutineScope.launch {
-                        delay(200)
-                        lazyListState.scrollToItem(0)
-                    }
-                }
+                isVisible = true
+
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_add_24),
@@ -72,6 +77,23 @@ fun MeasureScreen(
 
             }
         )
+
+        if (isVisible) {
+            AddMeasureDialog(
+                measureType = MeasureType.TEMPERATURE,
+                onDismissDialog = { value ->
+                    isVisible = false
+                    value?.let {
+                        measureViewModel.addTemperatureData(value).invokeOnCompletion {
+                            coroutineScope.launch {
+                                delay(200)
+                                lazyListState.scrollToItem(0)
+                            }
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 

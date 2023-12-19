@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class MeasureViewModel @Inject constructor(
@@ -55,13 +54,11 @@ class MeasureViewModel @Inject constructor(
                 emptyList()
             )
 
-
-    fun addFakeData() = viewModelScope.launch {
+    fun addTemperatureData(value: Float) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
-            val random = Random.nextFloat() * (38.0f - 36.0f) + 36.0f
             measureRepository.addMeasure(
                 type = MeasureType.TEMPERATURE,
-                value = random
+                value = value
             )
         }
     }
