@@ -1,32 +1,40 @@
 package com.nullpointer.nourseCompose.ui.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.types.MeasureType
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class MeasureViewModel @Inject constructor(
-    private val measureRepository: MeasureRepository
+class MeasureViewModel @AssistedInject constructor(
+    private val measureRepository: MeasureRepository,
+    @Assisted private val measureType: MeasureType
 ) : ViewModel() {
 
+    private val _message = Channel<String>()
+    val message = _message.receiveAsFlow()
 
-    val listPagingTemperature = Pager(
+
+    val listPagingMeasure = Pager(
         config = PagingConfig(
             pageSize = 20,
             initialLoadSize = 30,
@@ -34,32 +42,55 @@ class MeasureViewModel @Inject constructor(
             enablePlaceholders = false
         ),
         pagingSourceFactory = {
-            measureRepository.getPagingMeasureByType(MeasureType.TEMPERATURE)
+            measureRepository.getPagingMeasureByType(measureType)
         }
     ).flow.map { list ->
         list.map(MeasureData::fromMeasureEntity)
-    }.flowOn(Dispatchers.IO).cachedIn(viewModelScope)
+    }
+        .catch {
+            emit(PagingData.empty())
+            _message.send("Error get paginate in ${measureType.name} $it")
+        }
+        .flowOn(Dispatchers.IO).cachedIn(viewModelScope)
 
 
-    val lastTemperatureList =
+    val lastMeasureList =
         measureRepository
-            .getListMeasureByType(MeasureType.TEMPERATURE, 10)
+            .getListMeasureByType(measureType, 10)
             .flowOn(Dispatchers.IO)
             .catch {
                 emit(emptyList())
-                println(it)
+                _message.send("Error get last list in ${measureType.name} $it")
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
                 emptyList()
             )
 
-    fun addTemperatureData(value: Float) = viewModelScope.launch {
+    fun addMeasureData(value: Float) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             measureRepository.addMeasure(
-                type = MeasureType.TEMPERATURE,
+                type = measureType,
                 value = value
             )
+        }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(measureType: MeasureType): MeasureViewModel
+    }
+
+    companion object {
+        fun provideMainViewModelFactory(
+            factory: Factory,
+            measureType: MeasureType
+        ): ViewModelProvider.Factory {
+            return object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return factory.create(measureType) as T
+                }
+            }
         }
     }
 }

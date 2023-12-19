@@ -129,6 +129,9 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.2.1")
     implementation("androidx.room:room-paging:$roomVersion")
 
+    implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
+    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
+
 }
 
 kapt {
