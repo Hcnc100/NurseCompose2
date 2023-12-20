@@ -132,6 +132,8 @@ dependencies {
     implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
     kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
 
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.9.0")
+
 }
 
 kapt {

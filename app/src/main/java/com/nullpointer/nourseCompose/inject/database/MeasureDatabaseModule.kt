@@ -2,6 +2,7 @@ package com.nullpointer.nourseCompose.inject.database
 
 import android.content.Context
 import androidx.room.Room
+import com.nullpointer.nourseCompose.data.csv.local.BackUpDatabase
 import com.nullpointer.nourseCompose.database.NurseDatabase
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,11 @@ object MeasureDatabaseModule {
     @Singleton
     @Named(value = keyNameDatabase)
     fun provideNameDatabase(): String = nameDatabase
+
+
+    @Provides
+    @Singleton
+    fun provideBackUpDatabase(): BackUpDatabase = BackUpDatabase()
 
 
     @Provides

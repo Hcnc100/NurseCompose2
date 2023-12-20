@@ -6,6 +6,7 @@ import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 class MeasureRepoImpl(
     private val measureLocalDataSource: MeasureLocalDataSource
@@ -25,5 +26,11 @@ class MeasureRepoImpl(
 
     override fun getPagingMeasureByType(type: MeasureType): PagingSource<Int, MeasureEntity> =
         measureLocalDataSource.getPagingMeasureByType(type)
+
+    override suspend fun exportDatabase(file: File) =
+        measureLocalDataSource.exportDatabase(file)
+
+    override suspend fun importDatabase(file: File) =
+        measureLocalDataSource.importDatabase(file)
 
 }

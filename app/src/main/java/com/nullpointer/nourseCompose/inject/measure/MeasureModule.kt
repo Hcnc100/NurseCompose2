@@ -1,6 +1,7 @@
 package com.nullpointer.nourseCompose.inject.measure
 
-import com.nullpointer.nourseCompose.database.MeasureDAO
+import com.nullpointer.nourseCompose.data.csv.local.BackUpDatabase
+import com.nullpointer.nourseCompose.data.measure.local.MeasureDAO
 import com.nullpointer.nourseCompose.database.NurseDatabase
 import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSource
 import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSourceImpl
@@ -27,9 +28,11 @@ object MeasureModule {
     @Provides
     @Singleton
     fun provideMeasureLocalDataSource(
-        measureDAO: MeasureDAO
+        measureDAO: MeasureDAO,
+        backUpDatabase: BackUpDatabase
     ): MeasureLocalDataSource = MeasureLocalDataSourceImpl(
-        measureDAO = measureDAO
+        measureDAO = measureDAO,
+        backUpDatabase = backUpDatabase
     )
 
     @Provides

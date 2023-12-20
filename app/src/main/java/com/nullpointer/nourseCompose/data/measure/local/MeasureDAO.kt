@@ -1,9 +1,11 @@
-package com.nullpointer.nourseCompose.database
+package com.nullpointer.nourseCompose.data.measure.local
 
+import android.database.Cursor
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
@@ -22,9 +24,25 @@ interface MeasureDAO {
     @Insert
     suspend fun insertMeasure(measureEntity: MeasureEntity)
 
+    @Insert
+    suspend fun insertMeasure(measureEntity: List<MeasureEntity>)
+
+
     @Update
     suspend fun updateMeasure(measureEntity: MeasureEntity)
 
     @Update
     suspend fun deleter(measureEntity: MeasureEntity)
+
+    @Query("SELECT * FROM measures")
+    fun getCursorMeasure(): Cursor
+
+    @Query("DELETE FROM measures")
+    suspend fun deleterAll()
+
+    @Transaction
+    suspend fun updateAll(list: List<MeasureEntity>) {
+        deleterAll()
+        insertMeasure(list)
+    }
 }

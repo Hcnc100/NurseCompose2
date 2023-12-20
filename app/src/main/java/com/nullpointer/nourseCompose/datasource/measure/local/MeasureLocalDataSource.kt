@@ -5,6 +5,7 @@ import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 interface MeasureLocalDataSource {
 
@@ -17,4 +18,8 @@ interface MeasureLocalDataSource {
     suspend fun deleterMeasureData(measureData: MeasureData)
 
     suspend fun updateMeasureData(measureData: MeasureData)
+
+    suspend fun exportDatabase(file: File)
+
+    suspend fun importDatabase(file: File)
 }
