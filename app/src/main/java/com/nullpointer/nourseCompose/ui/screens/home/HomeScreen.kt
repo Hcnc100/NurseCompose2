@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
+import com.nullpointer.nourseCompose.ui.screens.destinations.SettingsScreenDestination
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.CLEAR_DATA
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.EXPORT
@@ -33,6 +34,7 @@ import com.nullpointer.nourseCompose.ui.screens.home.widgets.dialogs.DrawerActio
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
 @RootNavGraph(start = true)
@@ -40,6 +42,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
+    destinationsNavigator: DestinationsNavigator,
     homeState: HomeState = rememberHomeState(
         selectExportDocumentSuccess = homeViewModel::exportMeasureDatabase,
         selectImportDocumentSuccess = homeViewModel::importMeasureDatabase
@@ -67,7 +70,7 @@ fun HomeScreen(
                     homeState.closeDrawer()
                     when (drawerAction) {
                         EXPORT -> homeState.selectExportFile()
-                        SETTINGS -> {}
+                        SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
                         else -> changeSelectDrawerActions(drawerAction)
                     }
                 }
