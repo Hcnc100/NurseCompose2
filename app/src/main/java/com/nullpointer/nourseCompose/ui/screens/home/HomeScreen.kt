@@ -18,12 +18,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
-import com.nullpointer.nourseCompose.ui.screens.destinations.SettingsScreenDestination
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.CLEAR_DATA
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.EXPORT
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.IMPORT
-import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.SETTINGS
 import com.nullpointer.nourseCompose.ui.screens.home.state.HomeState
 import com.nullpointer.nourseCompose.ui.screens.home.state.rememberHomeState
 import com.nullpointer.nourseCompose.ui.screens.home.viewModel.HomeViewModel
@@ -70,7 +68,7 @@ fun HomeScreen(
                     homeState.closeDrawer()
                     when (drawerAction) {
                         EXPORT -> homeState.selectExportFile()
-                        SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
+//                        SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
                         else -> changeSelectDrawerActions(drawerAction)
                     }
                 }

@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.MyApplication" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/pink</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
+    </style>
 </resources>

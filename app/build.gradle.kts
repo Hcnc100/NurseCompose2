@@ -132,7 +132,11 @@ dependencies {
     implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
     kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
 
+    // * csv
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.9.0")
+
+    // * splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
 }
 

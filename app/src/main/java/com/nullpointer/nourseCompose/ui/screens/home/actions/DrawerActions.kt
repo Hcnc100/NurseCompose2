@@ -16,10 +16,11 @@ enum class DrawerActions(
         title = "Export",
         icon = R.drawable.baseline_cloud_download_24
     ),
-    SETTINGS(
-        title = "Settings",
-        icon = R.drawable.baseline_build_24
-    ),
+
+    //    SETTINGS(
+//        title = "Settings",
+//        icon = R.drawable.baseline_build_24
+//    ),
     CLEAR_DATA(
         title = "Clear all Data",
         icon = R.drawable.baseline_delete_24
