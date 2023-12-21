@@ -1,6 +1,11 @@
 package com.nullpointer.nourseCompose.ui.screens.home.state
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -10,10 +15,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nullpointer.nourseCompose.contants.Constants.EXTENSION_FILE
 import com.nullpointer.nourseCompose.contants.Constants.MEASURE_DATABASE_BACKUP
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
 @Stable
 class HomeState(
@@ -21,6 +28,8 @@ class HomeState(
     private val scaffoldState: ScaffoldState,
     private val coroutineScope: CoroutineScope,
     private val navHostController: NavHostController,
+    private val selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
+    private val selectImportDocumentResult: ManagedActivityResultLauncher<String, Uri?>
 ) {
 
     operator fun component1() = scaffoldState
@@ -39,27 +48,48 @@ class HomeState(
         scaffoldState.drawerState.close()
     }
 
-    fun createDatabaseBackUpFile(
-        writeFile: (File) -> Unit
-    ) {
-        val csvFile = File(context.filesDir, MEASURE_DATABASE_BACKUP)
-        writeFile(csvFile)
+
+    fun selectExportFile() {
+        selectExportDocumentResult.launch("${MEASURE_DATABASE_BACKUP}_${System.currentTimeMillis()}.${EXTENSION_FILE}")
+    }
+
+    fun selectImportFile() {
+        selectImportDocumentResult.launch("text/*")
     }
 }
 
 
 @Composable
 fun rememberHomeState(
+    selectExportDocumentSuccess: (OutputStream) -> Unit,
+    selectImportDocumentSuccess: (InputStream) -> Unit,
     context: Context = LocalContext.current,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    navHostController: NavHostController = rememberNavController()
-) = remember(scaffoldState, coroutineScope) {
+    navHostController: NavHostController = rememberNavController(),
+    @SuppressLint("Recycle") selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
+        CreateDocument("text/*")
+    ) { uri: Uri? ->
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.let(selectExportDocumentSuccess)
+        }
+    },
+    @SuppressLint("Recycle") selectImportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
+        GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                context.contentResolver.openInputStream(it)?.let(selectImportDocumentSuccess)
+            }
+        }
+    ),
+) = remember(scaffoldState, coroutineScope, selectExportDocumentResult) {
     HomeState(
         context = context,
         scaffoldState = scaffoldState,
         coroutineScope = coroutineScope,
-        navHostController = navHostController
+        navHostController = navHostController,
+        selectExportDocumentResult = selectExportDocumentResult,
+        selectImportDocumentResult = selectImportDocumentResult
     )
 }
 

@@ -10,5 +10,7 @@ object Constants {
     const val MEASURE_ID_NAME = "id"
 
 
-    const val MEASURE_DATABASE_BACKUP = "MeasureDatabaseBackUp.csv"
+    const val MEASURE_DATABASE_BACKUP = "Nurse"
+    const val EXTENSION_FILE = "nursebackup"
+
 }

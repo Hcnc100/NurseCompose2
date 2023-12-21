@@ -8,7 +8,8 @@ import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
 class MeasureLocalDataSourceImpl(
     private val measureDAO: MeasureDAO,
@@ -42,16 +43,19 @@ class MeasureLocalDataSourceImpl(
         measureDAO.updateMeasure(measureEntity)
     }
 
-    override suspend fun exportDatabase(file: File) {
+    override suspend fun exportDatabase(outputStream: OutputStream) {
         measureDAO.getCursorMeasure().use {
-            backUpDatabase.exportMeasureToCSVFile(file, it)
+            backUpDatabase.exportMeasureToCSVFile(outputStream, it)
         }
     }
 
-    override suspend fun importDatabase(file: File) {
-        val list = backUpDatabase.importMeasureFromCSVFile(file)
+
+    override suspend fun importDatabase(inputStream: InputStream) {
+        val list = backUpDatabase.importMeasureFromCSVFile(inputStream)
         measureDAO.updateAll(list)
     }
+
+    override suspend fun deleterAllMeasures() = measureDAO.deleterAll()
 
 
 }

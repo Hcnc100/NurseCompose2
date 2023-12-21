@@ -12,7 +12,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,12 +27,30 @@ class HomeViewModel @Inject constructor(
     private val _message = Channel<String>()
     val message = _message.receiveAsFlow()
 
-    fun exportMeasureDatabase(file: File) = viewModelScope.launch {
+    fun exportMeasureDatabase(outputStream: OutputStream) = viewModelScope.launch {
         isLoading = true
 
         runCatching {
             withContext(Dispatchers.IO) {
-                measureRepository.exportDatabase(file)
+                outputStream.use {
+                    measureRepository.exportDatabase(outputStream)
+                }
+            }
+        }.onFailure {
+            _message.trySend("Error in export file, verify your file")
+        }
+
+        isLoading = false
+    }
+
+    fun importMeasureDatabase(inputStream: InputStream) = viewModelScope.launch {
+        isLoading = true
+
+        runCatching {
+            withContext(Dispatchers.IO) {
+                inputStream.use {
+                    measureRepository.importDatabase(inputStream)
+                }
             }
         }.onFailure {
             _message.trySend("Error in export $it")
@@ -40,12 +59,12 @@ class HomeViewModel @Inject constructor(
         isLoading = false
     }
 
-    fun importMeasureDatabase(file: File) = viewModelScope.launch {
+    fun deleterAllData() = viewModelScope.launch {
         isLoading = true
 
         runCatching {
             withContext(Dispatchers.IO) {
-                measureRepository.importDatabase(file)
+                measureRepository.deleterAllMeasures()
             }
         }.onFailure {
             _message.trySend("Error in export $it")

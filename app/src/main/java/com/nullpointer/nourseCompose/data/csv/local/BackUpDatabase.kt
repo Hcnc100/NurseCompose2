@@ -8,7 +8,8 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.nullpointer.nourseCompose.contants.Constants
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
-import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
 class BackUpDatabase {
 
@@ -34,8 +35,8 @@ class BackUpDatabase {
         }
     }
 
-    fun exportMeasureToCSVFile(csvFile: File, cursor: Cursor) {
-        csvWriter().open(csvFile, append = false) {
+    fun exportMeasureToCSVFile(outputStream: OutputStream, cursor: Cursor) {
+        csvWriter().open(outputStream) {
             writeRow(listTableNames)
             if (cursor.moveToFirst()) {
                 do {
@@ -45,8 +46,8 @@ class BackUpDatabase {
         }
     }
 
-    fun importMeasureFromCSVFile(csvFile: File): List<MeasureEntity> {
-        return csvReader().open(csvFile) {
+    fun importMeasureFromCSVFile(inputSystem: InputStream): List<MeasureEntity> {
+        return csvReader().open(inputSystem) {
             readAllWithHeaderAsSequence().mapNotNull { row ->
                 val id = row[Constants.MEASURE_ID_NAME]?.toIntOrNull()
                 val value1 = row[Constants.MEASURE_VALUE1_NAME]?.toFloatOrNull()
@@ -68,4 +69,6 @@ class BackUpDatabase {
             }.toList()
         }
     }
+
+
 }

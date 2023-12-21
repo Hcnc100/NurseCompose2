@@ -45,10 +45,7 @@ fun MeasureGraphList(
             ) {
 
                 stickyHeader {
-                    HeaderMeasureList(
-                        graphHeader = graphHeader,
-                        measureList = measureList,
-                    )
+                    HeaderMeasureList(graphHeader)
                 }
 
                 items(

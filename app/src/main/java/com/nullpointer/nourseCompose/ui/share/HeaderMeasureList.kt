@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 
 @Composable
-fun HeaderMeasureList(
+fun HeaderMeasureListAndCounter(
     graphHeader: @Composable () -> Unit,
     measureList: LazyPagingItems<MeasureData>,
 ) {
@@ -68,6 +68,20 @@ fun HeaderMeasureList(
                     )
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun HeaderMeasureList(
+    graphHeader: @Composable () -> Unit,
+) {
+
+    Box(modifier = Modifier.background(MaterialTheme.colors.background)) {
+        Card(
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            graphHeader()
         }
     }
 }
