@@ -3,8 +3,10 @@ package com.nullpointer.nourseCompose.ui.screens.home.widgets
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -19,7 +21,10 @@ fun HomeBottomNavBar(
     currentDestination: Destination?
 ) {
 
-    BottomAppBar {
+    BottomAppBar(
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = Color.White
+    ) {
         HomeNavItems.values().map {
             BottomNavigationItem(
                 alwaysShowLabel = false,

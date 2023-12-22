@@ -7,8 +7,10 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
 private val DarkColorScheme = darkColors(
-    primary = Purple80,
-    secondary = PurpleGrey80,
+    primary = Primary,
+    secondary = Secondary,
+    primaryVariant = PrimaryVariant,
+    secondaryVariant = SecondaryVariant
 )
 
 private val LightColorScheme = lightColors(
@@ -16,6 +18,7 @@ private val LightColorScheme = lightColors(
     secondary = Secondary,
     primaryVariant = PrimaryVariant,
     secondaryVariant = SecondaryVariant
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -35,8 +38,8 @@ fun MyApplicationTheme(
 ) {
 
     MaterialTheme(
-        colors = LightColorScheme,
+        colors = if (darkTheme) DarkColorScheme else LightColorScheme,
         typography = Typography,
-        content =content
+        content = content
     )
 }

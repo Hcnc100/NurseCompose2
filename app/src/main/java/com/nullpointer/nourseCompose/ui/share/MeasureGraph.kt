@@ -1,10 +1,12 @@
 package com.nullpointer.nourseCompose.ui.share
 
-import android.graphics.Color
 import android.graphics.Typeface
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -19,7 +21,8 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 fun MeasureGraph(
     measureList: List<MeasureData>,
     modifier: Modifier = Modifier,
-    measureType: MeasureType
+    measureType: MeasureType,
+    textColor: Color = MaterialTheme.colors.onBackground
 ) {
 
 
@@ -44,6 +47,7 @@ fun MeasureGraph(
             valueTypeface = Typeface.DEFAULT_BOLD
             color = measureType.color1
             setCircleColor(measureType.color1)
+            valueTextColor = textColor.hashCode()
         }
     }
 
@@ -83,10 +87,13 @@ fun MeasureGraph(
                 legend.isEnabled = false
 
                 // Set the border color to black
-                setBorderColor(Color.BLACK)
+                setBorderColor(textColor.toArgb())
 
                 axisLeft.xOffset = 15f
                 axisRight.xOffset = 15f
+
+                axisRight.textColor = textColor.toArgb()
+                axisLeft.textColor = textColor.toArgb()
 
                 setTouchEnabled(false)
 
