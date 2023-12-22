@@ -10,7 +10,7 @@ enum class MeasureType(
     val minValue2: Float? = null,
     val suffix: String,
     val color1: Int,
-    val color2: Int? = null
+    val color2: Int = color1
 ) {
     TEMPERATURE(
         maxValue1 = 37.0f,
