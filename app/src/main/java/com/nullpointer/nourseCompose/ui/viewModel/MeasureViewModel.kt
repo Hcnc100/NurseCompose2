@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.viewModel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -34,6 +35,9 @@ class MeasureViewModel @AssistedInject constructor(
     private val _message = Channel<String>()
     val message = _message.receiveAsFlow()
 
+
+    var measureListSelected = mutableStateListOf<MeasureData>()
+        private set
 
     val listPagingMeasure = Pager(
         config = PagingConfig(
@@ -85,13 +89,24 @@ class MeasureViewModel @AssistedInject constructor(
     }
 
     companion object {
+        /**
+         * Provides a factory for creating instances of MeasureViewModel.
+         *
+         * @param factory The factory to create the ViewModel.
+         * @param measureType The type of measure for the ViewModel.
+         * @return A ViewModelProvider.Factory that creates MeasureViewModels.
+         */
         fun provideMainViewModelFactory(
             factory: Factory,
             measureType: MeasureType
         ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return factory.create(measureType) as T
+                    return try {
+                        factory.create(measureType) as T
+                    } catch (e: Exception) {
+                        throw RuntimeException("Cannot create an instance of $modelClass", e)
+                    }
                 }
             }
         }

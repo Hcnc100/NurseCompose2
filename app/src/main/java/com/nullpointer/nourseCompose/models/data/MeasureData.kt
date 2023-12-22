@@ -1,5 +1,8 @@
 package com.nullpointer.nourseCompose.models.data
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import java.time.Instant
@@ -14,6 +17,8 @@ data class MeasureData(
     val createAt: String,
     val type: MeasureType,
 ) {
+
+    var isSelected by mutableStateOf(false)
 
     val showValue
         get() = when (type) {

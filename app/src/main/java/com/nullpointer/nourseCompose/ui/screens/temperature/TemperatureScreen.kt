@@ -26,6 +26,7 @@ fun TemperatureScreen(
 ) {
 
     val lastMeasureList by measureViewModel.lastMeasureList.collectAsState()
+    val listMeasureSelected = measureViewModel.measureListSelected
     val pagingListMeasure = measureViewModel.listPagingMeasure.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = Unit) {

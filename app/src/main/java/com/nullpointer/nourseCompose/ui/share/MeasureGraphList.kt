@@ -9,6 +9,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,6 +31,9 @@ fun MeasureGraphList(
     graphHeader: @Composable () -> Unit
 ) {
 
+    var isSelectedEnable by remember {
+        mutableStateOf(false)
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -56,8 +63,10 @@ fun MeasureGraphList(
                     // * when no use place holders
                     // * no need check if the item is null
                     MeasureItem(
+                        isSelectedEnable = isSelectedEnable,
+                        enableSelected = { isSelectedEnable = true },
                         measureData = measureList[it]!!,
-//                        modifier = Modifier.animateItemPlacement()
+//                        modifier = Modifier.animateItemPlacement(),
                     )
                 }
             }

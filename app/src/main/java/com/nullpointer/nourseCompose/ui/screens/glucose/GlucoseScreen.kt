@@ -41,5 +41,6 @@ fun GlucoseScreen(
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.GLUCOSE,
         addMeasureData = measureViewModel::addMeasureData,
-    )
+
+        )
 }
