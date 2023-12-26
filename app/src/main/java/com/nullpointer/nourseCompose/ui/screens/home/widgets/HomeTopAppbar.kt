@@ -1,11 +1,13 @@
 package com.nullpointer.nourseCompose.ui.screens.home.widgets
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import com.nullpointer.nourseCompose.R
@@ -20,8 +22,13 @@ fun HomeTopAppbar(
 
     val menuIcon = @Composable { getNavigationIcon(openDrawer) }
 
+    val backgroundColor: Color by animateColorAsState(
+        if (countSelected == 0) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
+        label = ""
+    )
+
     TopAppBar(
-        backgroundColor = getAppBarColor(countSelected),
+        backgroundColor = backgroundColor,
         contentColor = Color.White,
         navigationIcon = if (countSelected == 0) menuIcon else null,
         title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
@@ -53,13 +60,6 @@ fun getClearIcon(clearSelected: () -> Unit) {
     }
 }
 
-@Composable
-fun getAppBarColor(countSelected: Int): Color {
-    return when (countSelected) {
-        0 -> MaterialTheme.colors.primary
-        else -> MaterialTheme.colors.secondary
-    }
-}
 
 @Composable
 fun getAppBarTitle(countSelected: Int, currentTitle: String): String {

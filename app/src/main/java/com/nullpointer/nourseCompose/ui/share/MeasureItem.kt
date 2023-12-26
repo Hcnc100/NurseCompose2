@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.share
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -26,19 +27,20 @@ import com.nullpointer.nourseCompose.models.data.MeasureData
 fun MeasureItem(
     measureData: MeasureData,
     modifier: Modifier = Modifier,
-    selectedColor: Color = MaterialTheme.colors.primary,
-    unselectedColor: Color = MaterialTheme.colors.surface,
     addMeasureSelected: (MeasureData) -> Unit,
-    isSelectedEnable: Boolean
+    isSelectedEnable: Boolean,
+    isSelected: Boolean
 ) {
 
 
-    val color = remember(measureData.isSelected) {
-        if (measureData.isSelected) selectedColor else unselectedColor
-    }
+    val backgroundColor: Color by animateColorAsState(
+        if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+        label = ""
+    )
+
 
     Surface(
-        color = color,
+        color = backgroundColor,
         shape = RoundedCornerShape(10.dp),
         elevation = 10.dp,
         modifier = modifier

@@ -3,6 +3,7 @@ package com.nullpointer.nourseCompose.data.measure.local
 import android.database.Cursor
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MeasureDAO {
 
-    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt ASC LIMIT (:limit)")
+    @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt DESC LIMIT (:limit)")
     fun getListMeasureByTypes(type: MeasureType, limit: Int): Flow<List<MeasureEntity>>
 
     @Query("SELECT * FROM measures WHERE type = (:type) ORDER BY createAt DESC")
@@ -45,4 +46,7 @@ interface MeasureDAO {
         deleterAll()
         insertMeasure(list)
     }
+
+    @Delete
+    suspend fun deleter(measureEntity: List<MeasureEntity>)
 }

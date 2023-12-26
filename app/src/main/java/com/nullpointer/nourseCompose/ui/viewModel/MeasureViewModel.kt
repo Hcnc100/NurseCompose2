@@ -1,7 +1,8 @@
 package com.nullpointer.nourseCompose.ui.viewModel
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,10 +38,11 @@ class MeasureViewModel @AssistedInject constructor(
     private val _message = Channel<String>()
     val message = _message.receiveAsFlow()
 
-    var isSelectedEnable by mutableStateOf(false)
-        private set
 
-    private var measureSelected = emptyList<MeasureData>()
+    val measureSelected = mutableStateMapOf<Int, MeasureData>()
+
+    var measureSelectedCount by mutableIntStateOf(0)
+        private set
 
     val listPagingMeasure = Pager(
         config = PagingConfig(
@@ -85,26 +87,28 @@ class MeasureViewModel @AssistedInject constructor(
         }
     }
 
-    fun deleterAllSelected() {
-        measureSelected.forEach {
-            it.isSelected = false
-        }
-        measureSelected = emptyList()
-        isSelectedEnable = false
+    fun clearSelection() {
+        measureSelected.clear()
+        measureSelectedCount = 0
     }
 
-    fun toggleMeasureData(measureData: MeasureData): Int {
-        if (measureSelected.contains(measureData)) {
-            measureSelected = measureSelected - measureData
-            measureData.isSelected = false
-
-        } else {
-            measureSelected = measureSelected + measureData
-            measureData.isSelected = true
+    fun deleterAllSelected() = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            measureRepository.deleterMeasureData(measureSelected.values.toList())
         }
-        isSelectedEnable = measureSelected.isNotEmpty()
+        measureSelected.clear()
+        measureSelectedCount = 0
+    }
 
-        return measureSelected.size
+    fun toggleMeasureData(measureData: MeasureData) {
+        if (measureSelected.containsKey(measureData.id)) {
+            measureSelected.remove(measureData.id)
+        } else {
+            measureSelected[measureData.id] = measureData
+        }
+
+        measureSelectedCount = measureSelected.size
+
     }
 
 

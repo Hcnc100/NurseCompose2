@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.screens.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -56,11 +57,18 @@ fun HomeScreen(
         mutableStateOf<DrawerActions?>(null)
     }
 
+    BackHandler(
+        enabled = selectedState.currentValueSelected != 0
+    ) {
+        selectedState.clearNumberSelected()
+    }
+
     LaunchedEffect(key1 = Unit) {
         homeViewModel.message.collect(homeState::showSnackBar)
     }
 
     Scaffold(
+        drawerGesturesEnabled = homeState.currentValueSelected == 0,
         scaffoldState = scaffoldState,
         drawerShape = customShape(),
         drawerContent = {

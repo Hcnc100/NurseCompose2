@@ -41,14 +41,14 @@ fun MeasureGraph(
                 measureType = measureType,
                 textColor = textColor,
                 measureColor = measureType.color1,
-                measureSequence = measureList.asSequence().map { it.value1 }
+                measureSequence = measureList.reversed().asSequence().map { it.value1 }
             )?.let(::addDataSet)
 
             measureListToLineDataSet(
                 measureType = measureType,
                 textColor = textColor,
                 measureColor = measureType.color2,
-                measureSequence = measureList.asSequence().mapNotNull { it.value2 }
+                measureSequence = measureList.reversed().asSequence().mapNotNull { it.value2 }
             )?.let(::addDataSet)
         }
     }

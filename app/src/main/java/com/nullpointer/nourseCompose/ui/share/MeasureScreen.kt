@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -25,13 +26,15 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 @Composable
 fun MeasureScreen(
     measureType: MeasureType,
+    isSelectedEnable: Boolean,
     lazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     lastMeasureList: List<MeasureData>,
-    addMeasureData: (value1: Float, value2: Float?) -> Unit,
+    deleterMeasureSelected: () -> Unit,
+    listMeasureSelected: SnapshotStateMap<Int, MeasureData>,
+    addMeasureSelected: (MeasureData) -> Unit,
     pagingListMeasure: LazyPagingItems<MeasureData>,
-    isSelectedEnable: Boolean,
-    addMeasureSelected: (MeasureData) -> Unit
+    addMeasureData: (value1: Float, value2: Float?) -> Unit,
 ) {
 
 
@@ -42,34 +45,30 @@ fun MeasureScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                isVisible = true
-
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_add_24),
-                    contentDescription = null,
-                )
-            }
+            MeasureFAB(
+                showDialogAdd = { isVisible = true },
+                isSelectedEnable = isSelectedEnable,
+                deleterMeasureSelected = deleterMeasureSelected,
+            )
         }
     ) { paddingValues ->
         MeasureGraphList(
+            listMeasureSelected = listMeasureSelected,
             isSelectedEnable = isSelectedEnable,
             addMeasureSelected = addMeasureSelected,
             measureList = pagingListMeasure,
             lazyListState = lazyListState,
-            modifier = Modifier.padding(paddingValues),
-            graphHeader = {
-                MeasureGraph(
-                    measureType = measureType,
-                    measureList = lastMeasureList,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            MeasureGraph(
+                measureType = measureType,
+                measureList = lastMeasureList,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
 
-            }
-        )
+        }
 
         if (isVisible) {
             AddMeasureDialog(
@@ -83,3 +82,25 @@ fun MeasureScreen(
     }
 }
 
+
+@Composable
+fun MeasureFAB(
+    showDialogAdd: () -> Unit,
+    isSelectedEnable: Boolean,
+    deleterMeasureSelected: () -> Unit,
+) {
+    FloatingActionButton(
+        onClick = {
+            if (isSelectedEnable) {
+                deleterMeasureSelected()
+            } else {
+                showDialogAdd()
+            }
+        }
+    ) {
+        Icon(
+            painter = painterResource(id = if (isSelectedEnable) R.drawable.baseline_delete_24 else R.drawable.baseline_add_24),
+            contentDescription = null,
+        )
+    }
+}

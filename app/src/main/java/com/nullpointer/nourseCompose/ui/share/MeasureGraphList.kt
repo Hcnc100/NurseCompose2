@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ fun MeasureGraphList(
     measureList: LazyPagingItems<MeasureData>,
     isSelectedEnable: Boolean,
     addMeasureSelected: (MeasureData) -> Unit,
+    listMeasureSelected: SnapshotStateMap<Int, MeasureData>,
     graphHeader: @Composable () -> Unit
 ) {
 
@@ -58,10 +60,14 @@ fun MeasureGraphList(
                 ) {
                     // * when no use place holders
                     // * no need check if the item is null
+
+                    val measureData = measureList[it]!!
+
                     MeasureItem(
                         isSelectedEnable = isSelectedEnable,
                         addMeasureSelected = addMeasureSelected,
-                        measureData = measureList[it]!!,
+                        measureData = measureData,
+                        isSelected = listMeasureSelected.containsKey(measureData.id)
 //                        modifier = Modifier.animateItemPlacement(),
                     )
                 }

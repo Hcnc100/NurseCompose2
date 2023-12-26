@@ -33,15 +33,19 @@ fun TemperatureScreen(
 
     DisposableEffect(key1 = Unit) {
         onDispose {
-            measureViewModel.deleterAllSelected()
+            measureViewModel.clearSelection()
             selectedState.changeNumberSelected(0)
         }
     }
 
     LaunchedEffect(key1 = selectedState.currentValueSelected) {
         if (selectedState.currentValueSelected == 0) {
-            measureViewModel.deleterAllSelected()
+            measureViewModel.clearSelection()
         }
+    }
+
+    LaunchedEffect(key1 = measureViewModel.measureSelectedCount) {
+        selectedState.changeNumberSelected(measureViewModel.measureSelectedCount)
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -57,10 +61,9 @@ fun TemperatureScreen(
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.TEMPERATURE,
         addMeasureData = measureViewModel::addMeasureData,
-        isSelectedEnable = measureViewModel.isSelectedEnable,
-        addMeasureSelected = {
-            val count = measureViewModel.toggleMeasureData(it)
-            selectedState.changeNumberSelected(count)
-        }
+        isSelectedEnable = measureViewModel.measureSelected.isNotEmpty(),
+        addMeasureSelected = measureViewModel::toggleMeasureData,
+        deleterMeasureSelected = measureViewModel::deleterAllSelected,
+        listMeasureSelected = measureViewModel.measureSelected
     )
 }

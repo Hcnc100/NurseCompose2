@@ -24,6 +24,7 @@ data class MeasureEntity(
     companion object {
         fun fromMeasureData(measureData: MeasureData): MeasureEntity {
             return MeasureEntity(
+                id = measureData.id,
                 value1 = measureData.value1,
                 value2 = measureData.value2,
                 type = measureData.type,

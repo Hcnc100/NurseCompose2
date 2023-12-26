@@ -31,25 +31,28 @@ fun OxygenScreen(
     val lastMeasureList by measureViewModel.lastMeasureList.collectAsState()
     val pagingListMeasure = measureViewModel.listPagingMeasure.collectAsLazyPagingItems()
 
-    LaunchedEffect(key1 = Unit) {
-        measureViewModel.message.collect {
-            scaffoldState.snackbarHostState.showSnackbar(it)
-        }
-    }
-
     DisposableEffect(key1 = Unit) {
         onDispose {
-            measureViewModel.deleterAllSelected()
+            measureViewModel.clearSelection()
             selectedState.changeNumberSelected(0)
         }
     }
 
     LaunchedEffect(key1 = selectedState.currentValueSelected) {
         if (selectedState.currentValueSelected == 0) {
-            measureViewModel.deleterAllSelected()
+            measureViewModel.clearSelection()
         }
     }
 
+    LaunchedEffect(key1 = measureViewModel.measureSelectedCount) {
+        selectedState.changeNumberSelected(measureViewModel.measureSelectedCount)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        measureViewModel.message.collect {
+            scaffoldState.snackbarHostState.showSnackbar(it)
+        }
+    }
     MeasureScreen(
         lazyListState = lazyListState,
         scaffoldState = scaffoldState,
@@ -57,10 +60,9 @@ fun OxygenScreen(
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.OXYGEN,
         addMeasureData = measureViewModel::addMeasureData,
-        isSelectedEnable = measureViewModel.isSelectedEnable,
-        addMeasureSelected = {
-            val count = measureViewModel.toggleMeasureData(it)
-            selectedState.changeNumberSelected(count)
-        }
+        isSelectedEnable = measureViewModel.measureSelected.isNotEmpty(),
+        addMeasureSelected = measureViewModel::toggleMeasureData,
+        deleterMeasureSelected = measureViewModel::deleterAllSelected,
+        listMeasureSelected = measureViewModel.measureSelected
     )
 }
