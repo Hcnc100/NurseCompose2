@@ -1,6 +1,7 @@
 package com.nullpointer.nourseCompose.ui.screens.home.widgets
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -22,9 +23,10 @@ fun HomeTopAppbar(
 
     val menuIcon = @Composable { getNavigationIcon(openDrawer) }
 
-    val backgroundColor: Color by animateColorAsState(
+    val backgroundColor by animateColorAsState(
         if (countSelected == 0) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        label = ""
+        label = "",
+        animationSpec = tween(durationMillis = 300)
     )
 
     TopAppBar(
