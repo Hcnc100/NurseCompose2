@@ -28,9 +28,10 @@ fun MeasureItem(
     modifier: Modifier = Modifier,
     selectedColor: Color = MaterialTheme.colors.primary,
     unselectedColor: Color = MaterialTheme.colors.surface,
-    enableSelected: () -> Unit,
+    addMeasureSelected: (MeasureData) -> Unit,
     isSelectedEnable: Boolean
 ) {
+
 
     val color = remember(measureData.isSelected) {
         if (measureData.isSelected) selectedColor else unselectedColor
@@ -45,13 +46,12 @@ fun MeasureItem(
             .combinedClickable(
                 onClick = {
                     if (isSelectedEnable) {
-                        measureData.isSelected = !measureData.isSelected
+                        addMeasureSelected(measureData)
                     }
                 },
                 onLongClick = {
                     if (!isSelectedEnable) {
-                        enableSelected()
-                        measureData.isSelected = true
+                        addMeasureSelected(measureData)
                     }
 
                 }

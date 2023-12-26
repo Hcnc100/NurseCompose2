@@ -1,6 +1,8 @@
 package com.nullpointer.nourseCompose.ui.viewModel
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -35,9 +37,10 @@ class MeasureViewModel @AssistedInject constructor(
     private val _message = Channel<String>()
     val message = _message.receiveAsFlow()
 
-
-    var measureListSelected = mutableStateListOf<MeasureData>()
+    var isSelectedEnable by mutableStateOf(false)
         private set
+
+    private var measureSelected = emptyList<MeasureData>()
 
     val listPagingMeasure = Pager(
         config = PagingConfig(
@@ -80,6 +83,28 @@ class MeasureViewModel @AssistedInject constructor(
                 value2 = value2,
             )
         }
+    }
+
+    fun deleterAllSelected() {
+        measureSelected.forEach {
+            it.isSelected = false
+        }
+        measureSelected = emptyList()
+        isSelectedEnable = false
+    }
+
+    fun toggleMeasureData(measureData: MeasureData): Int {
+        if (measureSelected.contains(measureData)) {
+            measureSelected = measureSelected - measureData
+            measureData.isSelected = false
+
+        } else {
+            measureSelected = measureSelected + measureData
+            measureData.isSelected = true
+        }
+        isSelectedEnable = measureSelected.isNotEmpty()
+
+        return measureSelected.size
     }
 
 

@@ -33,6 +33,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.dependency
 
 
 @RootNavGraph(start = true)
@@ -47,7 +48,7 @@ fun HomeScreen(
     ),
 ) {
 
-    val (scaffoldState, navHostController) = homeState
+    val (scaffoldState, navHostController, selectedState) = homeState
 
     val currentDestination by navHostController.appCurrentDestinationAsState()
     val destination = HomeNavItems.values().find { it.destination == currentDestination }
@@ -77,7 +78,9 @@ fun HomeScreen(
         topBar = {
             HomeTopAppbar(
                 currentTitle = destination?.title.orEmpty(),
-                openDrawer = homeState::openDrawer
+                openDrawer = homeState::openDrawer,
+                countSelected = homeState.currentValueSelected,
+                clearSelected = homeState::clearNumberSelected
             )
         },
         bottomBar = {
@@ -91,6 +94,9 @@ fun HomeScreen(
             navController = navHostController,
             navGraph = NavGraphs.homeGraph,
             modifier = Modifier.padding(it),
+            dependenciesContainerBuilder = {
+                dependency(selectedState)
+            }
         )
     }
 

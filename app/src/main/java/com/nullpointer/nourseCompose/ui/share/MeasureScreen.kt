@@ -30,6 +30,8 @@ fun MeasureScreen(
     lastMeasureList: List<MeasureData>,
     addMeasureData: (value1: Float, value2: Float?) -> Unit,
     pagingListMeasure: LazyPagingItems<MeasureData>,
+    isSelectedEnable: Boolean,
+    addMeasureSelected: (MeasureData) -> Unit
 ) {
 
 
@@ -52,6 +54,8 @@ fun MeasureScreen(
         }
     ) { paddingValues ->
         MeasureGraphList(
+            isSelectedEnable = isSelectedEnable,
+            addMeasureSelected = addMeasureSelected,
             measureList = pagingListMeasure,
             lazyListState = lazyListState,
             modifier = Modifier.padding(paddingValues),

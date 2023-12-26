@@ -26,14 +26,17 @@ import java.io.OutputStream
 class HomeState(
     private val context: Context,
     private val scaffoldState: ScaffoldState,
+    private val selectedState: SelectedState,
     private val coroutineScope: CoroutineScope,
     private val navHostController: NavHostController,
     private val selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
-    private val selectImportDocumentResult: ManagedActivityResultLauncher<String, Uri?>
+    private val selectImportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
 ) {
-
     operator fun component1() = scaffoldState
     operator fun component2() = navHostController
+    operator fun component3() = selectedState
+
+    val currentValueSelected get() = selectedState.currentValueSelected
 
 
     fun showSnackBar(message: String) = coroutineScope.launch {
@@ -56,6 +59,11 @@ class HomeState(
     fun selectImportFile() {
         selectImportDocumentResult.launch("text/*")
     }
+
+    fun clearNumberSelected() {
+        selectedState.changeNumberSelected(0)
+    }
+
 }
 
 
@@ -67,6 +75,7 @@ fun rememberHomeState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navHostController: NavHostController = rememberNavController(),
+    selectedState: SelectedState = rememberSelectedState(),
     @SuppressLint("Recycle") selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
         CreateDocument("text/*")
     ) { uri: Uri? ->
@@ -82,14 +91,15 @@ fun rememberHomeState(
             }
         }
     ),
-) = remember(scaffoldState, coroutineScope, selectExportDocumentResult) {
+) = remember(scaffoldState, coroutineScope, selectExportDocumentResult, selectedState) {
     HomeState(
         context = context,
         scaffoldState = scaffoldState,
         coroutineScope = coroutineScope,
         navHostController = navHostController,
         selectExportDocumentResult = selectExportDocumentResult,
-        selectImportDocumentResult = selectImportDocumentResult
+        selectImportDocumentResult = selectImportDocumentResult,
+        selectedState = selectedState
     )
 }
 

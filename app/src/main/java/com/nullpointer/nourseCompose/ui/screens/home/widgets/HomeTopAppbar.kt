@@ -12,20 +12,59 @@ import com.nullpointer.nourseCompose.R
 
 @Composable
 fun HomeTopAppbar(
+    countSelected: Int,
+    currentTitle: String,
     openDrawer: () -> Unit,
-    currentTitle: String
+    clearSelected: () -> Unit
 ) {
+
+    val menuIcon = @Composable { getNavigationIcon(openDrawer) }
+
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = getAppBarColor(countSelected),
         contentColor = Color.White,
-        navigationIcon = {
-            IconButton(onClick = openDrawer) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_dehaze_24),
-                    contentDescription = null
-                )
+        navigationIcon = if (countSelected == 0) menuIcon else null,
+        title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
+        actions = {
+            if (countSelected != 0) {
+                getClearIcon(clearSelected)
             }
-        },
-        title = { Text(text = currentTitle) }
+        }
     )
+}
+
+@Composable
+fun getNavigationIcon(openDrawer: () -> Unit) {
+    IconButton(onClick = openDrawer) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_dehaze_24),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun getClearIcon(clearSelected: () -> Unit) {
+    IconButton(onClick = clearSelected) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_clear_24),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun getAppBarColor(countSelected: Int): Color {
+    return when (countSelected) {
+        0 -> MaterialTheme.colors.primary
+        else -> MaterialTheme.colors.secondary
+    }
+}
+
+@Composable
+fun getAppBarTitle(countSelected: Int, currentTitle: String): String {
+    return when (countSelected) {
+        0 -> currentTitle
+        else -> "Selected (${countSelected})"
+    }
 }

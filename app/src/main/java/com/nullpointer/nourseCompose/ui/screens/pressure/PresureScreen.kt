@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +13,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.nullpointer.nourseCompose.measureViewModelProvider
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
+import com.nullpointer.nourseCompose.ui.screens.home.state.SelectedState
 import com.nullpointer.nourseCompose.ui.share.MeasureScreen
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -22,7 +24,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun PressureScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    measureViewModel: MeasureViewModel = measureViewModelProvider(measureType = MeasureType.PRESSURE)
+    measureViewModel: MeasureViewModel = measureViewModelProvider(measureType = MeasureType.PRESSURE),
+    selectedState: SelectedState
 ) {
 
     val lastMeasureList by measureViewModel.lastMeasureList.collectAsState()
@@ -34,6 +37,19 @@ fun PressureScreen(
         }
     }
 
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            measureViewModel.deleterAllSelected()
+            selectedState.changeNumberSelected(0)
+        }
+    }
+
+    LaunchedEffect(key1 = selectedState.currentValueSelected) {
+        if (selectedState.currentValueSelected == 0) {
+            measureViewModel.deleterAllSelected()
+        }
+    }
+
     MeasureScreen(
         lazyListState = lazyListState,
         scaffoldState = scaffoldState,
@@ -41,5 +57,10 @@ fun PressureScreen(
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.PRESSURE,
         addMeasureData = measureViewModel::addMeasureData,
+        isSelectedEnable = measureViewModel.isSelectedEnable,
+        addMeasureSelected = {
+            val count = measureViewModel.toggleMeasureData(it)
+            selectedState.changeNumberSelected(count)
+        }
     )
 }
