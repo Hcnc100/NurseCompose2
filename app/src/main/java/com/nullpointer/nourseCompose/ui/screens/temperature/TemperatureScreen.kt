@@ -64,6 +64,6 @@ fun TemperatureScreen(
         isSelectedEnable = measureViewModel.measureSelected.isNotEmpty(),
         addMeasureSelected = measureViewModel::toggleMeasureData,
         deleterMeasureSelected = measureViewModel::deleterAllSelected,
-        listMeasureSelected = measureViewModel.measureSelected
+        listMeasureSelected = measureViewModel.measureSelected,
     )
 }

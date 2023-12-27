@@ -1,4 +1,4 @@
-package com.nullpointer.nourseCompose.contants
+package com.nullpointer.nourseCompose.constants
 
 object Constants {
 
@@ -12,5 +12,6 @@ object Constants {
 
     const val MEASURE_DATABASE_BACKUP = "Nurse"
     const val EXTENSION_FILE = "nursebackup"
+    const val DEFAULT_MEASURE_GRAPH = 10
 
 }

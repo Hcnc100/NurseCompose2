@@ -23,7 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.nullpointer.nourseCompose.R
@@ -117,7 +118,7 @@ fun MeasureFAB(
             modifier = Modifier.scale(scale)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_add_24),
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_24),
                 contentDescription = null,
             )
         }
@@ -143,7 +144,7 @@ fun MeasureFAB(
             modifier = Modifier.scale(scaleDelete.value)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_delete_24),
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_24),
                 contentDescription = null,
             )
         }

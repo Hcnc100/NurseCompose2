@@ -5,6 +5,7 @@ import com.nullpointer.nourseCompose.data.measure.local.MeasureDAO
 import com.nullpointer.nourseCompose.database.NurseDatabase
 import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSource
 import com.nullpointer.nourseCompose.datasource.measure.local.MeasureLocalDataSourceImpl
+import com.nullpointer.nourseCompose.datasource.settings.local.SettingsLocalDataSource
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepoImpl
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
 import dagger.Module
@@ -38,9 +39,11 @@ object MeasureModule {
     @Provides
     @Singleton
     fun provideMeasureRepository(
-        measureLocalDataSource: MeasureLocalDataSource
+        measureLocalDataSource: MeasureLocalDataSource,
+        settingsLocalDataSource: SettingsLocalDataSource
     ): MeasureRepository = MeasureRepoImpl(
-        measureLocalDataSource = measureLocalDataSource
+        measureLocalDataSource = measureLocalDataSource,
+        settingsLocalDataSource = settingsLocalDataSource
     )
 
 }

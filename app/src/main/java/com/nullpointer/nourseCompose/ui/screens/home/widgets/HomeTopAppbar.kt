@@ -10,7 +10,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.nullpointer.nourseCompose.R
 
 @Composable
@@ -46,7 +47,7 @@ fun HomeTopAppbar(
 fun getNavigationIcon(openDrawer: () -> Unit) {
     IconButton(onClick = openDrawer) {
         Icon(
-            painter = painterResource(id = R.drawable.baseline_dehaze_24),
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_dehaze_24),
             contentDescription = null
         )
     }
@@ -56,7 +57,7 @@ fun getNavigationIcon(openDrawer: () -> Unit) {
 fun getClearIcon(clearSelected: () -> Unit) {
     IconButton(onClick = clearSelected) {
         Icon(
-            painter = painterResource(id = R.drawable.baseline_clear_24),
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_clear_24),
             contentDescription = null
         )
     }

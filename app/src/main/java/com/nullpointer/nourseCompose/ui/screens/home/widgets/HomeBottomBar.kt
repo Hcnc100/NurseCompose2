@@ -7,7 +7,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
@@ -41,7 +42,7 @@ fun HomeBottomNavBar(
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(id = it.icon),
+                        imageVector = ImageVector.vectorResource(id = it.icon),
                         contentDescription = it.title
                     )
                 }

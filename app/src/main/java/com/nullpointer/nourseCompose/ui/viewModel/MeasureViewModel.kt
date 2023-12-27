@@ -13,6 +13,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
+import com.nullpointer.nourseCompose.domain.settings.SettingsRepository
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import dagger.assisted.Assisted
@@ -31,6 +32,7 @@ import kotlinx.coroutines.withContext
 
 class MeasureViewModel @AssistedInject constructor(
     private val measureRepository: MeasureRepository,
+    private val settingsRepository: SettingsRepository,
     @Assisted private val measureType: MeasureType
 ) : ViewModel() {
 
@@ -66,7 +68,7 @@ class MeasureViewModel @AssistedInject constructor(
 
     val lastMeasureList =
         measureRepository
-            .getListMeasureByType(measureType, 10)
+            .getListMeasureByType(measureType)
             .flowOn(Dispatchers.IO)
             .catch {
                 emit(emptyList())

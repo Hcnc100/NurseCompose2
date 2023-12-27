@@ -3,7 +3,7 @@ package com.nullpointer.nourseCompose.models.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nullpointer.nourseCompose.contants.Constants
+import com.nullpointer.nourseCompose.constants.Constants
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.types.MeasureType
 

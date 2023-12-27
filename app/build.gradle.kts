@@ -138,6 +138,9 @@ dependencies {
     // * splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    //* data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 }
 
 kapt {

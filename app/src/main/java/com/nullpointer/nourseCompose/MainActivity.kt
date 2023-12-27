@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -21,6 +22,7 @@ import com.nullpointer.nourseCompose.inject.viewModel.measure.ViewModelFactoryPr
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import com.nullpointer.nourseCompose.state.rememberRootState
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
+import com.nullpointer.nourseCompose.ui.screens.settings.viewModel.SettingsViewModel
 import com.nullpointer.nourseCompose.ui.theme.MyApplicationTheme
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -32,6 +34,9 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val settingsViewModel by viewModels<SettingsViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var showSplash = true
@@ -63,6 +68,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(it),
                             dependenciesContainerBuilder = {
                                 dependency(rootActionsDestinations)
+                                dependency(settingsViewModel)
                             }
                         )
                     }

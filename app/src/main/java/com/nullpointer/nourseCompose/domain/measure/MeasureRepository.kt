@@ -9,7 +9,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 interface MeasureRepository {
-    fun getListMeasureByType(type: MeasureType, limit: Int): Flow<List<MeasureData>>
+    fun getListMeasureByType(type: MeasureType): Flow<List<MeasureData>>
 
     suspend fun addMeasure(type: MeasureType, value1: Float, value2: Float?)
 
