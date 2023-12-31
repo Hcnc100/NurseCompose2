@@ -57,7 +57,7 @@ class HomeState(
     }
 
     fun selectImportFile() {
-        selectImportDocumentResult.launch("text/*")
+        selectImportDocumentResult.launch("*/*")
     }
 
     fun clearNumberSelected() {
@@ -77,7 +77,7 @@ fun rememberHomeState(
     navHostController: NavHostController = rememberNavController(),
     selectedState: SelectedState = rememberSelectedState(),
     @SuppressLint("Recycle") selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
-        CreateDocument("text/*")
+        CreateDocument("*/*")
     ) { uri: Uri? ->
         uri?.let {
             context.contentResolver.openOutputStream(it)?.let(selectExportDocumentSuccess)
