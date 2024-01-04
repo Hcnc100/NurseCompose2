@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.annotation.StringRes
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -42,6 +43,16 @@ class HomeState(
     fun showSnackBar(message: String) = coroutineScope.launch {
         scaffoldState.snackbarHostState.showSnackbar(message)
     }
+
+    fun showSnackBar(
+        @StringRes
+        message: Int,
+    ) = coroutineScope.launch {
+        scaffoldState.snackbarHostState.showSnackbar(
+            context.getString(message)
+        )
+    }
+
 
     fun openDrawer() = coroutineScope.launch {
         scaffoldState.drawerState.open()

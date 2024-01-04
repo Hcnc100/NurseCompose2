@@ -1,13 +1,17 @@
 package com.nullpointer.nourseCompose.ui.screens.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -52,6 +56,8 @@ fun HomeScreen(
         selectImportDocumentSuccess = homeViewModel::importMeasureDatabase
     ),
 ) {
+
+    val isLoading = homeViewModel.isLoading
 
     val (scaffoldState, navHostController, selectedState) = homeState
 
@@ -102,14 +108,25 @@ fun HomeScreen(
             )
         }
     ) {
-        DestinationsNavHost(
-            navController = navHostController,
-            navGraph = NavGraphs.homeGraph,
-            modifier = Modifier.padding(it),
-            dependenciesContainerBuilder = {
-                dependency(selectedState)
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            DestinationsNavHost(
+                navController = navHostController,
+                navGraph = NavGraphs.homeGraph,
+                modifier = Modifier.fillMaxSize(),
+                dependenciesContainerBuilder = {
+                    dependency(selectedState)
+                }
+            )
+
+            if (isLoading) {
+                CircularProgressIndicator()
             }
-        )
+        }
     }
 
 

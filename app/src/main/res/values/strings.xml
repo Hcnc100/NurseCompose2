@@ -44,5 +44,10 @@
     <string name="message_accept_dialog" translatable="false">OK</string>
     <string name="message_cancel_dialog">Cancel</string>
 
+    <!-- errors import and export -->
+    <string name="error_export_measure">Error exporting your data, try again later</string>
+    <string name="error_import_measure">Error importing your data, please check your file</string>
+    <string name="error_deleter_all_data">Error deleting your data, try again later</string>
+
 
 </resources>

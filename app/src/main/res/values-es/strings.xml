@@ -19,8 +19,12 @@
     <string name="title_option_import">Importar</string>
     <string name="title_export_option">Exportar</string>
     <string name="title_settings_option">Ajustes</string>
-    <string name="title_clear_all_data_option">Elimitar todos los datos</string>
+    <string name="title_clear_all_data_option">Eliminar todos los datos</string>
     <string name="title_settings">Ajustes</string>
     <string name="message_number_items_graph">Número los elementos que se mostrarán en el gráfico:</string>
     <string name="message_cancel_dialog">Cancelar</string>
+
+    <string name="error_export_measure">Error al exportar sus datos, reintente más tarde</string>
+    <string name="error_import_measure">Error al exportar sus datos, intente más tarde</string>
+    <string name="error_deleter_all_data">Error al eliminar sus datos, intente más tarde</string>
 </resources>
