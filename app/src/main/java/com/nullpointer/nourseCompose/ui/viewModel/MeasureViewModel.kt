@@ -12,8 +12,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.crashlytics.ktx.setCustomKeys
+import com.google.firebase.ktx.Firebase
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
-import com.nullpointer.nourseCompose.domain.settings.SettingsRepository
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import dagger.assisted.Assisted
@@ -29,10 +31,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class MeasureViewModel @AssistedInject constructor(
     private val measureRepository: MeasureRepository,
-    private val settingsRepository: SettingsRepository,
     @Assisted private val measureType: MeasureType
 ) : ViewModel() {
 
@@ -61,7 +63,12 @@ class MeasureViewModel @AssistedInject constructor(
     }
         .catch {
             emit(PagingData.empty())
-            _message.send("Error get paginate in ${measureType.name} $it")
+            _message.send("Error get paginate in ${measureType.name}")
+            Timber.e("Error get paginate in ${measureType.name} $it")
+            Firebase.crashlytics.setCustomKeys {
+                key("Error get paginate in ", measureType.name)
+            }
+            Firebase.crashlytics.recordException(it)
         }
         .flowOn(Dispatchers.IO).cachedIn(viewModelScope)
 
@@ -72,7 +79,12 @@ class MeasureViewModel @AssistedInject constructor(
             .flowOn(Dispatchers.IO)
             .catch {
                 emit(emptyList())
-                _message.send("Error get last list in ${measureType.name} $it")
+                _message.send("Error get last list in ${measureType.name}")
+                Timber.e("Error get last measure in ${measureType.name}")
+                Firebase.crashlytics.setCustomKeys {
+                    key("Error get paginate in ", measureType.name)
+                }
+                Firebase.crashlytics.recordException(it)
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
@@ -136,6 +148,11 @@ class MeasureViewModel @AssistedInject constructor(
                     return try {
                         factory.create(measureType) as T
                     } catch (e: Exception) {
+                        Timber.e("Error creating view model with ${measureType.name}")
+                        Firebase.crashlytics.setCustomKeys {
+                            key("Error creating view model of ", measureType.name)
+                        }
+                        Firebase.crashlytics.recordException(e)
                         throw RuntimeException("Cannot create an instance of $modelClass", e)
                     }
                 }

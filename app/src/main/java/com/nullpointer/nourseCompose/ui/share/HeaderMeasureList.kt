@@ -25,6 +25,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 
 @Composable
 fun HeaderMeasureListAndCounter(
@@ -44,7 +45,7 @@ fun HeaderMeasureListAndCounter(
                 measureList.loadState.refresh is LoadState.NotLoading
             }
             ?.map {
-                println("Change $it")
+                Timber.d("Change $it")
                 it
             }
             ?.debounce(500)
