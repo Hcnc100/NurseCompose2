@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -69,7 +70,7 @@ fun AppbarSettings(
     TopAppBar(
         backgroundColor = MaterialTheme.colors.primary,
         contentColor = Color.White,
-        title = { Text(text = "Settings") },
+        title = { Text(text = stringResource(R.string.titlle_settings)) },
         navigationIcon = {
             IconButton(
                 onClick = actionBack,
@@ -102,7 +103,7 @@ fun NumberMeasureRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(50.dp)
     ) {
-        Text(text = "Number Graph Measure:")
+        Text(text = stringResource(R.string.message_number_items_graph))
 
         Box {
 

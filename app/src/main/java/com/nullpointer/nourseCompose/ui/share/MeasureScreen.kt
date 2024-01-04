@@ -62,6 +62,7 @@ fun MeasureScreen(
         }
     ) { paddingValues ->
         MeasureGraphList(
+            measureType = measureType,
             listMeasureSelected = listMeasureSelected,
             isSelectedEnable = isSelectedEnable,
             addMeasureSelected = addMeasureSelected,
@@ -98,7 +99,10 @@ fun MeasureFAB(
     isSelectedEnable: Boolean,
     deleterMeasureSelected: () -> Unit,
 ) {
-    val scale by animateFloatAsState(if (isSelectedEnable) 0f else 1f, label = "")
+    val scale by animateFloatAsState(
+        if (isSelectedEnable) 0f else 1f,
+        label = "FAB_MEASURE_ANIMATION"
+    )
 
     AnimatedVisibility(
         visible = !isSelectedEnable,

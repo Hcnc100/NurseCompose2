@@ -13,9 +13,11 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
@@ -113,8 +115,8 @@ fun HomeScreen(
 
     when (selectedDrawerActionDialog) {
         IMPORT -> DrawerActionDialog(
-            title = selectedDrawerActionDialog.title,
-            message = "When importing information, saved data will be deleted. Are you sure?",
+            title = stringResource(id = selectedDrawerActionDialog.title),
+            message = stringResource(R.string.message_import_data),
             closeDialog = {
                 changeSelectDrawerActions(null)
                 if (it) {
@@ -124,8 +126,8 @@ fun HomeScreen(
         )
 
         CLEAR_DATA -> DrawerActionDialog(
-            title = selectedDrawerActionDialog.title,
-            message = "Do you want to delete all saved data?",
+            title = stringResource(id = selectedDrawerActionDialog.title),
+            message = stringResource(R.string.message_deleter_all_data),
             closeDialog = {
                 changeSelectDrawerActions(null)
                 if (it) {

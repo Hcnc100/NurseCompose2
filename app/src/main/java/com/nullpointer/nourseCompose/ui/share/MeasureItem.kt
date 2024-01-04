@@ -35,7 +35,7 @@ fun MeasureItem(
 
     val backgroundColor: Color by animateColorAsState(
         if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
-        label = ""
+        label = "MEASURE_ANIMATION_SELECT"
     )
 
 

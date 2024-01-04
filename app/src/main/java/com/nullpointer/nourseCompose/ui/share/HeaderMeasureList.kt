@@ -17,11 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
@@ -62,7 +64,7 @@ fun HeaderMeasureListAndCounter(
             Column(modifier = Modifier) {
                 graphHeader()
                 Text(
-                    text = "Number of measures loaded $animatedCountItems",
+                    text = stringResource(R.string.title_number_measure_loaded, animatedCountItems),
                     Modifier.padding(10.dp),
                     style = TextStyle(
                         fontSize = 12.sp

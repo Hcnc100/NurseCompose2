@@ -15,17 +15,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.types.MeasureType
 
 
 @Composable
 fun AddMeasureDialog(
+    maxLong: Long = 7,
     measureType: MeasureType,
     onDismissDialog: (Float?, Float?) -> Unit,
-    maxLong: Long = 7
-) {
+
+    ) {
 
     val (measureValue1, changeMeasureValue1) = rememberSaveable {
         mutableStateOf("")
@@ -46,7 +49,7 @@ fun AddMeasureDialog(
         confirmButton = {
             TextButton(
                 content = {
-                    Text(text = "Save")
+                    Text(text = stringResource(R.string.button_save_title))
                 },
                 onClick = {
                     val value1 = measureValue1.toFloatOrNull()
@@ -69,12 +72,16 @@ fun AddMeasureDialog(
         },
         dismissButton = {
             TextButton(onClick = { onDismissDialog(null, null) }) {
-                Text(text = "Cancel")
+                Text(text = stringResource((R.string.button_calcel_title)))
             }
         },
         text = {
+
+            val titleMeasure = stringResource(measureType.titleMeasure)
+            val message = stringResource(R.string.title_dialog_add_measure, titleMeasure)
+
             Column {
-                Text(text = "Add New Measure", style = MaterialTheme.typography.h6)
+                Text(text = message, style = MaterialTheme.typography.h6)
                 Spacer(modifier = Modifier.height(10.dp))
                 MeasureInputField(
                     measureType = measureType,
@@ -125,7 +132,7 @@ fun MeasureInputField(
             },
             maxLines = 1,
             singleLine = true,
-            placeholder = { Text(text = measureType.name) },
+            placeholder = { Text(text = stringResource(id = measureType.titleMeasure)) },
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Decimal
@@ -142,7 +149,7 @@ fun MeasureInputField(
 @Composable
 fun ErrorText() {
     Text(
-        text = "Not is a valid number",
+        text = stringResource(R.string.error_invalid_value),
         style = MaterialTheme.typography.caption,
         color = MaterialTheme.colors.error
     )

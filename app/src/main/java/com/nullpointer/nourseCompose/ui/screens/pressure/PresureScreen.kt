@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.screens.pressure
 
+import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ScaffoldState
@@ -9,7 +10,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.nullpointer.nourseCompose.extensions.showSnackbar
 import com.nullpointer.nourseCompose.measureViewModelProvider
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
@@ -22,10 +25,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 @HomeGraph
 @Composable
 fun PressureScreen(
+    selectedState: SelectedState,
+    context: Context = LocalContext.current,
     lazyListState: LazyListState = rememberLazyListState(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     measureViewModel: MeasureViewModel = measureViewModelProvider(measureType = MeasureType.PRESSURE),
-    selectedState: SelectedState
 ) {
 
     val lastMeasureList by measureViewModel.lastMeasureList.collectAsState()
@@ -50,7 +54,10 @@ fun PressureScreen(
 
     LaunchedEffect(key1 = Unit) {
         measureViewModel.message.collect {
-            scaffoldState.snackbarHostState.showSnackbar(it)
+            scaffoldState.snackbarHostState.showSnackbar(
+                measureError = it,
+                context = context
+            )
         }
     }
 

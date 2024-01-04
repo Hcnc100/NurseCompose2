@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.nullpointer.nourseCompose.R
 
@@ -26,7 +27,7 @@ fun HomeTopAppbar(
 
     val backgroundColor by animateColorAsState(
         if (countSelected == 0) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        label = "",
+        label = "ANIMATION_CHANGE_COLOR_TOOLBAR",
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -68,6 +69,6 @@ fun getClearIcon(clearSelected: () -> Unit) {
 fun getAppBarTitle(countSelected: Int, currentTitle: String): String {
     return when (countSelected) {
         0 -> currentTitle
-        else -> "Selected (${countSelected})"
+        else -> stringResource(R.string.title_selected_measure, countSelected)
     }
 }
