@@ -5,6 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -140,6 +142,14 @@ dependencies {
 
     //* data store
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 
 }
 
