@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.screens.home.widgets
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material.Icon
@@ -18,7 +19,8 @@ import com.nullpointer.nourseCompose.R
 @Composable
 fun HomeTopAppbar(
     countSelected: Int,
-    currentTitle: String,
+    @StringRes
+    currentTitle: Int?,
     openDrawer: () -> Unit,
     clearSelected: () -> Unit
 ) {
@@ -66,9 +68,13 @@ fun getClearIcon(clearSelected: () -> Unit) {
 
 
 @Composable
-fun getAppBarTitle(countSelected: Int, currentTitle: String): String {
+fun getAppBarTitle(
+    countSelected: Int,
+    @StringRes
+    currentTitle: Int?,
+): String {
     return when (countSelected) {
-        0 -> currentTitle
+        0 -> currentTitle?.let { stringResource(id = it) } ?: ""
         else -> stringResource(R.string.title_selected_measure, countSelected)
     }
 }

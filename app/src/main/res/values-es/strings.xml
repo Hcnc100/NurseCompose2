@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_selected_measure">Seleccionado(s) (%1$s)</string>
+    <string name="title_temperature">Temperatura</string>
+    <string name="title_glucose">Glucosa</string>
+    <string name="title_oxygen">Oxigeno</string>
+    <string name="title_pressure">Presión</string>
+    <string name="today_indicator_measure">Hoy %1$s</string>
+    <string name="error_paginate_measure">Error al paginar las medidas de %s</string>
+    <string name="error_get_last_measure">Error al obtener las últimas medidas de %s</string>
+    <string name="message_empty_measure">Sin datos de %s</string>
+    <string name="button_save_title">Guardar</string>
+    <string name="button_calcel_title">Cancelar</string>
+    <string name="title_dialog_add_measure">Agregar nueva medida de %s</string>
+    <string name="error_invalid_value">No es un valor válido</string>
+    <string name="title_number_measure_loaded">Número de medidas cargadas</string>
+    <string name="message_import_data">Al importar información, los datos guardados se eliminarán. ¿Está seguro?</string>
+    <string name="message_deleter_all_data">¿Quieres eliminar todos los datos guardados?</string>
+    <string name="title_option_import">Importar</string>
+    <string name="title_export_option">Exportar</string>
+    <string name="title_settings_option">Ajustes</string>
+    <string name="title_clear_all_data_option">Elimitar todos los datos</string>
+    <string name="title_settings">Ajustes</string>
+    <string name="message_number_items_graph">Número los elementos que se mostrarán en el gráfico:</string>
+    <string name="message_cancel_dialog">Cancelar</string>
+</resources>

@@ -89,7 +89,7 @@ fun HomeScreen(
         },
         topBar = {
             HomeTopAppbar(
-                currentTitle = destination?.title.orEmpty(),
+                currentTitle = destination?.title,
                 openDrawer = homeState::openDrawer,
                 countSelected = homeState.currentValueSelected,
                 clearSelected = homeState::clearNumberSelected

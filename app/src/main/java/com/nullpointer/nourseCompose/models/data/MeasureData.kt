@@ -3,17 +3,13 @@ package com.nullpointer.nourseCompose.models.data
 import androidx.compose.runtime.Immutable
 import com.nullpointer.nourseCompose.models.entity.MeasureEntity
 import com.nullpointer.nourseCompose.models.types.MeasureType
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Immutable
 data class MeasureData(
     val id: Int,
     val value1: Float,
     val value2: Float?,
-    val createAt: String,
+    val createAt: Long,
     val type: MeasureType,
 ) {
 
@@ -26,29 +22,14 @@ data class MeasureData(
 
     companion object {
 
-        private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-
-
         fun fromMeasureEntity(measureEntity: MeasureEntity): MeasureData {
-            val now = LocalDateTime.now()
-            val dateSaved =
-                Instant.ofEpochMilli(measureEntity.createAt).atZone(ZoneId.systemDefault())
-                    .toLocalDateTime()
-
-            val dateString = if (now.toLocalDate().isEqual(dateSaved.toLocalDate())) {
-                "Today ${timeFormatter.format(dateSaved)}"
-            } else {
-                dateTimeFormatter.format(dateSaved)
-            }
-
 
             return MeasureData(
                 id = measureEntity.id,
                 type = measureEntity.type,
                 value1 = measureEntity.value1,
                 value2 = measureEntity.value2,
-                createAt = dateString,
+                createAt = measureEntity.createAt,
             )
         }
     }

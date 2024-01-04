@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NurseApp</string>
+    <string name="app_name" translatable="false">NurseApp</string>
 
     <!-- titles measure-->
     <string name="title_selected_measure">Selected (%1$s)</string>
@@ -7,11 +7,12 @@
     <string name="title_glucose">Glucose</string>
     <string name="title_oxygen">Oxygen</string>
     <string name="title_pressure">Pressure</string>
+    <string name="today_indicator_measure">Today %1$s</string>
 
 
     <!-- errors measure-->
-    <string name="error_paginate_measure">Error in paginate %s measure</string>
-    <string name="error_get_last_measure">Error to get last %s measures</string>
+    <string name="error_paginate_measure">Error when paginating %s measurements</string>
+    <string name="error_get_last_measure">Error getting last measurements of %s</string>
 
     <!-- empty data -->
     <string name="message_empty_measure">Without data from %s measure</string>
@@ -21,7 +22,7 @@
     <string name="button_save_title">Save</string>
     <string name="button_calcel_title">Cancel</string>
     <string name="title_dialog_add_measure">Add new measure of %s</string>
-    <string name="error_invalid_value">Not is a valid value</string>
+    <string name="error_invalid_value">It is not a valid value</string>
     <string name="title_number_measure_loaded">Number of measures loaded %1$s</string>
 
     <!-- dialog message for drawable -->
@@ -36,11 +37,12 @@
 
 
     <!-- settings value -->
-    <string name="titlle_settings">Settings</string>
+    <string name="title_settings">Settings</string>
     <string name="message_number_items_graph">Number measure items to show in graph:</string>
 
     <!-- general message dialogs-->
-    <string name="message_accept_dialog">OK</string>
+    <string name="message_accept_dialog" translatable="false">OK</string>
     <string name="message_cancel_dialog">Cancel</string>
+
 
 </resources>

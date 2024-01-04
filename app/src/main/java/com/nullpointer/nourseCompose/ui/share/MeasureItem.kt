@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,7 @@ fun MeasureItem(
     modifier: Modifier = Modifier,
     addMeasureSelected: (MeasureData) -> Unit,
     isSelectedEnable: Boolean,
-    isSelected: Boolean
+    isSelected: Boolean,
 ) {
 
 
@@ -67,19 +68,13 @@ fun MeasureItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${measureData.type}",
+                    text = stringResource(id = measureData.type.titleMeasure),
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 )
-                Text(
-                    text = measureData.createAt,
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                    ),
-                )
+                TimeMeasureIndicator(createAt = measureData.createAt)
             }
             Text(
                 text = measureData.showValue,
