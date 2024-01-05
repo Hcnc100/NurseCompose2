@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ class HomeViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
-    private val _message = Channel<String>()
+    private val _message = Channel<Int>()
     val message = _message.receiveAsFlow()
 
     fun exportMeasureDatabase(outputStream: OutputStream) = viewModelScope.launch {
@@ -37,7 +38,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }.onFailure {
-            _message.trySend("Error in export file, verify your file")
+            _message.trySend(R.string.error_export_measure)
         }
 
         isLoading = false
@@ -53,7 +54,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }.onFailure {
-            _message.trySend("Error in export $it")
+            _message.trySend(R.string.error_import_measure)
         }
 
         isLoading = false
@@ -67,7 +68,7 @@ class HomeViewModel @Inject constructor(
                 measureRepository.deleterAllMeasures()
             }
         }.onFailure {
-            _message.trySend("Error in export $it")
+            _message.trySend(R.string.error_deleter_all_data)
         }
 
         isLoading = false

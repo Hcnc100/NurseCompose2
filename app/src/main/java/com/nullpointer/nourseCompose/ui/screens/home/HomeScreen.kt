@@ -1,21 +1,27 @@
 package com.nullpointer.nourseCompose.ui.screens.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
@@ -50,6 +56,8 @@ fun HomeScreen(
         selectImportDocumentSuccess = homeViewModel::importMeasureDatabase
     ),
 ) {
+
+    val isLoading = homeViewModel.isLoading
 
     val (scaffoldState, navHostController, selectedState) = homeState
 
@@ -87,7 +95,7 @@ fun HomeScreen(
         },
         topBar = {
             HomeTopAppbar(
-                currentTitle = destination?.title.orEmpty(),
+                currentTitle = destination?.title,
                 openDrawer = homeState::openDrawer,
                 countSelected = homeState.currentValueSelected,
                 clearSelected = homeState::clearNumberSelected
@@ -100,21 +108,32 @@ fun HomeScreen(
             )
         }
     ) {
-        DestinationsNavHost(
-            navController = navHostController,
-            navGraph = NavGraphs.homeGraph,
-            modifier = Modifier.padding(it),
-            dependenciesContainerBuilder = {
-                dependency(selectedState)
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            DestinationsNavHost(
+                navController = navHostController,
+                navGraph = NavGraphs.homeGraph,
+                modifier = Modifier.fillMaxSize(),
+                dependenciesContainerBuilder = {
+                    dependency(selectedState)
+                }
+            )
+
+            if (isLoading) {
+                CircularProgressIndicator()
             }
-        )
+        }
     }
 
 
     when (selectedDrawerActionDialog) {
         IMPORT -> DrawerActionDialog(
-            title = selectedDrawerActionDialog.title,
-            message = "When importing information, saved data will be deleted. Are you sure?",
+            title = stringResource(id = selectedDrawerActionDialog.title),
+            message = stringResource(R.string.message_import_data),
             closeDialog = {
                 changeSelectDrawerActions(null)
                 if (it) {
@@ -124,8 +143,8 @@ fun HomeScreen(
         )
 
         CLEAR_DATA -> DrawerActionDialog(
-            title = selectedDrawerActionDialog.title,
-            message = "Do you want to delete all saved data?",
+            title = stringResource(id = selectedDrawerActionDialog.title),
+            message = stringResource(R.string.message_deleter_all_data),
             closeDialog = {
                 changeSelectDrawerActions(null)
                 if (it) {

@@ -1,3 +1,53 @@
 <resources>
-    <string name="app_name">NourseCompose</string>
+    <string name="app_name" translatable="false">NurseApp</string>
+
+    <!-- titles measure-->
+    <string name="title_selected_measure">Selected (%1$s)</string>
+    <string name="title_temperature">Temperature</string>
+    <string name="title_glucose">Glucose</string>
+    <string name="title_oxygen">Oxygen</string>
+    <string name="title_pressure">Pressure</string>
+    <string name="today_indicator_measure">Today %1$s</string>
+
+
+    <!-- errors measure-->
+    <string name="error_paginate_measure">Error when paginating %s measurements</string>
+    <string name="error_get_last_measure">Error getting last measurements of %s</string>
+
+    <!-- empty data -->
+    <string name="message_empty_measure">Without data from %s measure</string>
+
+
+    <!-- dialog add measure -->
+    <string name="button_save_title">Save</string>
+    <string name="button_calcel_title">Cancel</string>
+    <string name="title_dialog_add_measure">Add new measure of %s</string>
+    <string name="error_invalid_value">It is not a valid value</string>
+    <string name="title_number_measure_loaded">Number of measures loaded %1$s</string>
+
+    <!-- dialog message for drawable -->
+    <string name="message_import_data">When importing information, saved data will be deleted. Are you sure?</string>
+    <string name="message_deleter_all_data">Do you want to delete all saved data?</string>
+
+    <!-- drawable titles-->
+    <string name="title_option_import">Import</string>
+    <string name="title_export_option">Export</string>
+    <string name="title_settings_option">Settings</string>
+    <string name="title_clear_all_data_option">Clear all Data</string>
+
+
+    <!-- settings value -->
+    <string name="title_settings">Settings</string>
+    <string name="message_number_items_graph">Number measure items to show in graph:</string>
+
+    <!-- general message dialogs-->
+    <string name="message_accept_dialog" translatable="false">OK</string>
+    <string name="message_cancel_dialog">Cancel</string>
+
+    <!-- errors import and export -->
+    <string name="error_export_measure">Error exporting your data, try again later</string>
+    <string name="error_import_measure">Error importing your data, please check your file</string>
+    <string name="error_deleter_all_data">Error deleting your data, try again later</string>
+
+
 </resources>

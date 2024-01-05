@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.screens.home.widgets
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material.Icon
@@ -11,13 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.nullpointer.nourseCompose.R
 
 @Composable
 fun HomeTopAppbar(
     countSelected: Int,
-    currentTitle: String,
+    @StringRes
+    currentTitle: Int?,
     openDrawer: () -> Unit,
     clearSelected: () -> Unit
 ) {
@@ -26,7 +29,7 @@ fun HomeTopAppbar(
 
     val backgroundColor by animateColorAsState(
         if (countSelected == 0) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        label = "",
+        label = "ANIMATION_CHANGE_COLOR_TOOLBAR",
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -65,9 +68,13 @@ fun getClearIcon(clearSelected: () -> Unit) {
 
 
 @Composable
-fun getAppBarTitle(countSelected: Int, currentTitle: String): String {
+fun getAppBarTitle(
+    countSelected: Int,
+    @StringRes
+    currentTitle: Int?,
+): String {
     return when (countSelected) {
-        0 -> currentTitle
-        else -> "Selected (${countSelected})"
+        0 -> currentTitle?.let { stringResource(id = it) } ?: ""
+        else -> stringResource(R.string.title_selected_measure, countSelected)
     }
 }

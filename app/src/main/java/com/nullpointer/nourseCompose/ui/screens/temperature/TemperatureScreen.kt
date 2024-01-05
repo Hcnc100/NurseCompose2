@@ -1,5 +1,6 @@
 package com.nullpointer.nourseCompose.ui.screens.temperature
 
+import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ScaffoldState
@@ -9,7 +10,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.nullpointer.nourseCompose.extensions.showSnackbar
 import com.nullpointer.nourseCompose.measureViewModelProvider
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
@@ -18,14 +21,16 @@ import com.nullpointer.nourseCompose.ui.share.MeasureScreen
 import com.nullpointer.nourseCompose.ui.viewModel.MeasureViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 
+
 @Destination
 @HomeGraph(start = true)
 @Composable
 fun TemperatureScreen(
+    selectedState: SelectedState,
+    context: Context = LocalContext.current,
     lazyListState: LazyListState = rememberLazyListState(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     measureViewModel: MeasureViewModel = measureViewModelProvider(measureType = MeasureType.TEMPERATURE),
-    selectedState: SelectedState
 ) {
 
     val lastMeasureList by measureViewModel.lastMeasureList.collectAsState()
@@ -50,7 +55,10 @@ fun TemperatureScreen(
 
     LaunchedEffect(key1 = Unit) {
         measureViewModel.message.collect {
-            scaffoldState.snackbarHostState.showSnackbar(it)
+            scaffoldState.snackbarHostState.showSnackbar(
+                measureError = it,
+                context = context
+            )
         }
     }
 
@@ -67,3 +75,4 @@ fun TemperatureScreen(
         listMeasureSelected = measureViewModel.measureSelected,
     )
 }
+

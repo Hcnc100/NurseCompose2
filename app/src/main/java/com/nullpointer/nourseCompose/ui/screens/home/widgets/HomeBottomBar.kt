@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -29,7 +30,7 @@ fun HomeBottomNavBar(
         HomeNavItems.values().map {
             BottomNavigationItem(
                 alwaysShowLabel = false,
-                label = { Text(text = it.title) },
+                label = { Text(text = stringResource(id = it.title)) },
                 selected = it.destination == currentDestination,
                 onClick = {
                     navController.navigate(it.destination) {
@@ -43,7 +44,7 @@ fun HomeBottomNavBar(
                 icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = it.icon),
-                        contentDescription = it.title
+                        contentDescription = stringResource(id = it.title)
                     )
                 }
             )

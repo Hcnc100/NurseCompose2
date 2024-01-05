@@ -26,10 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.data.SettingsData
 import com.nullpointer.nourseCompose.ui.screens.settings.viewModel.SettingsViewModel
@@ -69,7 +71,7 @@ fun AppbarSettings(
     TopAppBar(
         backgroundColor = MaterialTheme.colors.primary,
         contentColor = Color.White,
-        title = { Text(text = "Settings") },
+        title = { Text(text = stringResource(R.string.title_settings)) },
         navigationIcon = {
             IconButton(
                 onClick = actionBack,
@@ -102,9 +104,15 @@ fun NumberMeasureRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(50.dp)
     ) {
-        Text(text = "Number Graph Measure:")
+        Text(
+            text = stringResource(R.string.message_number_items_graph),
+            modifier = Modifier.weight(3f),
+            fontSize = 12.sp
+        )
 
-        Box {
+        Box(
+            modifier = Modifier.weight(2f)
+        ) {
 
             OutlinedTextField(
                 value = selectedValue.toString(),

@@ -4,6 +4,8 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.nullpointer.nourseCompose.R
 
 @Composable
 fun DrawerActionDialog(
@@ -19,12 +21,12 @@ fun DrawerActionDialog(
         text = { Text(text = message) },
         confirmButton = {
             TextButton(onClick = { closeDialog(true) }) {
-                Text(text = "OK")
+                Text(text = stringResource(R.string.message_accept_dialog))
             }
         },
         dismissButton = {
             TextButton(onClick = { closeDialog(false) }) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.message_cancel_dialog))
             }
         }
     )

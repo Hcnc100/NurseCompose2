@@ -12,20 +12,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.data.MeasureData
+import com.nullpointer.nourseCompose.models.types.MeasureType
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MeasureGraphList(
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
-    measureList: LazyPagingItems<MeasureData>,
+    measureType: MeasureType,
     isSelectedEnable: Boolean,
+    lazyListState: LazyListState,
+    modifier: Modifier = Modifier,
+    measureList: LazyPagingItems<MeasureData>,
     addMeasureSelected: (MeasureData) -> Unit,
     listMeasureSelected: SnapshotStateMap<Int, MeasureData>,
     graphHeader: @Composable () -> Unit
@@ -39,9 +43,13 @@ fun MeasureGraphList(
     ) {
         when {
             measureList.loadState.source.refresh is LoadState.Loading && measureList.itemCount == 0 -> CircularProgressIndicator()
-            measureList.loadState.source.refresh is LoadState.NotLoading && measureList.itemCount == 0 -> Text(
-                text = "Without Data"
-            )
+            measureList.loadState.source.refresh is LoadState.NotLoading && measureList.itemCount == 0 -> {
+                val titleMeasure = stringResource(measureType.titleMeasure)
+                val message = stringResource(R.string.message_empty_measure, titleMeasure)
+                Text(
+                    text = message
+                )
+            }
 
             else -> LazyColumn(
                 state = lazyListState,
