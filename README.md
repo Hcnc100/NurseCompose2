@@ -1,6 +1,9 @@
 # NourseCompose
 Simple project to save data on temperature, oxygen, pressure and Glucose
 
+### Google Play Link
+
+https://play.google.com/store/apps/details?id=com.nullpointer.nourseCompose
 
 ### Description
 
