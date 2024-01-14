@@ -15,6 +15,16 @@ enum class HomeNavItems(
     val destination: DirectionDestination
 ) {
 
+    GLUCOSE(
+        title = R.string.title_glucose,
+        icon = R.drawable.baseline_bloodtype_24,
+        destination = GlucoseScreenDestination
+    ),
+    PRESSURE(
+        title = R.string.title_pressure,
+        icon = R.drawable.outline_boy_24,
+        destination = PressureScreenDestination
+    ),
     TEMPERATURE(
         title = R.string.title_temperature,
         icon = R.drawable.baseline_barcode_reader_24,
@@ -25,15 +35,6 @@ enum class HomeNavItems(
         icon = R.drawable.baseline_bloodtype_24,
         destination = OxygenScreenDestination
     ),
-    PRESSURE(
-        title = R.string.title_pressure,
-        icon = R.drawable.outline_boy_24,
-        destination = PressureScreenDestination
-    ),
-    GLUCOSE(
-        title = R.string.title_glucose,
-        destination = GlucoseScreenDestination,
-        icon = R.drawable.baseline_flare_24
-    )
+
 
 }

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -23,8 +24,15 @@ fun DrawerContent(
 
         DrawerActions.values().map {
             ListItem(
-                modifier = Modifier.clickable { drawerAction(it) },
-                text = { Text(stringResource(id = it.title)) },
+                modifier = Modifier
+                    .clickable { drawerAction(it) },
+                text = {
+                    Text(
+                        stringResource(id = it.title),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(it.icon),

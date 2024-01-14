@@ -16,7 +16,7 @@ import com.nullpointer.nourseCompose.ui.viewModel.SelectViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
-@HomeGraph
+@HomeGraph(start = true)
 @Composable
 fun GlucoseScreen(
     selectViewModel: SelectViewModel,

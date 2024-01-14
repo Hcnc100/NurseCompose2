@@ -17,7 +17,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 
 
 @Destination
-@HomeGraph(start = true)
+@HomeGraph
 @Composable
 fun TemperatureScreen(
     selectViewModel: SelectViewModel,
