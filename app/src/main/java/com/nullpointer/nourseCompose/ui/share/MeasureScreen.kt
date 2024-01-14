@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -36,11 +37,11 @@ import com.nullpointer.nourseCompose.models.types.MeasureType
 fun MeasureScreen(
     measureType: MeasureType,
     isSelectedEnable: Boolean,
-    lazyListState: LazyListState,
+    lazyGridState: LazyGridState,
     scaffoldState: ScaffoldState,
     lastMeasureList: List<MeasureData>,
     deleterMeasureSelected: () -> Unit,
-    listMeasureSelected: SnapshotStateMap<Int, MeasureData>,
+    listMeasureSelected: Map<Int, MeasureData>,
     addMeasureSelected: (MeasureData) -> Unit,
     pagingListMeasure: LazyPagingItems<MeasureData>,
     addMeasureData: (value1: Float, value2: Float?) -> Unit,
@@ -67,7 +68,7 @@ fun MeasureScreen(
             isSelectedEnable = isSelectedEnable,
             addMeasureSelected = addMeasureSelected,
             measureList = pagingListMeasure,
-            lazyListState = lazyListState,
+            lazyGridState = lazyGridState,
             modifier = Modifier.padding(paddingValues)
         ) {
             MeasureGraph(

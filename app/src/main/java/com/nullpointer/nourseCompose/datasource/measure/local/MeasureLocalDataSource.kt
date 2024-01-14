@@ -24,5 +24,6 @@ interface MeasureLocalDataSource {
 
     suspend fun importDatabase(inputStream: InputStream)
     suspend fun deleterAllMeasures()
-    suspend fun deleterMeasureData(measureData: List<MeasureData>)
+
+    suspend fun deleterMeasureData(listIds: List<Int>)
 }

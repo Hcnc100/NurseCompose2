@@ -20,7 +20,8 @@ import com.ramcosta.composedestinations.navigation.navigate
 @Composable
 fun HomeBottomNavBar(
     navController: NavController,
-    currentDestination: Destination?
+    currentDestination: Destination?,
+    actionClearSelected: () -> Unit
 ) {
 
     BottomAppBar(
@@ -33,6 +34,9 @@ fun HomeBottomNavBar(
                 label = { Text(text = stringResource(id = it.title)) },
                 selected = it.destination == currentDestination,
                 onClick = {
+                    if(it.destination != currentDestination) {
+                        actionClearSelected()
+                    }
                     navController.navigate(it.destination) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true

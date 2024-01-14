@@ -31,8 +31,10 @@ class MeasureRepoImpl(
     override suspend fun deleterMeasureData(measureData: MeasureData) =
         measureLocalDataSource.deleterMeasureData(measureData)
 
-    override suspend fun deleterMeasureData(measureData: List<MeasureData>) =
-        measureLocalDataSource.deleterMeasureData(measureData)
+
+    override suspend fun deleterMeasureData(listIds: List<Int>) {
+        measureLocalDataSource.deleterMeasureData(listIds)
+    }
 
     override suspend fun updateMeasureData(measureData: MeasureData) =
         measureLocalDataSource.updateMeasureData(measureData)

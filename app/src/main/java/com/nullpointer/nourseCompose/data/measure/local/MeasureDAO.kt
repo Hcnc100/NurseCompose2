@@ -47,6 +47,7 @@ interface MeasureDAO {
         insertMeasure(list)
     }
 
-    @Delete
-    suspend fun deleter(measureEntity: List<MeasureEntity>)
+
+    @Query("DELETE FROM measures WHERE id IN (:listIds)")
+    suspend fun deleter(listIds: List<Int>)
 }

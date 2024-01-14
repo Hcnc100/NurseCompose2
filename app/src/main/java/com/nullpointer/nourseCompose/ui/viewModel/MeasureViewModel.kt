@@ -45,7 +45,8 @@ class MeasureViewModel @AssistedInject constructor(
     val message = _message.receiveAsFlow()
 
 
-    val measureSelected = mutableStateMapOf<Int, MeasureData>()
+
+
 
     var measureSelectedCount by mutableIntStateOf(0)
         private set
@@ -108,28 +109,10 @@ class MeasureViewModel @AssistedInject constructor(
         }
     }
 
-    fun clearSelection() {
-        measureSelected.clear()
-        measureSelectedCount = 0
-    }
-
-    fun deleterAllSelected() = viewModelScope.launch {
+    fun deleterAllSelected(listIds:List<Int>) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
-            measureRepository.deleterMeasureData(measureSelected.values.toList())
+            measureRepository.deleterMeasureData(listIds)
         }
-        measureSelected.clear()
-        measureSelectedCount = 0
-    }
-
-    fun toggleMeasureData(measureData: MeasureData) {
-        if (measureSelected.containsKey(measureData.id)) {
-            measureSelected.remove(measureData.id)
-        } else {
-            measureSelected[measureData.id] = measureData
-        }
-
-        measureSelectedCount = measureSelected.size
-
     }
 
 

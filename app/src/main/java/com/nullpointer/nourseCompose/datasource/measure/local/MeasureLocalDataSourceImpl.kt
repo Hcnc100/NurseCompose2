@@ -38,9 +38,9 @@ class MeasureLocalDataSourceImpl(
         measureDAO.deleter(measureEntity)
     }
 
-    override suspend fun deleterMeasureData(measureData: List<MeasureData>) {
-        val listMeasureList = measureData.map(MeasureEntity::fromMeasureData)
-        measureDAO.deleter(listMeasureList)
+
+    override suspend fun deleterMeasureData(listIds: List<Int>) {
+        measureDAO.deleter(listIds)
     }
 
     override suspend fun updateMeasureData(measureData: MeasureData) {

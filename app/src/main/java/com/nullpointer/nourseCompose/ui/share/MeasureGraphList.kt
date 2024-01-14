@@ -3,9 +3,12 @@ package com.nullpointer.nourseCompose.ui.share
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,17 +24,17 @@ import androidx.paging.compose.itemKey
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.data.MeasureData
 import com.nullpointer.nourseCompose.models.types.MeasureType
+import com.nullpointer.nourseCompose.ui.share.measureItem.MeasureItem
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MeasureGraphList(
     measureType: MeasureType,
     isSelectedEnable: Boolean,
-    lazyListState: LazyListState,
+    lazyGridState: LazyGridState,
     modifier: Modifier = Modifier,
     measureList: LazyPagingItems<MeasureData>,
     addMeasureSelected: (MeasureData) -> Unit,
-    listMeasureSelected: SnapshotStateMap<Int, MeasureData>,
+    listMeasureSelected: Map<Int, MeasureData>,
     graphHeader: @Composable () -> Unit
 ) {
 
@@ -51,37 +54,39 @@ fun MeasureGraphList(
                 )
             }
 
-            else -> LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            else -> {
+                Column {
+                    graphHeader()
+                    LazyVerticalGrid(
+                        state = lazyGridState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        columns = GridCells.Adaptive(150.dp),
+                        contentPadding = PaddingValues(10.dp)
+                    ) {
+                        items(
+                            measureList.itemCount,
+                            key = measureList.itemKey { it.id },
+                            contentType = measureList.itemContentType { it.type },
+                        ) {
+                            // * when no use place holders
+                            // * no need check if the item is null
 
-                stickyHeader {
-                    HeaderMeasureList(graphHeader)
-                }
+                            val measureData = measureList[it]!!
 
-                items(
-                    measureList.itemCount,
-                    key = measureList.itemKey { it.id },
-                    contentType = measureList.itemContentType { it.type },
-                ) {
-                    // * when no use place holders
-                    // * no need check if the item is null
-
-                    val measureData = measureList[it]!!
-
-                    MeasureItem(
-                        isSelectedEnable = isSelectedEnable,
-                        addMeasureSelected = addMeasureSelected,
-                        measureData = measureData,
-                        isSelected = listMeasureSelected.containsKey(measureData.id)
+                            MeasureItem(
+                                isSelectedEnable = isSelectedEnable,
+                                addMeasureSelected = addMeasureSelected,
+                                measureData = measureData,
+                                isSelected = listMeasureSelected.containsKey(measureData.id)
 //                        modifier = Modifier.animateItemPlacement(),
-                    )
+                            )
+                        }
+                    }
                 }
             }
+
         }
     }
-
-
 }
