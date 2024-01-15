@@ -13,21 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nullpointer.nourseCompose.models.data.MeasureData
-import com.nullpointer.nourseCompose.models.types.MeasureType
-import com.nullpointer.nourseCompose.ui.share.TimeMeasureIndicator
-import com.nullpointer.runningcompose.ui.preview.config.ThemePreviews
+import com.nullpointer.nourseCompose.ui.preview.config.SimplePreview
+import com.nullpointer.nourseCompose.ui.preview.states.MeasureProvider
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MeasureItem(
+    isSelected: Boolean,
     measureData: MeasureData,
+    isSelectedEnable: Boolean,
     modifier: Modifier = Modifier,
     addMeasureSelected: (MeasureData) -> Unit,
-    isSelectedEnable: Boolean,
-    isSelected: Boolean,
 ) {
     ContainerMeasureItem(
         modifier = modifier,
@@ -71,19 +71,31 @@ fun MeasureItem(
     }
 }
 
-@ThemePreviews
+@SimplePreview
 @Composable
-private fun MeasureItemPreview() {
+private fun MeasureItemPreview(
+    @PreviewParameter(MeasureProvider::class)
+    measureData: MeasureData
+) {
     MeasureItem(
-        measureData = MeasureData(
-            createAt = System.currentTimeMillis(),
-            id = 1,
-            type = MeasureType.PRESSURE,
-            value1 = 120f,
-            value2 = 80f
-        ),
+        measureData = measureData,
         addMeasureSelected = {},
         isSelected = false,
         isSelectedEnable = true
     )
 }
+
+@SimplePreview
+@Composable
+private fun MeasureItemSelectedPreview(
+    @PreviewParameter(MeasureProvider::class)
+    measureData: MeasureData
+) {
+    MeasureItem(
+        measureData = measureData,
+        addMeasureSelected = {},
+        isSelected = true,
+        isSelectedEnable = true
+    )
+}
+

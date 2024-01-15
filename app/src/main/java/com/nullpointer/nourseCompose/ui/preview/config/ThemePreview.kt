@@ -1,6 +1,5 @@
-package com.nullpointer.runningcompose.ui.preview.config
+package com.nullpointer.nourseCompose.ui.preview.config
 
-import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview

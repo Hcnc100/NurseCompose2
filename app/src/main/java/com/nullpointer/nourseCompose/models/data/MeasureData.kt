@@ -22,6 +22,72 @@ data class MeasureData(
 
     companion object {
 
+        val listMeasureExample = listOf(
+            MeasureData(
+                id = 0,
+                value1 = 118F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 1,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 2,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 3,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 4,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 5,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 6,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 7,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+            MeasureData(
+                id = 8,
+                value1 = 120F,
+                value2 = 80F,
+                createAt = 100023,
+                type = MeasureType.PRESSURE
+            ),
+        )
+
         fun fromMeasureEntity(measureEntity: MeasureEntity): MeasureData {
 
             return MeasureData(

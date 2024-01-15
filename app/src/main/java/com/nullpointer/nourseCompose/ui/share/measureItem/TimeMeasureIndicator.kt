@@ -1,4 +1,4 @@
-package com.nullpointer.nourseCompose.ui.share
+package com.nullpointer.nourseCompose.ui.share.measureItem
 
 import android.content.Context
 import androidx.compose.material.Text

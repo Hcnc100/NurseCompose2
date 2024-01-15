@@ -1,4 +1,4 @@
-package com.nullpointer.nourseCompose.ui.share
+package com.nullpointer.nourseCompose.ui.share.graph
 
 import android.graphics.Typeface
 import androidx.compose.material.MaterialTheme

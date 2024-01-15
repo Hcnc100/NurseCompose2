@@ -1,4 +1,4 @@
-package com.nullpointer.runningcompose.ui.preview.config
+package com.nullpointer.nourseCompose.ui.preview.config
 
 import androidx.compose.ui.tooling.preview.Preview
 
