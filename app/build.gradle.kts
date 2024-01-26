@@ -61,13 +61,23 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = freeCompilerArgs + listOf(
+                "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+            )
+        }
+    }
+
 
     applicationVariants.all {
         addJavaSourceFoldersToModel(
@@ -85,7 +95,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material:material:1.5.4")
+    implementation("androidx.compose.material:material:1.6.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -96,23 +106,26 @@ dependencies {
 
 
     // * room
-    val roomVersion = "2.5.0"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
-    // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$roomVersion")
-    // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$roomVersion")
 
 
     // * kotlin serialization
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
-    // * dagger hilt
-    implementation("com.google.dagger:hilt-android:2.48")
+    // * hilt
+    val daggerHiltVersion = "2.50"
+    implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
+    kapt("com.google.dagger:hilt-compiler:$daggerHiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
+    // ? hilt test
+    testImplementation("com.google.dagger:hilt-android-testing:$daggerHiltVersion")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$daggerHiltVersion")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
 
     // * graph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
@@ -121,10 +134,9 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     // * navigation
-    val destinationsVersion = "1.8.42-beta"
+    val destinationsVersion = "1.10.0"
     implementation("io.github.raamcosta.compose-destinations:core:$destinationsVersion")
     ksp("io.github.raamcosta.compose-destinations:ksp:$destinationsVersion")
-
 
     // * pagination
     val pagingVersion = "3.2.1"
@@ -144,11 +156,8 @@ dependencies {
     //* data store
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    // Import the BoM for the Firebase platform
+    // * firebase
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
-
-    // Add the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
