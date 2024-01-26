@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
@@ -38,6 +39,7 @@ import com.nullpointer.nourseCompose.ui.screens.home.widgets.DrawerContent
 import com.nullpointer.nourseCompose.ui.screens.home.widgets.HomeBottomNavBar
 import com.nullpointer.nourseCompose.ui.screens.home.widgets.HomeTopAppbar
 import com.nullpointer.nourseCompose.ui.screens.home.widgets.dialogs.DrawerActionDialog
+import com.nullpointer.nourseCompose.ui.viewModel.SelectViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -49,28 +51,34 @@ import com.ramcosta.composedestinations.navigation.dependency
 @Destination
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(),
     destinationsNavigator: DestinationsNavigator,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    selectViewModel: SelectViewModel = hiltViewModel(),
     homeState: HomeState = rememberHomeState(
         selectExportDocumentSuccess = homeViewModel::exportMeasureDatabase,
         selectImportDocumentSuccess = homeViewModel::importMeasureDatabase
-    ),
+    )
 ) {
 
     val isLoading = homeViewModel.isLoading
 
-    val (scaffoldState, navHostController, selectedState) = homeState
+    val (scaffoldState, navHostController) = homeState
 
     val currentDestination by navHostController.appCurrentDestinationAsState()
     val destination = HomeNavItems.values().find { it.destination == currentDestination }
     val (selectedDrawerActionDialog, changeSelectDrawerActions) = remember {
         mutableStateOf<DrawerActions?>(null)
     }
+    val listSelected = selectViewModel.measureSelected
 
     BackHandler(
-        enabled = selectedState.currentValueSelected != 0
+        enabled = listSelected.isNotEmpty() || selectedDrawerActionDialog != null || scaffoldState.drawerState.isOpen
     ) {
-        selectedState.clearNumberSelected()
+        when {
+            listSelected.isNotEmpty() -> selectViewModel.clearSelection()
+            selectedDrawerActionDialog != null -> changeSelectDrawerActions(null)
+            scaffoldState.drawerState.isOpen -> homeState.closeDrawer()
+        }
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -78,7 +86,7 @@ fun HomeScreen(
     }
 
     Scaffold(
-        drawerGesturesEnabled = homeState.currentValueSelected == 0,
+        drawerGesturesEnabled = listSelected.isEmpty(),
         scaffoldState = scaffoldState,
         drawerShape = customShape(),
         drawerContent = {
@@ -97,14 +105,15 @@ fun HomeScreen(
             HomeTopAppbar(
                 currentTitle = destination?.title,
                 openDrawer = homeState::openDrawer,
-                countSelected = homeState.currentValueSelected,
-                clearSelected = homeState::clearNumberSelected
+                countSelected = listSelected.size,
+                clearSelected = selectViewModel::clearSelection,
             )
         },
         bottomBar = {
             HomeBottomNavBar(
                 navController = navHostController,
                 currentDestination = currentDestination,
+                actionClearSelected = selectViewModel::clearSelection,
             )
         }
     ) {
@@ -119,7 +128,7 @@ fun HomeScreen(
                 navGraph = NavGraphs.homeGraph,
                 modifier = Modifier.fillMaxSize(),
                 dependenciesContainerBuilder = {
-                    dependency(selectedState)
+                    dependency(selectViewModel)
                 }
             )
 

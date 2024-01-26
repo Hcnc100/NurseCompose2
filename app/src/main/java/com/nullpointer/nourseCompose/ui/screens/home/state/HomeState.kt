@@ -27,7 +27,6 @@ import java.io.OutputStream
 class HomeState(
     private val context: Context,
     private val scaffoldState: ScaffoldState,
-    private val selectedState: SelectedState,
     private val coroutineScope: CoroutineScope,
     private val navHostController: NavHostController,
     private val selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
@@ -35,9 +34,6 @@ class HomeState(
 ) {
     operator fun component1() = scaffoldState
     operator fun component2() = navHostController
-    operator fun component3() = selectedState
-
-    val currentValueSelected get() = selectedState.currentValueSelected
 
 
     fun showSnackBar(message: String) = coroutineScope.launch {
@@ -68,27 +64,23 @@ class HomeState(
     }
 
     fun selectImportFile() {
-        selectImportDocumentResult.launch("text/*")
+        selectImportDocumentResult.launch("*/*")
     }
 
-    fun clearNumberSelected() {
-        selectedState.changeNumberSelected(0)
-    }
 
 }
 
 
 @Composable
 fun rememberHomeState(
+    context: Context = LocalContext.current,
     selectExportDocumentSuccess: (OutputStream) -> Unit,
     selectImportDocumentSuccess: (InputStream) -> Unit,
-    context: Context = LocalContext.current,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navHostController: NavHostController = rememberNavController(),
-    selectedState: SelectedState = rememberSelectedState(),
     @SuppressLint("Recycle") selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
-        CreateDocument("text/*")
+        CreateDocument("*/*")
     ) { uri: Uri? ->
         uri?.let {
             context.contentResolver.openOutputStream(it)?.let(selectExportDocumentSuccess)
@@ -102,7 +94,7 @@ fun rememberHomeState(
             }
         }
     ),
-) = remember(scaffoldState, coroutineScope, selectExportDocumentResult, selectedState) {
+) = remember(scaffoldState, coroutineScope, selectExportDocumentResult) {
     HomeState(
         context = context,
         scaffoldState = scaffoldState,
@@ -110,7 +102,6 @@ fun rememberHomeState(
         navHostController = navHostController,
         selectExportDocumentResult = selectExportDocumentResult,
         selectImportDocumentResult = selectImportDocumentResult,
-        selectedState = selectedState
     )
 }
 
