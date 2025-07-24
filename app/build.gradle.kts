@@ -1,22 +1,22 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.22"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
     namespace = "com.nullpointer.nourseCompose"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.nullpointer.nourseCompose"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 7
         versionName = "4.0.0"
 
@@ -74,6 +74,10 @@ android {
             File(buildDir, "generated/ksp/$name/kotlin")
         )
     }
+
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
@@ -110,9 +114,14 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
     // * dagger hilt
-    implementation("com.google.dagger:hilt-android:2.48")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
+    val hiltVersion = "2.51.1"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    ksp("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.8.1")
+    ksp("com.squareup.inject:assisted-inject-processor-dagger2:0.8.1")
 
     // * graph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
@@ -132,8 +141,7 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.2.1")
     implementation("androidx.room:room-paging:$roomVersion")
 
-    implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
-    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
+
 
     // * csv
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.9.0")
@@ -156,8 +164,4 @@ dependencies {
     implementation("com.orhanobut:logger:2.2.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-}
-
-kapt {
-    correctErrorTypes = true
 }
