@@ -17,8 +17,8 @@ android {
         applicationId = "com.nullpointer.nourseCompose"
         minSdk = 21
         targetSdk = 36
-        versionCode = 7
-        versionName = "5.0.0"
+        versionCode = 10
+        versionName = "5.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
