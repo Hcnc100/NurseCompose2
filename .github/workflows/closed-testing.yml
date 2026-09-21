@@ -56,7 +56,8 @@ jobs:
         run: |
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/release.keystore
           cat > keystore.properties <<EOF
-          storeFile=app/release.keystore
+          # storeFile is resolved relative to the app module directory.
+          storeFile=release.keystore
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
