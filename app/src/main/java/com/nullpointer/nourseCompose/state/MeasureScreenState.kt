@@ -3,8 +3,7 @@ package com.nullpointer.nourseCompose.state
 import android.content.Context
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -15,9 +14,9 @@ import com.nullpointer.nourseCompose.models.data.MeasureError
 @Stable
 class MeasureScreenState(
     context: Context,
-    scaffoldState: ScaffoldState,
+    snackbarHostState: SnackbarHostState,
     val lazyGridState: LazyGridState,
-):SimpleScreenState(context, scaffoldState){
+):SimpleScreenState(context, snackbarHostState){
     suspend fun showSnackMessage(measureError: MeasureError) {
 
         val titleMeasure = context.getString(measureError.titleMeasure)
@@ -30,12 +29,12 @@ class MeasureScreenState(
 @Composable
 fun rememberMeasureScreenState(
     context: Context = LocalContext.current,
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     lazyGridState: LazyGridState = rememberLazyGridState(),
-) = remember(scaffoldState, lazyGridState){
+) = remember(snackbarHostState, lazyGridState){
     MeasureScreenState(
         context = context,
-        scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
         lazyGridState = lazyGridState,
     )
 }

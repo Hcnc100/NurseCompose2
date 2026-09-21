@@ -7,8 +7,10 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.annotation.StringRes
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -26,36 +28,37 @@ import java.io.OutputStream
 @Stable
 class HomeState(
     private val context: Context,
-    private val scaffoldState: ScaffoldState,
+    private val drawerState: DrawerState,
+    val snackbarHostState: SnackbarHostState,
     private val coroutineScope: CoroutineScope,
     private val navHostController: NavHostController,
     private val selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
     private val selectImportDocumentResult: ManagedActivityResultLauncher<String, Uri?>,
 ) {
-    operator fun component1() = scaffoldState
+    operator fun component1() = drawerState
     operator fun component2() = navHostController
 
 
     fun showSnackBar(message: String) = coroutineScope.launch {
-        scaffoldState.snackbarHostState.showSnackbar(message)
+        snackbarHostState.showSnackbar(message)
     }
 
     fun showSnackBar(
         @StringRes
         message: Int,
     ) = coroutineScope.launch {
-        scaffoldState.snackbarHostState.showSnackbar(
+        snackbarHostState.showSnackbar(
             context.getString(message)
         )
     }
 
 
     fun openDrawer() = coroutineScope.launch {
-        scaffoldState.drawerState.open()
+        drawerState.open()
     }
 
     fun closeDrawer() = coroutineScope.launch {
-        scaffoldState.drawerState.close()
+        drawerState.close()
     }
 
 
@@ -76,7 +79,8 @@ fun rememberHomeState(
     context: Context = LocalContext.current,
     selectExportDocumentSuccess: (OutputStream) -> Unit,
     selectImportDocumentSuccess: (InputStream) -> Unit,
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navHostController: NavHostController = rememberNavController(),
     @SuppressLint("Recycle") selectExportDocumentResult: ManagedActivityResultLauncher<String, Uri?> = rememberLauncherForActivityResult(
@@ -94,10 +98,11 @@ fun rememberHomeState(
             }
         }
     ),
-) = remember(scaffoldState, coroutineScope, selectExportDocumentResult) {
+) = remember(drawerState, snackbarHostState, coroutineScope, selectExportDocumentResult) {
     HomeState(
         context = context,
-        scaffoldState = scaffoldState,
+        drawerState = drawerState,
+        snackbarHostState = snackbarHostState,
         coroutineScope = coroutineScope,
         navHostController = navHostController,
         selectExportDocumentResult = selectExportDocumentResult,

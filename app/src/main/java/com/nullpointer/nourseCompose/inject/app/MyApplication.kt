@@ -2,6 +2,7 @@ package com.nullpointer.nourseCompose.inject.app
 
 import android.app.Application
 import com.nullpointer.nourseCompose.BuildConfig
+import com.nullpointer.nourseCompose.notifications.MedicationReminderScheduler
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
@@ -14,6 +15,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MedicationReminderScheduler.createChannel(this)
 
         if (!BuildConfig.DEBUG) {
             return

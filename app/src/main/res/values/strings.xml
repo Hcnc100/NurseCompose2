@@ -21,6 +21,9 @@
     <!-- dialog add measure -->
     <string name="button_save_title">Save</string>
     <string name="button_calcel_title">Cancel</string>
+    <string name="button_cancel_title">Cancel</string>
+    <string name="action_back">Back</string>
+    <string name="action_save">Save reminder</string>
     <string name="title_dialog_add_measure">Add new measure of %s</string>
     <string name="error_invalid_value">It is not a valid value</string>
     <string name="title_number_measure_loaded">Number of measures loaded %1$s</string>
@@ -32,6 +35,12 @@
     <!-- drawable titles-->
     <string name="title_option_import">Import</string>
     <string name="title_export_option">Export</string>
+    <string name="title_export_medication_pdf_option">Export medication reminders as PDF</string>
+    <string name="title_data_export">Export health data</string>
+    <string name="action_export_all_pdf">Export all data as PDF</string>
+    <string name="message_data_export_disclaimer">This export contains user-entered reminders, medication details and health measurements. It is not a medical report or diagnosis. You are responsible for how you use or share this file.</string>
+    <string name="message_data_export_contents">Records ready to export: %1$d</string>
+    <string name="export_include_reminders">Medication reminders</string>
     <string name="title_settings_option">Settings</string>
     <string name="title_clear_all_data_option">Clear all Data</string>
 
@@ -50,4 +59,81 @@
     <string name="error_deleter_all_data">Error deleting your data, try again later</string>
 
 
+
+    <!-- medication reminders -->
+    <string name="title_medications">Reminders</string>
+    <string name="action_add_medication">Add reminder</string>
+    <string name="message_empty_medications">No reminders yet</string>
+    <string name="message_empty_medications_description">Add a medication to organize its doses.</string>
+    <string name="title_add_medication">New reminder</string>
+    <string name="title_edit_medication">Edit reminder</string>
+    <string name="label_medication_name">Medication</string>
+    <string name="label_dosage_optional">Dosage (optional)</string>
+    <string name="label_comment_optional">Comment (optional)</string>
+    <string name="action_select_photo">Select photo</string>
+    <string name="text_select_photo_option">Add a medication photo</string>
+    <string name="option_take_photo">Take a photo</string>
+    <string name="description_take_photo">Use the camera</string>
+    <string name="option_choose_gallery">Choose from gallery</string>
+    <string name="description_choose_gallery">Select an existing image</string>
+    <string name="label_photo_selected">Photo selected</string>
+    <string name="label_start_time">First dose</string>
+    <string name="label_end_date">Last dose</string>
+    <string name="label_interval_hours">Every how many hours</string>
+    <string name="label_every_hours">Every %1$d hours</string>
+    <string name="label_schedule">Duration</string>
+    <string name="schedule_one_day">One day</string>
+    <string name="schedule_date_range">Date range</string>
+    <string name="schedule_indefinite">Indefinitely</string>
+    <string name="label_next_doses">Next doses</string>
+    <string name="label_notification_behavior">Notification behavior</string>
+    <string name="option_notification_sound">Play sound</string>
+    <string name="option_notification_vibration">Vibrate</string>
+    <string name="option_full_screen_alarm">Open full-screen alarm</string>
+    <string name="title_alarm_now">Medication reminder</string>
+    <string name="action_dismiss_alarm">Dismiss</string>
+    <string name="action_snooze_alarm">Snooze 10 minutes</string>
+    <string name="action_taken_alarm">Mark as taken</string>
+    <string name="message_no_upcoming_doses">No doses in the next 48 hours.</string>
+    <string name="label_active">Active</string>
+    <string name="label_inactive">Inactive</string>
+    <string name="error_medication_name">Enter the medication name.</string>
+    <string name="title_medication_collision">Overlapping schedule</string>
+    <string name="message_medication_collision">This overlaps with: %1$s. Review the schedule or save anyway.</string>
+    <string name="action_save_anyway">Save anyway</string>
+    <string name="action_delete">Delete</string>
+    <string name="title_delete_reminder">Delete reminder?</string>
+    <string name="message_delete_reminder">Delete “%1$s” and cancel its scheduled alarms?</string>
+    <string name="intro_welcome_title">Welcome</string>
+    <string name="intro_welcome_body">Organize your medication reminders privately and offline.</string>
+    <string name="intro_permissions_title">Permissions when you choose</string>
+    <string name="intro_permissions_body">Notifications are needed for reminders. Exact alarms are optional and improve timing accuracy. Full-screen alarms may require system permission on some Android versions.</string>
+    <string name="intro_allow_notifications">Allow notifications</string>
+    <string name="intro_exact_alarms">Configure exact alarms</string>
+    <string name="intro_full_screen_permission">Full-screen alarms can appear over the lock screen when you enable them for a reminder. Android may let you manage this permission in system settings.</string>
+    <string name="intro_notification_settings">Review notification settings</string>
+    <string name="intro_disclaimer_title">Your data is not a diagnosis</string>
+    <string name="intro_skip">Skip</string>
+    <string name="intro_start">Get started</string>
+    <string name="intro_next">Next</string>
+    <string name="notification_medication_title">Time to take %1$s</string>
+    <string name="notification_medication_take_now">Check your medication reminder.</string>
+    <string name="notification_channel_medications">Medication reminders</string>
+    <string name="notification_channel_medications_description">Quiet alerts for scheduled doses.</string>    <string name="action_export_medication_pdf">Export data as PDF</string>
+    <string name="medication_report_disclaimer">This document is not a medical report and does not provide a diagnosis. A healthcare professional should evaluate any clinical situation.</string>
+    <string name="intro_medications_title">Your reminders, under your control</string>
+    <string name="intro_medications_body">You can allow notifications now or later in system settings. Alerts do not replace medical care.</string>
+    <string name="pdf_medication_title">Medication reminders</string>
+    <string name="pdf_medication_disclaimer">This document contains user-entered data. It is not a medical report or diagnosis.</string>
+    <string name="pdf_medication_entry">%1$s — %2$s — every %3$d hours</string>
+    <string name="pdf_no_dosage">No dosage</string>
+    <string name="pdf_start_date">First dose: %1$s</string>
+    <string name="pdf_report_title">Health data report</string>
+    <string name="pdf_report_date">Exported: %1$s</string>
+    <string name="pdf_report_app_version">Application: %1$s · Version %2$s</string>
+    <string name="pdf_report_disclaimer">User-entered data only. This is not a medical report or diagnosis. Use and sharing are the user’s responsibility.</string>
+    <string name="pdf_report_medications">Medication reminders</string>
+    <string name="pdf_report_measurements">Measurements</string>
+    <string name="pdf_report_medication_details">Dosage: %1$s · Every %2$d hours · First dose: %3$s</string>
+    <string name="pdf_report_none">No records selected.</string>
 </resources>

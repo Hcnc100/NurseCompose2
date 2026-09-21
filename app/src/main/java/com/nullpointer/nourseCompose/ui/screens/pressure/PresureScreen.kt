@@ -34,7 +34,6 @@ fun PressureScreen(
 
     MeasureScreen(
         lazyGridState = measureScreenState.lazyGridState,
-        scaffoldState = measureScreenState.scaffoldState,
         lastMeasureList = lastMeasureList,
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.PRESSURE,

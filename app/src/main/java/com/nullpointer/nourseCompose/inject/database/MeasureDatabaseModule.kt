@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.nullpointer.nourseCompose.data.csv.local.BackUpDatabase
 import com.nullpointer.nourseCompose.database.NurseDatabase
+import com.nullpointer.nourseCompose.database.NurseDatabaseMigrations
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,7 +41,7 @@ object MeasureDatabaseModule {
         context = context,
         name = nameDatabase,
         klass = NurseDatabase::class.java
-    ).fallbackToDestructiveMigration().build()
+    ).addMigrations(NurseDatabaseMigrations.MIGRATION_4_5, NurseDatabaseMigrations.MIGRATION_5_6, NurseDatabaseMigrations.MIGRATION_6_7).build()
 
 
 }

@@ -1,23 +1,32 @@
 package com.nullpointer.nourseCompose.ui.screens.home
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +36,7 @@ import com.nullpointer.nourseCompose.navigation.HomeNavItems
 import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
 import com.nullpointer.nourseCompose.ui.screens.destinations.SettingsScreenDestination
+import com.nullpointer.nourseCompose.ui.screens.destinations.DataExportScreenDestination
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.CLEAR_DATA
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.EXPORT
@@ -40,6 +50,8 @@ import com.nullpointer.nourseCompose.ui.screens.home.widgets.HomeBottomNavBar
 import com.nullpointer.nourseCompose.ui.screens.home.widgets.HomeTopAppbar
 import com.nullpointer.nourseCompose.ui.screens.home.widgets.dialogs.DrawerActionDialog
 import com.nullpointer.nourseCompose.ui.viewModel.SelectViewModel
+import com.nullpointer.nourseCompose.ui.screens.medication.MedicationReminderViewModel
+import com.nullpointer.nourseCompose.reports.MedicationReportExporter
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -61,8 +73,13 @@ fun HomeScreen(
 ) {
 
     val isLoading = homeViewModel.isLoading
+    val context = LocalContext.current
+    val reminders by hiltViewModel<MedicationReminderViewModel>().reminders.collectAsState()
+    val medicationPdfLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        uri?.let { context.contentResolver.openOutputStream(it)?.use { output -> MedicationReportExporter.write(context, reminders, output) } }
+    }
 
-    val (scaffoldState, navHostController) = homeState
+    val (drawerState, navHostController) = homeState
 
     val currentDestination by navHostController.appCurrentDestinationAsState()
     val destination = HomeNavItems.values().find { it.destination == currentDestination }
@@ -72,12 +89,12 @@ fun HomeScreen(
     val listSelected = selectViewModel.measureSelected
 
     BackHandler(
-        enabled = listSelected.isNotEmpty() || selectedDrawerActionDialog != null || scaffoldState.drawerState.isOpen
+        enabled = listSelected.isNotEmpty() || selectedDrawerActionDialog != null || drawerState.isOpen
     ) {
         when {
             listSelected.isNotEmpty() -> selectViewModel.clearSelection()
             selectedDrawerActionDialog != null -> changeSelectDrawerActions(null)
-            scaffoldState.drawerState.isOpen -> homeState.closeDrawer()
+            drawerState.isOpen -> homeState.closeDrawer()
         }
     }
 
@@ -85,22 +102,27 @@ fun HomeScreen(
         homeViewModel.message.collect(homeState::showSnackBar)
     }
 
-    Scaffold(
-        drawerGesturesEnabled = listSelected.isEmpty(),
-        scaffoldState = scaffoldState,
-        drawerShape = customShape(),
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = listSelected.isEmpty(),
         drawerContent = {
+            ModalDrawerSheet {
             DrawerContent(
                 drawerAction = { drawerAction ->
                     homeState.closeDrawer()
                     when (drawerAction) {
                         EXPORT -> homeState.selectExportFile()
+                        DrawerActions.EXPORT_MEDICATION_PDF -> destinationsNavigator.navigate(DataExportScreenDestination)
                         SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
                         else -> changeSelectDrawerActions(drawerAction)
                     }
                 }
             )
+            }
         },
+    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(homeState.snackbarHostState) },
         topBar = {
             HomeTopAppbar(
                 currentTitle = destination?.title,
@@ -109,35 +131,15 @@ fun HomeScreen(
                 clearSelected = selectViewModel::clearSelection,
             )
         },
-        bottomBar = {
-            HomeBottomNavBar(
-                navController = navHostController,
-                currentDestination = currentDestination,
-                actionClearSelected = selectViewModel::clearSelection,
-            )
-        }
+        bottomBar = { HomeBottomNavBar(navHostController, currentDestination, selectViewModel::clearSelection) },
+        floatingActionButton = { }
     ) {
-        Box(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            DestinationsNavHost(
-                navController = navHostController,
-                navGraph = NavGraphs.homeGraph,
-                modifier = Modifier.fillMaxSize(),
-                dependenciesContainerBuilder = {
-                    dependency(selectViewModel)
-                }
-            )
-
-            if (isLoading) {
-                CircularProgressIndicator()
+        Box(Modifier.padding(it).fillMaxSize(), contentAlignment = Alignment.Center) {
+                DestinationsNavHost(navController = navHostController, navGraph = NavGraphs.homeGraph, modifier = Modifier.fillMaxSize(), dependenciesContainerBuilder = { dependency(selectViewModel) })
+                if (isLoading) CircularProgressIndicator()
             }
         }
     }
-
 
     when (selectedDrawerActionDialog) {
         IMPORT -> DrawerActionDialog(

@@ -1,10 +1,14 @@
 package com.nullpointer.nourseCompose.ui.screens.settings.components
 
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -13,13 +17,14 @@ import androidx.compose.ui.res.vectorResource
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.ui.preview.config.SimplePreview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppbarSettings(
     actionBack: () -> Unit
 ) {
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = Color.White,
+        windowInsets = WindowInsets.statusBars,
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary, titleContentColor = Color.White, navigationIconContentColor = Color.White),
         title = { Text(text = stringResource(R.string.title_settings)) },
         navigationIcon = {
             IconButton(

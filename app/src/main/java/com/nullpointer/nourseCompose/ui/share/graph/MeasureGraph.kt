@@ -1,7 +1,7 @@
 package com.nullpointer.nourseCompose.ui.share.graph
 
 import android.graphics.Typeface
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,7 +31,7 @@ fun MeasureGraph(
     measureType: MeasureType,
     measureList: List<MeasureData>,
     modifier: Modifier = Modifier,
-    textColor: Color = MaterialTheme.colors.onBackground
+    textColor: Color = MaterialTheme.colorScheme.onBackground
 ) {
 
     // Remember the measure data for the graph

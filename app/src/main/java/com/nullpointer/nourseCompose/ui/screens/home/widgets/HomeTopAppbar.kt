@@ -3,11 +3,14 @@ package com.nullpointer.nourseCompose.ui.screens.home.widgets
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -16,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.nullpointer.nourseCompose.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopAppbar(
     countSelected: Int,
@@ -28,15 +32,15 @@ fun HomeTopAppbar(
     val menuIcon = @Composable { getNavigationIcon(openDrawer) }
 
     val backgroundColor by animateColorAsState(
-        if (countSelected == 0) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
+        if (countSelected == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
         label = "ANIMATION_CHANGE_COLOR_TOOLBAR",
         animationSpec = tween(durationMillis = 300)
     )
 
     TopAppBar(
-        backgroundColor = backgroundColor,
-        contentColor = Color.White,
-        navigationIcon = if (countSelected == 0) menuIcon else null,
+        windowInsets = WindowInsets.statusBars,
+        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor, titleContentColor = Color.White, navigationIconContentColor = Color.White, actionIconContentColor = Color.White),
+        navigationIcon = if (countSelected == 0) menuIcon else { {} },
         title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
         actions = {
             if (countSelected != 0) {

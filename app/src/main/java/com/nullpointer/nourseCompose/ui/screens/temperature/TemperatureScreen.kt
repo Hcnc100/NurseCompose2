@@ -36,7 +36,6 @@ fun TemperatureScreen(
 
     MeasureScreen(
         lazyGridState = measureScreenState.lazyGridState,
-        scaffoldState = measureScreenState.scaffoldState,
         lastMeasureList = lastMeasureList,
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.TEMPERATURE,

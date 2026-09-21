@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -83,14 +83,13 @@ fun NumberMeasureOption(
             ) {
                 items.forEach { label ->
                     DropdownMenuItem(
+                        text = { Text(text = label.toString()) },
                         onClick = {
                             selectedValue = label
                             expanded = false
                             updateMeasureGraph(label)
                         },
-                    ) {
-                        Text(text = label.toString())
-                    }
+                    )
                 }
             }
         }

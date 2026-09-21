@@ -7,5 +7,6 @@ import kotlinx.serialization.Serializable
 @Immutable
 @Serializable
 data class SettingsData(
-    val numberMeasureGraph: Int = 10
+    val numberMeasureGraph: Int = 10,
+    val onboardingCompleted: Boolean = false
 )

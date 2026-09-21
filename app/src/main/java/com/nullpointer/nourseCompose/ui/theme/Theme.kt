@@ -1,34 +1,28 @@
 package com.nullpointer.nourseCompose.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-private val DarkColorScheme = darkColors(
+private val Material3DarkColorScheme = darkColorScheme(
     primary = Primary,
     secondary = Secondary,
-    primaryVariant = PrimaryVariant,
-    secondaryVariant = SecondaryVariant
+    tertiary = PrimaryVariant,
+    background = androidx.compose.ui.graphics.Color(0xFF15131A),
+    surface = androidx.compose.ui.graphics.Color(0xFF24212A),
+    surfaceVariant = androidx.compose.ui.graphics.Color(0xFF35313D),
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    onSurface = androidx.compose.ui.graphics.Color(0xFFF1EDF4)
 )
 
-private val LightColorScheme = lightColors(
+private val Material3LightColorScheme = lightColorScheme(
     primary = Primary,
     secondary = Secondary,
-    primaryVariant = PrimaryVariant,
-    secondaryVariant = SecondaryVariant
-
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    tertiary = PrimaryVariant,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White
 )
 
 @Composable
@@ -37,8 +31,8 @@ fun MyApplicationTheme(
     content: @Composable () -> Unit
 ) {
 
-    MaterialTheme(
-        colors = if (darkTheme) DarkColorScheme else LightColorScheme,
+    androidx.compose.material3.MaterialTheme(
+        colorScheme = if (darkTheme) Material3DarkColorScheme else Material3LightColorScheme,
         typography = Typography,
         content = content
     )

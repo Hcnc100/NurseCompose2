@@ -7,8 +7,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -43,7 +43,9 @@ fun MeasureFAB(
     ) {
         FloatingActionButton(
             onClick = showDialogAdd,
-            modifier = Modifier.scale(scale)
+            modifier = Modifier.scale(scale),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSecondary
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_24),
@@ -69,7 +71,9 @@ fun MeasureFAB(
     ) {
         FloatingActionButton(
             onClick = deleterMeasureSelected,
-            modifier = Modifier.scale(scaleDelete.value)
+            modifier = Modifier.scale(scaleDelete.value),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.error,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onError
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_24),

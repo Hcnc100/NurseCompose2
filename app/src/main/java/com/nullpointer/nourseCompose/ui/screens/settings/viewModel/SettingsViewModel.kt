@@ -32,6 +32,11 @@ class SettingsViewModel @Inject constructor(
     )
 
 
+    fun completeOnboarding() = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            settingsRepository.saveMeasureSettingsData((settingsData.value ?: SettingsData()).copy(onboardingCompleted = true))
+        }
+    }
     fun updateNumberMeasureGraph(number: Int) = viewModelScope.launch {
         val updateSettings =
             (settingsData.value ?: SettingsData()).copy(numberMeasureGraph = number)

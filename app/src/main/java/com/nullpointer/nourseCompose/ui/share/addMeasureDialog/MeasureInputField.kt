@@ -3,9 +3,9 @@ package com.nullpointer.nourseCompose.ui.share.addMeasureDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,8 +77,8 @@ private fun MeasureInputFieldPreview(
 private fun ErrorText() {
     Text(
         text = stringResource(R.string.error_invalid_value),
-        style = MaterialTheme.typography.caption,
-        color = MaterialTheme.colors.error
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.error
     )
 }
 
@@ -86,6 +86,6 @@ private fun ErrorText() {
 private fun LengthText(currentLength: Int, maxLength: Long) {
     Text(
         text = "$currentLength/$maxLength",
-        style = MaterialTheme.typography.caption,
+        style = MaterialTheme.typography.labelSmall,
     )
 }

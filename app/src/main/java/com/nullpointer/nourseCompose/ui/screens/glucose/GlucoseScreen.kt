@@ -38,7 +38,6 @@ fun GlucoseScreen(
         lastMeasureList = lastMeasureList,
         pagingListMeasure = pagingListMeasure,
         lazyGridState = measureScreenState.lazyGridState,
-        scaffoldState = measureScreenState.scaffoldState,
         addMeasureData = measureViewModel::addMeasureData,
         isSelectedEnable = selectViewModel.measureSelected.isNotEmpty(),
         addMeasureSelected = selectViewModel::toggleMeasureData,

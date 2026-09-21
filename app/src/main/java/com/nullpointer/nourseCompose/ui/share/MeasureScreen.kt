@@ -3,8 +3,7 @@ package com.nullpointer.nourseCompose.ui.share
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +23,6 @@ fun MeasureScreen(
     measureType: MeasureType,
     isSelectedEnable: Boolean,
     lazyGridState: LazyGridState,
-    scaffoldState: ScaffoldState,
     lastMeasureList: List<MeasureData>,
     deleterMeasureSelected: () -> Unit,
     listMeasureSelected: Map<Int, MeasureData>,
@@ -39,7 +37,6 @@ fun MeasureScreen(
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
         floatingActionButton = {
             MeasureFAB(
                 showDialogAdd = { isVisible = true },

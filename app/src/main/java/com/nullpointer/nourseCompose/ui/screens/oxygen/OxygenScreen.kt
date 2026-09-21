@@ -33,7 +33,6 @@ fun OxygenScreen(
     }
     MeasureScreen(
         lazyGridState = measureScreenState.lazyGridState,
-        scaffoldState = measureScreenState.scaffoldState,
         lastMeasureList = lastMeasureList,
         pagingListMeasure = pagingListMeasure,
         measureType = MeasureType.OXYGEN,

@@ -18,6 +18,10 @@ enum class DrawerActions(
         title = R.string.title_export_option,
         icon = R.drawable.baseline_cloud_download_24
     ),
+    EXPORT_MEDICATION_PDF(
+        title = R.string.title_export_medication_pdf_option,
+        icon = R.drawable.baseline_backup_24
+    ),
 
     SETTINGS(
         title = R.string.title_settings_option,
