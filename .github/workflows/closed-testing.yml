@@ -2,7 +2,7 @@ name: Closed testing bundle
 
 on:
   push:
-    branches: [codex/closed-testing-pipeline]
+    branches: [feature/closed-testing-pipeline]
   workflow_dispatch:
 
 concurrency:
@@ -32,8 +32,8 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x gradlew
 
-      - name: Run unit tests and compile instrumentation tests
-        run: ./gradlew testDebugUnitTest compileDebugAndroidTestKotlin
+      - name: Test, lint and assemble debug artifact
+        run: ./gradlew test lint assembleDebug --stacktrace
 
       - name: Decode release keystore
         if: env.ANDROID_KEYSTORE_BASE64 != ''
@@ -41,14 +41,24 @@ jobs:
           KEYSTORE_B64: ${{ env.ANDROID_KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
 
-      - name: Build signed closed-testing bundle
+      - name: Configure release signing
         if: env.ANDROID_KEYSTORE_BASE64 != ''
         env:
-          KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: ${{ env.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ env.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ env.ANDROID_KEY_PASSWORD }}
-        run: ./gradlew bundleRelease -Pandroid.injected.signing.store.file="$KEYSTORE_FILE" -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" -Pandroid.injected.signing.key.alias="$KEY_ALIAS" -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/release.keystore
+          cat > keystore.properties <<EOF
+          storeFile=app/release.keystore
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Build signed closed-testing bundle
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        run: ./gradlew bundleRelease --stacktrace
 
       - name: Stop if signing secrets are missing
         if: env.ANDROID_KEYSTORE_BASE64 == ''
@@ -62,6 +72,7 @@ jobs:
           name: nurseapp-closed-testing-aab
           path: app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+          retention-days: 14
 
       - name: Publish to Google Play closed testing track
         if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
