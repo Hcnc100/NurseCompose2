@@ -1,8 +1,8 @@
 package com.nullpointer.nourseCompose
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -76,6 +75,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun measureViewModelProvider(measureType: MeasureType): MeasureViewModel {
-    val factory = EntryPointAccessors.fromActivity(LocalContext.current as Activity, ViewModelFactoryProvider::class.java).measureViewModelFactory()
+    val activity = LocalActivity.current ?: error("Activity is not available")
+    val factory = EntryPointAccessors.fromActivity(activity, ViewModelFactoryProvider::class.java).measureViewModelFactory()
     return viewModel(factory = MeasureViewModel.provideMainViewModelFactory(factory, measureType))
 }
