@@ -19,7 +19,10 @@ android {
         applicationId = "com.nullpointer.nourseCompose"
         minSdk = 21
         targetSdk = 36
-        versionCode = 10
+        // CI injects a monotonically increasing value for Play uploads.
+        versionCode = providers.gradleProperty("versionCode")
+            .map(String::toInt)
+            .getOrElse(10)
         versionName = "5.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
