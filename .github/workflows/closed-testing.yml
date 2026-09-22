@@ -65,7 +65,10 @@ jobs:
 
       - name: Build signed closed-testing bundle
         if: env.ANDROID_KEYSTORE_BASE64 != ''
-        run: ./gradlew bundleRelease -PversionCode="${{ 1000 + github.run_number }}" --stacktrace
+        run: |
+          VERSION_CODE=$((1000 + ${{ github.run_number }}))
+          echo "Building versionCode $VERSION_CODE"
+          ./gradlew bundleRelease -PversionCode="$VERSION_CODE" --stacktrace
 
       - name: Stop if signing secrets are missing
         if: env.ANDROID_KEYSTORE_BASE64 == ''
