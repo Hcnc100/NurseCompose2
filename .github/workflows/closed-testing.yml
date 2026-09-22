@@ -93,5 +93,5 @@ jobs:
           serviceAccountJson: ${{ runner.temp }}/service-account.json
           packageName: com.nullpointer.nourseCompose
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
-          track: closed
+          track: internal
           status: completed
