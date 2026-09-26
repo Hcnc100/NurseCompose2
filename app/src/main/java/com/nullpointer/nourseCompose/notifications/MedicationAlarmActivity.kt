@@ -35,8 +35,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.getValue
 import com.nullpointer.nourseCompose.R
+import com.nullpointer.nourseCompose.domain.alarm.AlarmLogEvent
+import com.nullpointer.nourseCompose.domain.alarm.AlarmLogRepository
+import com.nullpointer.nourseCompose.models.entity.AlarmLogEntity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MedicationAlarmActivity : ComponentActivity() {
+    @Inject lateinit var alarmLogRepository: AlarmLogRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -60,11 +70,25 @@ class MedicationAlarmActivity : ComponentActivity() {
                         Text(name, style = MaterialTheme.typography.headlineSmall)
                         if (dosage.isNotBlank()) Text(dosage)
                         bitmap?.let { Image(it.asImageBitmap(), null, Modifier.height(150.dp), contentScale = ContentScale.Crop) }
-                        Button(onClick = { NotificationManagerCompat.from(context).cancel(id.toInt()); finishAndRemoveTask() }) { Text(getString(R.string.action_taken_alarm)) }
-                        Button(onClick = { sendBroadcast(Intent(this@MedicationAlarmActivity, MedicationReminderReceiver::class.java).setAction(MedicationReminderScheduler.ACTION_SNOOZE).putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id)); finishAndRemoveTask() }) { Text(getString(R.string.action_snooze_alarm)) }
+                        Button(onClick = { logEvent(AlarmLogEvent.ALARM_DISMISSED, "Alarm marked as taken"); NotificationManagerCompat.from(context).cancel(id.toInt()); finishAndRemoveTask() }) { Text(getString(R.string.action_taken_alarm)) }
+                        Button(onClick = { logEvent(AlarmLogEvent.ALARM_SNOOZED, "Alarm snoozed for 10 minutes"); sendBroadcast(Intent(this@MedicationAlarmActivity, MedicationReminderReceiver::class.java).setAction(MedicationReminderScheduler.ACTION_SNOOZE).putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id)); finishAndRemoveTask() }) { Text(getString(R.string.action_snooze_alarm)) }
                     }
                 }
             }
+        }
+    }
+
+    private fun logEvent(eventType: String, details: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            alarmLogRepository.record(
+                AlarmLogEntity(
+                    reminderId = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1),
+                    reminderName = intent.getStringExtra("reminder_name").orEmpty(),
+                    eventType = eventType,
+                    success = true,
+                    details = details,
+                )
+            )
         }
     }
 }

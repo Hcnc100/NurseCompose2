@@ -52,8 +52,8 @@ class MedicationReminderScheduler @Inject constructor(@ApplicationContext privat
         }
     }
 
-    fun showNotification(reminder: MedicationReminderEntity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) return
+    fun showNotification(reminder: MedicationReminderEntity): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) return false
         val contentIntent = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val fullScreenIntent = PendingIntent.getActivity(context, reminder.id.toInt(), Intent(context, MedicationAlarmActivity::class.java).putExtra(EXTRA_REMINDER_ID, reminder.id).putExtra("reminder_name", reminder.name).putExtra("reminder_dosage", reminder.dosage).putExtra("reminder_photo", reminder.photoUri), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val channelId = channelId(reminder)
@@ -70,6 +70,7 @@ class MedicationReminderScheduler @Inject constructor(@ApplicationContext privat
         if (reminder.soundEnabled) builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
         if (reminder.fullScreenAlarm) builder.setFullScreenIntent(fullScreenIntent, true)
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), builder.build())
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
     private fun channelId(reminder: MedicationReminderEntity) = "medication_${if (reminder.soundEnabled) "sound" else "silent"}_${if (reminder.vibrationEnabled) "vibrate" else "still"}_${if (reminder.fullScreenAlarm) "alarm" else "notice"}"

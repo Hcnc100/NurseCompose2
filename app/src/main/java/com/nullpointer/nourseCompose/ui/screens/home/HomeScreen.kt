@@ -37,10 +37,12 @@ import com.nullpointer.nourseCompose.ui.screens.NavGraphs
 import com.nullpointer.nourseCompose.ui.screens.appCurrentDestinationAsState
 import com.nullpointer.nourseCompose.ui.screens.destinations.SettingsScreenDestination
 import com.nullpointer.nourseCompose.ui.screens.destinations.DataExportScreenDestination
+import com.nullpointer.nourseCompose.ui.screens.destinations.AlarmLogScreenDestination
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.CLEAR_DATA
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.EXPORT
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.IMPORT
+import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.ALARM_LOGS
 import com.nullpointer.nourseCompose.ui.screens.home.actions.DrawerActions.SETTINGS
 import com.nullpointer.nourseCompose.ui.screens.home.state.HomeState
 import com.nullpointer.nourseCompose.ui.screens.home.state.rememberHomeState
@@ -113,6 +115,7 @@ fun HomeScreen(
                     when (drawerAction) {
                         EXPORT -> homeState.selectExportFile()
                         DrawerActions.EXPORT_MEDICATION_PDF -> destinationsNavigator.navigate(DataExportScreenDestination)
+                        ALARM_LOGS -> destinationsNavigator.navigate(AlarmLogScreenDestination)
                         SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
                         else -> changeSelectDrawerActions(drawerAction)
                     }

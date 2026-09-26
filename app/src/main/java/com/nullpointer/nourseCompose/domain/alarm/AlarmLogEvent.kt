@@ -1,0 +1,13 @@
+package com.nullpointer.nourseCompose.domain.alarm
+
+object AlarmLogEvent {
+    const val REMINDER_CREATED = "REMINDER_CREATED"
+    const val REMINDER_UPDATED = "REMINDER_UPDATED"
+    const val REMINDER_ENABLED = "REMINDER_ENABLED"
+    const val REMINDER_DISABLED = "REMINDER_DISABLED"
+    const val REMINDER_DELETED = "REMINDER_DELETED"
+    const val ALARM_LAUNCHED = "ALARM_LAUNCHED"
+    const val ALARM_FAILED = "ALARM_FAILED"
+    const val ALARM_DISMISSED = "ALARM_DISMISSED"
+    const val ALARM_SNOOZED = "ALARM_SNOOZED"
+}

@@ -41,7 +41,7 @@ object MeasureDatabaseModule {
         context = context,
         name = nameDatabase,
         klass = NurseDatabase::class.java
-    ).addMigrations(NurseDatabaseMigrations.MIGRATION_4_5, NurseDatabaseMigrations.MIGRATION_5_6, NurseDatabaseMigrations.MIGRATION_6_7).build()
+    ).addMigrations(NurseDatabaseMigrations.MIGRATION_4_5, NurseDatabaseMigrations.MIGRATION_5_6, NurseDatabaseMigrations.MIGRATION_6_7, NurseDatabaseMigrations.MIGRATION_7_8).build()
 
 
 }

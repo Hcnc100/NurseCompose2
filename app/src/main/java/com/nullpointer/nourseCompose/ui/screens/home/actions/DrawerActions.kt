@@ -23,6 +23,11 @@ enum class DrawerActions(
         icon = R.drawable.baseline_backup_24
     ),
 
+    ALARM_LOGS(
+        title = R.string.title_alarm_logs,
+        icon = R.drawable.baseline_history_24
+    ),
+
     SETTINGS(
         title = R.string.title_settings_option,
         icon = R.drawable.baseline_build_24

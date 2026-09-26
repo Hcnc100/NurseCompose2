@@ -43,6 +43,14 @@
     <string name="export_include_reminders">Medication reminders</string>
     <string name="title_settings_option">Settings</string>
     <string name="title_clear_all_data_option">Clear all Data</string>
+    <string name="title_alarm_logs">Alarm logs</string>
+    <string name="title_alarm_log_summary">Registration summary</string>
+    <string name="message_empty_alarm_logs">No alarm activity has been recorded yet.</string>
+    <string name="label_first_registration">First registration: %1$s</string>
+    <string name="label_latest_registration">Latest registration: %1$s</string>
+    <string name="label_first_registration_badge">First reminder registered</string>
+    <string name="label_success">Success</string>
+    <string name="label_failure">Failed</string>
 
 
     <!-- settings value -->

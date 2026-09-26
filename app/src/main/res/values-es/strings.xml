@@ -26,6 +26,14 @@
     <string name="export_include_reminders">Recordatorios de medicamentos</string>
     <string name="title_settings_option">Ajustes</string>
     <string name="title_clear_all_data_option">Eliminar todos los datos</string>
+    <string name="title_alarm_logs">Registro de alarmas</string>
+    <string name="title_alarm_log_summary">Resumen de registros</string>
+    <string name="message_empty_alarm_logs">Aún no se ha registrado actividad de alarmas.</string>
+    <string name="label_first_registration">Primer registro: %1$s</string>
+    <string name="label_latest_registration">Registro más reciente: %1$s</string>
+    <string name="label_first_registration_badge">Primer recordatorio registrado</string>
+    <string name="label_success">Exitoso</string>
+    <string name="label_failure">Fallido</string>
     <string name="title_settings">Ajustes</string>
     <string name="message_number_items_graph">Número los elementos que se mostrarán en el gráfico:</string>
     <string name="message_cancel_dialog">Cancelar</string>

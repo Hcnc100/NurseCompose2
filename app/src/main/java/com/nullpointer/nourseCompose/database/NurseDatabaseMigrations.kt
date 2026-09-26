@@ -4,6 +4,24 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object NurseDatabaseMigrations {
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS alarm_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    reminderId INTEGER,
+                    reminderName TEXT NOT NULL,
+                    eventType TEXT NOT NULL,
+                    occurredAt INTEGER NOT NULL,
+                    success INTEGER NOT NULL,
+                    details TEXT,
+                    isFirstReminder INTEGER NOT NULL DEFAULT 0
+                )
+                """.trimIndent(),
+            )
+        }
+    }
     val MIGRATION_4_5 = object : Migration(4, 5) {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL(
