@@ -16,28 +16,58 @@ import androidx.core.content.ContextCompat
 import com.nullpointer.nourseCompose.MainActivity
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.domain.medication.ReminderSchedule
+import com.nullpointer.nourseCompose.domain.alarm.AlarmLogEvent
+import com.nullpointer.nourseCompose.domain.alarm.AlarmLogRepository
+import com.nullpointer.nourseCompose.models.entity.AlarmLogEntity
 import com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.util.Date
 
 @Singleton
-class MedicationReminderScheduler @Inject constructor(@ApplicationContext private val context: Context) {
+class MedicationReminderScheduler @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val alarmLogRepository: AlarmLogRepository,
+) {
     private val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
         ?: error("AlarmManager is not available")
 
     fun schedule(reminder: MedicationReminderEntity) {
         if (!reminder.isActive) return
         val now = System.currentTimeMillis()
-        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, now + reminder.intervalHours * 60L * 60L * 1_000L + 60_000L).firstOrNull() ?: return
+        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, now + reminder.intervalHours * 60L * 60L * 1_000L + 60_000L).firstOrNull()
+            ?: return
         val pendingIntent = reminderPendingIntent(reminder.id)
         alarmManager.cancel(pendingIntent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && reminder.useExactAlarm && alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        val exactPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+        val exactRequested = reminder.useExactAlarm || exactPermission
+        val scheduledExact = runCatching {
+            if (exactRequested && exactPermission) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                else alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                true
+            } else false
+        }.getOrElse { false }
+        if (!scheduledExact) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+            else alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            alarmLogRepository.record(
+                AlarmLogEntity(
+                    reminderId = reminder.id,
+                    reminderName = reminder.name,
+                    eventType = AlarmLogEvent.ALARM_SCHEDULED,
+                    success = true,
+                    details = "Trigger: ${DateFormat.getDateTimeInstance().format(Date(triggerAt))}; exact=$scheduledExact; exactPermission=$exactPermission",
+                )
+            )
         }
     }
 
