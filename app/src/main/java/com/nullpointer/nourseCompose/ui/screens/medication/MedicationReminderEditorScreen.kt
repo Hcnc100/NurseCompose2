@@ -16,10 +16,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
 
 /** Dedicated HomeGraph destination so the editor is a peer screen, not an embedded dialog. */
 @Destination
-@com.ramcosta.composedestinations.annotation.RootNavGraph
+@HomeGraph
 @Composable
 fun MedicationReminderEditorScreen(
     destinationsNavigator: DestinationsNavigator,
