@@ -3,6 +3,7 @@ package com.nullpointer.nourseCompose.inject.app
 import android.app.Application
 import com.nullpointer.nourseCompose.BuildConfig
 import com.nullpointer.nourseCompose.notifications.MedicationReminderScheduler
+import com.nullpointer.nourseCompose.domain.alarm.AppLogger
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
@@ -13,9 +14,16 @@ import timber.log.Timber
 @HiltAndroidApp
 class MyApplication : Application() {
 
+    @javax.inject.Inject lateinit var appLogger: AppLogger
+
     override fun onCreate() {
         super.onCreate()
         MedicationReminderScheduler.createChannel(this)
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            appLogger.recordCrash(thread.name, throwable)
+            previousHandler?.uncaughtException(thread, throwable)
+        }
 
         if (!BuildConfig.DEBUG) {
             return

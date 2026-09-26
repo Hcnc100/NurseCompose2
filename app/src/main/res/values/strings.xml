@@ -51,6 +51,12 @@
     <string name="label_first_registration_badge">First reminder registered</string>
     <string name="label_success">Success</string>
     <string name="label_failure">Failed</string>
+    <string name="title_diagnostics">Diagnostics and support</string>
+    <string name="action_export_diagnostics">Export diagnostics</string>
+    <string name="action_share_diagnostics">Share diagnostics</string>
+    <string name="message_diagnostics_description">Review general app failures and export a local report for support. Production crashes are still tracked by Crashlytics.</string>
+    <string name="label_diagnostics_count">Local events: %1$d · Errors: %2$d</string>
+    <string name="message_diagnostics_privacy">The report may include medication names and technical stack traces. Share it only with someone you trust.</string>
 
 
     <!-- settings value -->

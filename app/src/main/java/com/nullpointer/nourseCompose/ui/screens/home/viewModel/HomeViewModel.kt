@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.domain.measure.MeasureRepository
+import com.nullpointer.nourseCompose.domain.alarm.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val measureRepository: MeasureRepository
+    private val measureRepository: MeasureRepository,
+    private val appLogger: AppLogger,
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
@@ -38,6 +40,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }.onFailure {
+            appLogger.error("Health data export", it.message ?: "Export failed", it)
             _message.trySend(R.string.error_export_measure)
         }
 
@@ -54,6 +57,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }.onFailure {
+            appLogger.error("Health data import", it.message ?: "Import failed", it)
             _message.trySend(R.string.error_import_measure)
         }
 
@@ -68,6 +72,7 @@ class HomeViewModel @Inject constructor(
                 measureRepository.deleterAllMeasures()
             }
         }.onFailure {
+            appLogger.error("Health data deletion", it.message ?: "Deletion failed", it)
             _message.trySend(R.string.error_deleter_all_data)
         }
 

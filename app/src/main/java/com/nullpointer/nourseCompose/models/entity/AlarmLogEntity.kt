@@ -14,4 +14,7 @@ data class AlarmLogEntity(
     val success: Boolean,
     val details: String? = null,
     val isFirstReminder: Boolean = false,
+    val category: String = "ALARM",
+    val severity: String = "INFO",
+    val stackTrace: String? = null,
 )

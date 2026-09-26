@@ -10,7 +10,7 @@ import com.nullpointer.nourseCompose.models.entity.AlarmLogEntity
 
 
 @Database(
-    version = 8,
+    version = 9,
     entities = [MeasureEntity::class, MedicationReminderEntity::class, AlarmLogEntity::class],
     exportSchema = false
 )

@@ -7,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.nullpointer.nourseCompose.ui.screens.settings.components.AppbarSettings
 import com.nullpointer.nourseCompose.ui.screens.settings.components.NumberMeasureOption
 import com.nullpointer.nourseCompose.ui.screens.settings.viewModel.SettingsViewModel
+import com.nullpointer.nourseCompose.ui.screens.destinations.DiagnosticsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -35,6 +37,9 @@ fun SettingsScreen(
                 settingsData = settingsData,
                 updateMeasureGraph = settingsViewModel::updateNumberMeasureGraph
             )
+            androidx.compose.material3.Button(onClick = { destinationsNavigator.navigate(DiagnosticsScreenDestination) }) {
+                androidx.compose.material3.Text(stringResource(com.nullpointer.nourseCompose.R.string.title_diagnostics))
+            }
         }
     }
 }

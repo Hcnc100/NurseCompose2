@@ -6,7 +6,7 @@
 2. Run the workflow manually and upload the generated AAB to **Testing > Closed testing**.
 3. Complete **App content > Health apps declaration** and the Data safety form.
 4. Publish a privacy-policy URL that explains local storage, reminder data, photos, notifications, and PDF export.
-5. Test notifications, exact alarms, full-screen alarms, alarm history (launch success/failure, registration, cancellation, deletion), camera, gallery, Room migration, dark mode, and PDF export on supported Android versions.
+5. Test notifications, exact alarms, full-screen alarms, alarm history (launch success/failure, registration, cancellation, deletion), Diagnostics export, camera, gallery, Room migration, dark mode, and PDF export on supported Android versions.
 6. If the developer account is personal and was created after 13 November 2023, maintain at least 12 opted-in testers for 14 continuous days before requesting production access.
 
 ## Suggested store description

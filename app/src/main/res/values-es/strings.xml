@@ -34,6 +34,12 @@
     <string name="label_first_registration_badge">Primer recordatorio registrado</string>
     <string name="label_success">Exitoso</string>
     <string name="label_failure">Fallido</string>
+    <string name="title_diagnostics">Diagnóstico y soporte</string>
+    <string name="action_export_diagnostics">Exportar diagnóstico</string>
+    <string name="action_share_diagnostics">Compartir diagnóstico</string>
+    <string name="message_diagnostics_description">Revisa fallos generales y exporta un reporte local para soporte. Los crashes de producción siguen registrados en Crashlytics.</string>
+    <string name="label_diagnostics_count">Eventos locales: %1$d · Errores: %2$d</string>
+    <string name="message_diagnostics_privacy">El reporte puede incluir nombres de medicamentos y trazas técnicas. Compártelo solo con alguien de confianza.</string>
     <string name="title_settings">Ajustes</string>
     <string name="message_number_items_graph">Número los elementos que se mostrarán en el gráfico:</string>
     <string name="message_cancel_dialog">Cancelar</string>

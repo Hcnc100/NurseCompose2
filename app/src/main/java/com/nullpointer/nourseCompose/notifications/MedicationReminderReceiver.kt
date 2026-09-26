@@ -31,13 +31,13 @@ class MedicationReminderReceiver : BroadcastReceiver() {
                     val reminderId = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
                     val reminder = repository.observeAll().first().firstOrNull { it.id == reminderId }
                     if (reminder == null) {
-                        alarmLogRepository.record(AlarmLogEntity(reminderId = reminderId, reminderName = "Unknown", eventType = AlarmLogEvent.ALARM_FAILED, success = false, details = "Reminder not found"))
+                        alarmLogRepository.record(AlarmLogEntity(reminderId = reminderId, reminderName = "Unknown", eventType = AlarmLogEvent.ALARM_FAILED, success = false, details = "Reminder not found", severity = "ERROR"))
                     } else {
                         val notificationResult = runCatching { scheduler.showNotification(reminder) }
                         val shown = notificationResult.getOrDefault(false)
                         val details = notificationResult.exceptionOrNull()?.message
                             ?: if (shown) "Notification dispatched" else "Notification permission disabled"
-                        alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = if (shown) AlarmLogEvent.ALARM_LAUNCHED else AlarmLogEvent.ALARM_FAILED, success = shown, details = details))
+                        alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = if (shown) AlarmLogEvent.ALARM_LAUNCHED else AlarmLogEvent.ALARM_FAILED, success = shown, details = details, severity = if (shown) "INFO" else "ERROR"))
                         scheduler.schedule(reminder)
                     }
                 } else repository.observeActive().first().forEach(scheduler::schedule)
