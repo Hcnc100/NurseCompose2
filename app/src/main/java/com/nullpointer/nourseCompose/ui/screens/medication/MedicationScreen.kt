@@ -1,7 +1,5 @@
 package com.nullpointer.nourseCompose.ui.screens.medication
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -41,8 +39,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +67,6 @@ import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.domain.medication.MedicationReminderCollision
 import com.nullpointer.nourseCompose.domain.medication.ReminderSchedule
 import com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity
-import com.nullpointer.nourseCompose.navigation.LocalRootNavController
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
 import com.nullpointer.nourseCompose.reports.MedicationReportExporter
 import com.nullpointer.nourseCompose.ui.screens.destinations.MedicationReminderEditorScreenDestination
@@ -82,7 +85,6 @@ fun MedicationScreen(
     destinationsNavigator: DestinationsNavigator,
     viewModel: MedicationReminderViewModel = hiltViewModel()
 ) {
-    val rootNavController = LocalRootNavController.current
     val reminders by viewModel.reminders.collectAsState()
     val context = LocalContext.current
     var pendingReminder by remember { mutableStateOf<MedicationReminderEntity?>(null) }
@@ -101,10 +103,8 @@ fun MedicationScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                rootNavController.navigate(
-                    MedicationReminderEditorScreenDestination.route
-                )
-            },
+                    destinationsNavigator.navigate(MedicationReminderEditorScreenDestination.route)
+                },
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) { Icon(painterResource(R.drawable.baseline_add_24), contentDescription = stringResource(R.string.action_add_medication)) }
@@ -116,10 +116,8 @@ fun MedicationScreen(
             Column(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
                 reminders.forEach { reminder ->
                     MedicationReminderCard(reminder = reminder, onClick = {
-                        rootNavController.navigate(
-                            MedicationReminderEditorScreenDestination(
-                                reminderId = reminder.id
-                            ).route
+                        destinationsNavigator.navigate(
+                            MedicationReminderEditorScreenDestination(reminderId = reminder.id)
                         )
                     }, onActiveChange = { viewModel.setActive(reminder, it) }, onDelete = { reminderToDelete = reminder })
                 }
@@ -231,6 +229,9 @@ fun MedicationReminderEditor(
     var nameError by remember { mutableStateOf(false) }
     var showPhotoSheet by rememberSaveable { mutableStateOf(false) }
     var cameraUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    LaunchedEffect(startAt) {
+        if (endAt < startAt) endAt = startAt
+    }
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { captured ->
         if (captured) cameraUri?.let { photoUri = it.toString() }
     }
@@ -247,13 +248,14 @@ fun MedicationReminderEditor(
             }
         }
     val preview = remember(startAt, endMode, endAt, intervalText) {
+        val normalizedEndAt = endAt.coerceAtLeast(startAt)
         intervalText.toIntOrNull()?.takeIf { it > 0 }?.let { interval ->
             ReminderSchedule.occurrencesBetween(
                 MedicationReminderEntity(
                     name = "preview",
                     startAt = startAt,
                     endAt = when (endMode) {
-                        EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> endAt
+                        EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> normalizedEndAt
                     },
                     intervalHours = interval
                 ),
@@ -274,7 +276,7 @@ fun MedicationReminderEditor(
                 photoUri = photoUri,
                 startAt = startAt,
                 endAt = when (endMode) {
-                    EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> endAt
+                    EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> endAt.coerceAtLeast(startAt)
                 },
                 intervalHours = interval,
                 isActive = reminder?.isActive ?: true,
@@ -390,7 +392,7 @@ fun MedicationReminderEditor(
             EndModeSelector(endMode, { endMode = it })
             if (endMode == EndMode.RANGE) DateTimeButton(
                 stringResource(R.string.label_end_date),
-                endAt,
+                endAt.coerceAtLeast(startAt),
                 onChange = { endAt = it })
             Text(
                 stringResource(R.string.label_next_doses),
@@ -434,35 +436,72 @@ fun MedicationReminderEditor(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTimeButton(label: String, value: Long, onChange: (Long) -> Unit) {
-    val context = LocalContext.current
     val calendar = remember(value) { Calendar.getInstance().apply { timeInMillis = value } }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
+    var showTimePicker by rememberSaveable { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = value)
+    val timePickerState = rememberTimePickerState(
+        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+        initialMinute = calendar.get(Calendar.MINUTE),
+        is24Hour = false
+    )
+
     TextButton(onClick = {
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                TimePickerDialog(context, { _, hour, minute ->
-                    onChange(
-                        Calendar.getInstance().apply {
-                            set(year, month, day, hour, minute, 0); set(
-                            Calendar.MILLISECOND,
-                            0
-                        )
-                        }.timeInMillis
-                    )
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        showDatePicker = true
     }) {
         Text(
             "$label: ${
                 DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
                     .format(Date(value))
             }"
+        )
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDatePicker = false
+                    showTimePicker = true
+                }) { Text(stringResource(R.string.intro_next)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.button_cancel_title)) }
+            }
+        ) { DatePicker(state = datePickerState, showModeToggle = true) }
+    }
+
+    if (showTimePicker) {
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            title = { Text(stringResource(R.string.label_start_time)) },
+            text = { TimePicker(state = timePickerState) },
+            confirmButton = {
+                TextButton(onClick = {
+                    val selectedDate = Calendar.getInstance().apply {
+                        timeInMillis = datePickerState.selectedDateMillis ?: value
+                    }
+                    onChange(Calendar.getInstance().apply {
+                        set(
+                            selectedDate.get(Calendar.YEAR),
+                            selectedDate.get(Calendar.MONTH),
+                            selectedDate.get(Calendar.DAY_OF_MONTH),
+                            timePickerState.hour,
+                            timePickerState.minute,
+                            0
+                        )
+                        set(Calendar.MILLISECOND, 0)
+                    }.timeInMillis)
+                    showTimePicker = false
+                }) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.button_cancel_title)) }
+            }
         )
     }
 }

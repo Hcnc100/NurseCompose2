@@ -2,6 +2,7 @@ package com.nullpointer.nourseCompose.ui.screens.onboarding
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
@@ -61,7 +62,18 @@ fun MedicationIntroDialog(onComplete: () -> Unit) {
                             TextButton(onClick = {
                                 context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName))
                             }) { Text(stringResource(R.string.intro_notification_settings)) }
-                            Text(stringResource(R.string.intro_full_screen_permission), style = MaterialTheme.typography.bodySmall)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+                                !context.getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
+                            ) {
+                                TextButton(onClick = {
+                                    context.startActivity(
+                                        Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
+                                            .setData(android.net.Uri.parse("package:${context.packageName}"))
+                                    )
+                                }) { Text(stringResource(R.string.intro_full_screen_permission)) }
+                            } else {
+                                Text(stringResource(R.string.intro_full_screen_permission), style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                         else -> IntroPage(stringResource(R.string.intro_disclaimer_title), stringResource(R.string.medication_report_disclaimer))
                     }

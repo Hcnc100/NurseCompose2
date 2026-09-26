@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -60,16 +62,26 @@ class MedicationReminderScheduler @Inject constructor(@ApplicationContext privat
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(context.getString(R.string.notification_medication_title, reminder.name))
             .setContentText(reminder.dosage ?: context.getString(R.string.notification_medication_take_now))
-            .setContentIntent(contentIntent).setAutoCancel(true)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(!reminder.fullScreenAlarm)
+            .setPriority(if (reminder.fullScreenAlarm) NotificationCompat.PRIORITY_MAX else NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
         if (reminder.vibrationEnabled) builder.setVibrate(longArrayOf(0, 500, 250, 500))
-        if (reminder.soundEnabled) builder.setDefaults(android.app.Notification.DEFAULT_SOUND)
+        if (reminder.soundEnabled) builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
         if (reminder.fullScreenAlarm) builder.setFullScreenIntent(fullScreenIntent, true)
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), builder.build())
     }
 
     private fun channelId(reminder: MedicationReminderEntity) = "medication_${if (reminder.soundEnabled) "sound" else "silent"}_${if (reminder.vibrationEnabled) "vibrate" else "still"}_${if (reminder.fullScreenAlarm) "alarm" else "notice"}"
     private fun ensureChannel(id: String, reminder: MedicationReminderEntity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ContextCompat.getSystemService(context, NotificationManager::class.java)?.createNotificationChannel(NotificationChannel(id, context.getString(R.string.notification_channel_medications), if (reminder.soundEnabled || reminder.vibrationEnabled || reminder.fullScreenAlarm) NotificationManager.IMPORTANCE_HIGH else NotificationManager.IMPORTANCE_LOW).apply { description = context.getString(R.string.notification_channel_medications_description); enableVibration(reminder.vibrationEnabled); if (!reminder.soundEnabled) setSound(null, null) })
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ContextCompat.getSystemService(context, NotificationManager::class.java)?.createNotificationChannel(NotificationChannel(id, context.getString(R.string.notification_channel_medications), if (reminder.soundEnabled || reminder.vibrationEnabled || reminder.fullScreenAlarm) NotificationManager.IMPORTANCE_HIGH else NotificationManager.IMPORTANCE_LOW).apply {
+            description = context.getString(R.string.notification_channel_medications_description)
+            enableVibration(reminder.vibrationEnabled)
+            setSound(
+                if (reminder.soundEnabled) RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) else null,
+                if (reminder.soundEnabled) AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build() else null
+            )
+        })
     }
 
     private fun reminderPendingIntent(id: Long): PendingIntent = PendingIntent.getBroadcast(context, id.hashCode(), Intent(context, MedicationReminderReceiver::class.java).setAction(ACTION_REMINDER).putExtra(EXTRA_REMINDER_ID, id), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)

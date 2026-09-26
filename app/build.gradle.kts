@@ -22,7 +22,7 @@ android {
         // CI injects a monotonically increasing value for Play uploads.
         versionCode = providers.gradleProperty("versionCode")
             .map(String::toInt)
-            .getOrElse(10)
+            .getOrElse(11)
         versionName = "5.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

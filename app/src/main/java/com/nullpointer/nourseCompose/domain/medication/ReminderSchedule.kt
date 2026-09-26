@@ -13,7 +13,9 @@ object ReminderSchedule {
     ): List<Long> {
         require(reminder.intervalHours > 0) { "intervalHours must be greater than zero" }
         require(windowEnd >= windowStart) { "windowEnd must not be before windowStart" }
-        reminder.endAt?.let { require(it >= reminder.startAt) { "endAt must not be before startAt" } }
+        // A malformed persisted range should not crash the editor, collision detector,
+        // or alarm receiver. It simply has no valid occurrences until corrected.
+        if (reminder.endAt?.let { it < reminder.startAt } == true) return emptyList()
 
         val intervalMillis = reminder.intervalHours * MILLIS_PER_HOUR
         val firstIndex = if (windowStart <= reminder.startAt) 0 else {

@@ -32,6 +32,13 @@ class ReminderScheduleTest {
         )
     }
 
+    @Test
+    fun `ignores a malformed range whose end is before its start`() {
+        val reminder = reminder(startAt = 10_000, endAt = 9_000, intervalHours = 1)
+
+        assertEquals(emptyList<Long>(), ReminderSchedule.occurrencesBetween(reminder, 0, 20_000))
+    }
+
     private fun reminder(startAt: Long, endAt: Long?, intervalHours: Int) = MedicationReminderEntity(
         name = "Medication",
         startAt = startAt,

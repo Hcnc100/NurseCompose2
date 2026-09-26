@@ -23,8 +23,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.getValue
 import com.nullpointer.nourseCompose.R
 
 class MedicationAlarmActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1); val name = intent.getStringExtra("reminder_name").orEmpty(); val dosage = intent.getStringExtra("reminder_dosage").orEmpty(); val photo = intent.getStringExtra("reminder_photo"); setContent { val context = LocalContext.current; val bitmap = photo?.let { runCatching { contentResolver.openInputStream(Uri.parse(it))?.use(BitmapFactory::decodeStream) }.getOrNull() }; MaterialTheme { Column(Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) { Text(getString(R.string.title_alarm_now), style = MaterialTheme.typography.headlineMedium); Text(name, style = MaterialTheme.typography.headlineSmall); if (dosage.isNotBlank()) Text(dosage); bitmap?.let { Image(it.asImageBitmap(), null, Modifier.height(150.dp), contentScale = ContentScale.Crop) }; Button(onClick = { NotificationManagerCompat.from(context).cancel(id.toInt()); finish() }) { Text(getString(R.string.action_taken_alarm)) }; Button(onClick = { sendBroadcast(Intent(this@MedicationAlarmActivity, MedicationReminderReceiver::class.java).setAction(MedicationReminderScheduler.ACTION_SNOOZE).putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id)); finish() }) { Text(getString(R.string.action_snooze_alarm)) } } } } }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
+        val name = intent.getStringExtra("reminder_name").orEmpty()
+        val dosage = intent.getStringExtra("reminder_dosage").orEmpty()
+        val photo = intent.getStringExtra("reminder_photo")
+        setContent {
+            val context = LocalContext.current
+            val bitmap = photo?.let { runCatching { contentResolver.openInputStream(Uri.parse(it))?.use(BitmapFactory::decodeStream) }.getOrNull() }
+            val pulse by rememberInfiniteTransition(label = "alarm_pulse").animateFloat(0.92f, 1.08f, infiniteRepeatable(tween(900), RepeatMode.Reverse), label = "alarm_scale")
+            MaterialTheme {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer), contentAlignment = Alignment.Center) {
+                    Column(Modifier.padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        Box(Modifier.size(96.dp * pulse).background(MaterialTheme.colorScheme.error, CircleShape))
+                        Text(getString(R.string.title_alarm_now), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text(name, style = MaterialTheme.typography.headlineSmall)
+                        if (dosage.isNotBlank()) Text(dosage)
+                        bitmap?.let { Image(it.asImageBitmap(), null, Modifier.height(150.dp), contentScale = ContentScale.Crop) }
+                        Button(onClick = { NotificationManagerCompat.from(context).cancel(id.toInt()); finishAndRemoveTask() }) { Text(getString(R.string.action_taken_alarm)) }
+                        Button(onClick = { sendBroadcast(Intent(this@MedicationAlarmActivity, MedicationReminderReceiver::class.java).setAction(MedicationReminderScheduler.ACTION_SNOOZE).putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id)); finishAndRemoveTask() }) { Text(getString(R.string.action_snooze_alarm)) }
+                    }
+                }
+            }
+        }
+    }
 }
