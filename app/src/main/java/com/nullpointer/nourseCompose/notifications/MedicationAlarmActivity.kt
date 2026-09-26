@@ -1,6 +1,7 @@
 package com.nullpointer.nourseCompose.notifications
 
 import android.os.Bundle
+import android.os.Build
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -38,8 +39,10 @@ import com.nullpointer.nourseCompose.R
 class MedicationAlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setShowWhenLocked(true)
-        setTurnScreenOn(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
         val name = intent.getStringExtra("reminder_name").orEmpty()
