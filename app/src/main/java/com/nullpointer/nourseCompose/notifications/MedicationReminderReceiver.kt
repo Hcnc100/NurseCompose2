@@ -1,9 +1,11 @@
 package com.nullpointer.nourseCompose.notifications
 
 import android.app.AlarmManager
+import android.app.KeyguardManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.PowerManager
 import dagger.hilt.android.AndroidEntryPoint
 import com.nullpointer.nourseCompose.domain.medication.MedicationReminderRepository
 import com.nullpointer.nourseCompose.domain.alarm.AlarmLogEvent
@@ -44,13 +46,19 @@ class MedicationReminderReceiver : BroadcastReceiver() {
                             )
                         }
                         val shown = result.posted
-                        val details = notificationResult.exceptionOrNull()?.message
-                            ?: result.details
+                        val appForeground = ProcessLifecycleOwner.get().lifecycle.currentState
+                            .isAtLeast(Lifecycle.State.STARTED)
+                        val keyguardLocked = (context.getSystemService(Context.KEYGUARD_SERVICE)
+                            as? KeyguardManager)?.isKeyguardLocked
+                        val screenInteractive = (context.getSystemService(Context.POWER_SERVICE)
+                            as? PowerManager)?.isInteractive
+                        val details = (notificationResult.exceptionOrNull()?.message
+                            ?: result.details) + "; deviceLocked=$keyguardLocked; screenInteractive=$screenInteractive; appForeground=$appForeground"
                         alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = if (shown) AlarmLogEvent.ALARM_LAUNCHED else AlarmLogEvent.ALARM_FAILED, success = shown, details = details, severity = if (shown) "INFO" else "ERROR"))
                         if (shown && reminder.fullScreenAlarm &&
-                            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+                            appForeground
                         ) {
-                            alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = AlarmLogEvent.FOREGROUND_ALARM_ACTIVITY_REQUESTED, success = true, details = "Opening alarm activity because NurseApp is foreground"))
+                            alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = AlarmLogEvent.FOREGROUND_ALARM_ACTIVITY_REQUESTED, success = true, details = "Opening alarm activity because NurseApp is foreground; deviceLocked=$keyguardLocked; screenInteractive=$screenInteractive"))
                             withContext(Dispatchers.Main) {
                                 context.startActivity(
                                     Intent(context, MedicationAlarmActivity::class.java)
