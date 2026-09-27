@@ -51,8 +51,21 @@ class MedicationReminderScheduler @Inject constructor(
         alarmManager.cancel(pendingIntent)
         val exactPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
         val exactRequested = reminder.useExactAlarm || exactPermission
+        val useAlarmClock = reminder.fullScreenAlarm && exactPermission
         val scheduledExact = runCatching {
-            if (exactRequested && exactPermission) {
+            if (useAlarmClock) {
+                val showIntent = PendingIntent.getActivity(
+                    context,
+                    reminder.id.toInt(),
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                )
+                alarmManager.setAlarmClock(
+                    AlarmManager.AlarmClockInfo(triggerAt, showIntent),
+                    pendingIntent,
+                )
+                true
+            } else if (exactRequested && exactPermission) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
                 else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
                 else alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
@@ -70,7 +83,7 @@ class MedicationReminderScheduler @Inject constructor(
                     reminderName = reminder.name,
                     eventType = AlarmLogEvent.ALARM_SCHEDULED,
                     success = true,
-                    details = "Trigger: ${DateFormat.getDateTimeInstance().format(Date(triggerAt))}; exact=$scheduledExact; exactPermission=$exactPermission",
+                    details = "Trigger: ${DateFormat.getDateTimeInstance().format(Date(triggerAt))}; scheduleType=${if (useAlarmClock) "ALARM_CLOCK" else "STANDARD"}; exact=$scheduledExact; exactPermission=$exactPermission",
                 )
             )
         }
