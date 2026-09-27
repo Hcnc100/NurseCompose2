@@ -66,7 +66,7 @@
     <string name="option_choose_gallery">Elegir de la galería</string>
     <string name="description_choose_gallery">Seleccionar una imagen existente</string>
     <string name="label_start_time">Primera toma</string>
-    <string name="label_interval_hours">Cada cuántas horas</string>
+    <string name="label_interval_hours">Cada cuántos minutos</string>
     <string name="label_schedule">Duración</string>
     <string name="schedule_one_day">Un solo día</string>
     <string name="schedule_date_range">Rango de fechas</string>
@@ -91,7 +91,7 @@
     <string name="message_delete_reminder">¿Eliminar “%1$s” y cancelar sus alarmas programadas?</string>
     <string name="label_photo_selected">Foto seleccionada</string>
     <string name="label_end_date">Última toma</string>
-    <string name="label_every_hours">Cada %1$d horas</string>
+    <string name="label_every_minutes">Cada %1$d minutos</string>
     <string name="intro_welcome_title">Bienvenido</string>
     <string name="intro_welcome_body">Organiza tus recordatorios de medicamentos de forma privada y sin conexión.</string>
     <string name="intro_permissions_title">Permisos cuando tú decidas</string>
@@ -115,7 +115,7 @@
     <string name="intro_medications_body">Puedes permitir notificaciones ahora o más tarde desde los ajustes del sistema. Los avisos no sustituyen la atención médica.</string>
     <string name="pdf_medication_title">Recordatorios de medicamentos</string>
     <string name="pdf_medication_disclaimer">Este documento contiene datos ingresados por la persona usuaria. No es un reporte médico ni ofrece diagnóstico.</string>
-    <string name="pdf_medication_entry">%1$s — %2$s — cada %3$d horas</string>
+    <string name="pdf_medication_entry">%1$s — %2$s — cada %3$d minutos</string>
     <string name="pdf_no_dosage">Sin dosis</string>
     <string name="pdf_start_date">Primera toma: %1$s</string>
     <string name="pdf_report_title">Reporte de datos de salud</string>
@@ -124,6 +124,6 @@
     <string name="pdf_report_disclaimer">Solo contiene datos ingresados por la persona usuaria. No es un reporte médico ni ofrece diagnóstico. La persona usuaria es responsable del uso y distribución.</string>
     <string name="pdf_report_medications">Recordatorios de medicamentos</string>
     <string name="pdf_report_measurements">Mediciones</string>
-    <string name="pdf_report_medication_details">Dosis: %1$s · Cada %2$d horas · Primera toma: %3$s</string>
+    <string name="pdf_report_medication_details">Dosis: %1$s · Cada %2$d minutos · Primera toma: %3$s</string>
     <string name="pdf_report_none">No hay registros seleccionados.</string>
 </resources>

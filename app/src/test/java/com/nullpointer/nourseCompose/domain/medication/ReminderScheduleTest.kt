@@ -23,6 +23,16 @@ class ReminderScheduleTest {
     }
 
     @Test
+    fun `returns occurrences for a five minute interval`() {
+        val reminder = reminder(startAt = 0, endAt = null, intervalHours = 1, intervalMinutes = 5)
+
+        assertEquals(
+            listOf(300_000L, 600_000L, 900_000L),
+            ReminderSchedule.occurrencesBetween(reminder, 1, 900_000),
+        )
+    }
+
+    @Test
     fun `does not return occurrences after a date range ends`() {
         val reminder = reminder(startAt = 0, endAt = 7_200_000, intervalHours = 1)
 
@@ -39,10 +49,11 @@ class ReminderScheduleTest {
         assertEquals(emptyList<Long>(), ReminderSchedule.occurrencesBetween(reminder, 0, 20_000))
     }
 
-    private fun reminder(startAt: Long, endAt: Long?, intervalHours: Int) = MedicationReminderEntity(
+    private fun reminder(startAt: Long, endAt: Long?, intervalHours: Int, intervalMinutes: Int = intervalHours * 60) = MedicationReminderEntity(
         name = "Medication",
         startAt = startAt,
         endAt = endAt,
         intervalHours = intervalHours,
+        intervalMinutes = intervalMinutes,
     )
 }

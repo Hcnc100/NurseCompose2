@@ -45,7 +45,7 @@ class MedicationReminderScheduler @Inject constructor(
     fun schedule(reminder: MedicationReminderEntity) {
         if (!reminder.isActive) return
         val now = System.currentTimeMillis()
-        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, now + reminder.intervalHours * 60L * 60L * 1_000L + 60_000L).firstOrNull()
+        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, now + reminder.intervalMinutes * 60L * 1_000L + 60_000L).firstOrNull()
             ?: return
         val pendingIntent = reminderPendingIntent(reminder.id)
         alarmManager.cancel(pendingIntent)

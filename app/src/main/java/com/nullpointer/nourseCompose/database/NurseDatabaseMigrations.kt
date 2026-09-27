@@ -4,6 +4,12 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object NurseDatabaseMigrations {
+    val MIGRATION_9_10 = object : Migration(9, 10) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE medication_reminders ADD COLUMN intervalMinutes INTEGER NOT NULL DEFAULT 60")
+            database.execSQL("UPDATE medication_reminders SET intervalMinutes = intervalHours * 60")
+        }
+    }
     val MIGRATION_8_9 = object : Migration(8, 9) {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL("ALTER TABLE alarm_logs ADD COLUMN category TEXT NOT NULL DEFAULT 'ALARM'")

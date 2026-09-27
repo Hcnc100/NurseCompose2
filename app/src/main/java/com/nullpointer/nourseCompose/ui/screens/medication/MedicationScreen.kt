@@ -191,7 +191,7 @@ private fun MedicationReminderCard(reminder: MedicationReminderEntity, onClick: 
             Column(Modifier.weight(1f)) {
                 Text(reminder.name, style = MaterialTheme.typography.titleLarge)
                 reminder.dosage?.takeIf(String::isNotBlank)?.let { Text(it) }
-                Text(stringResource(R.string.label_every_hours, reminder.intervalHours))
+                Text(stringResource(R.string.label_every_minutes, reminder.intervalMinutes))
                 Text(if (reminder.isActive) stringResource(R.string.label_active) else stringResource(R.string.label_inactive), style = MaterialTheme.typography.labelSmall)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -223,7 +223,7 @@ fun MedicationReminderEditor(
     var endAt by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.endAt ?: startAt) }
     var intervalText by rememberSaveable(reminder?.id) {
         mutableStateOf(
-            (reminder?.intervalHours ?: 24).toString()
+            (reminder?.intervalMinutes ?: 60).toString()
         )
     }
     var vibrationEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.vibrationEnabled ?: false) }
@@ -260,7 +260,8 @@ fun MedicationReminderEditor(
                     endAt = when (endMode) {
                         EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> normalizedEndAt
                     },
-                    intervalHours = interval
+                    intervalHours = maxOf(1, interval / 60),
+                    intervalMinutes = interval,
                 ),
                 System.currentTimeMillis(), System.currentTimeMillis() + 48 * 60 * 60 * 1_000L,
             ).take(3)
@@ -281,7 +282,8 @@ fun MedicationReminderEditor(
                 endAt = when (endMode) {
                     EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> endAt.coerceAtLeast(startAt)
                 },
-                intervalHours = interval,
+                intervalHours = maxOf(1, interval / 60),
+                intervalMinutes = interval,
                 isActive = reminder?.isActive ?: true,
                 notificationMode = reminder?.notificationMode ?: "NOTIFICATION",
                 vibrationEnabled = vibrationEnabled,

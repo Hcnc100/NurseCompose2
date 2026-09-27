@@ -22,7 +22,7 @@ object MedicationReportExporter {
         canvas.drawText(context.getString(R.string.pdf_medication_disclaimer), 40f, y, paint); y += 28f
         reminders.forEach { reminder ->
             if (y > 790f) { document.finishPage(page); document.writeTo(output); return }
-            canvas.drawText(context.getString(R.string.pdf_medication_entry, reminder.name, reminder.dosage ?: context.getString(R.string.pdf_no_dosage), reminder.intervalHours), 40f, y, paint); y += 15f
+            canvas.drawText(context.getString(R.string.pdf_medication_entry, reminder.name, reminder.dosage ?: context.getString(R.string.pdf_no_dosage), reminder.intervalMinutes), 40f, y, paint); y += 15f
             canvas.drawText(context.getString(R.string.pdf_start_date, DateFormat.getDateTimeInstance().format(Date(reminder.startAt))), 52f, y, paint); y += 18f
         }
         document.finishPage(page)

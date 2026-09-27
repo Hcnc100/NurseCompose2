@@ -14,6 +14,8 @@ data class MedicationReminderEntity(
     val startAt: Long,
     val endAt: Long? = null,
     val intervalHours: Int,
+    /** Stored separately so newly created reminders can repeat in minutes. */
+    val intervalMinutes: Int = intervalHours * 60,
     val isActive: Boolean = true,
     val useExactAlarm: Boolean = false,
     val notificationMode: String = "NOTIFICATION",

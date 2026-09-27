@@ -93,8 +93,8 @@
     <string name="label_photo_selected">Photo selected</string>
     <string name="label_start_time">First dose</string>
     <string name="label_end_date">Last dose</string>
-    <string name="label_interval_hours">Every how many hours</string>
-    <string name="label_every_hours">Every %1$d hours</string>
+    <string name="label_interval_hours">Every how many minutes</string>
+    <string name="label_every_minutes">Every %1$d minutes</string>
     <string name="label_schedule">Duration</string>
     <string name="schedule_one_day">One day</string>
     <string name="schedule_date_range">Date range</string>
@@ -140,7 +140,7 @@
     <string name="intro_medications_body">You can allow notifications now or later in system settings. Alerts do not replace medical care.</string>
     <string name="pdf_medication_title">Medication reminders</string>
     <string name="pdf_medication_disclaimer">This document contains user-entered data. It is not a medical report or diagnosis.</string>
-    <string name="pdf_medication_entry">%1$s — %2$s — every %3$d hours</string>
+    <string name="pdf_medication_entry">%1$s — %2$s — every %3$d minutes</string>
     <string name="pdf_no_dosage">No dosage</string>
     <string name="pdf_start_date">First dose: %1$s</string>
     <string name="pdf_report_title">Health data report</string>
@@ -149,6 +149,6 @@
     <string name="pdf_report_disclaimer">User-entered data only. This is not a medical report or diagnosis. Use and sharing are the user’s responsibility.</string>
     <string name="pdf_report_medications">Medication reminders</string>
     <string name="pdf_report_measurements">Measurements</string>
-    <string name="pdf_report_medication_details">Dosage: %1$s · Every %2$d hours · First dose: %3$s</string>
+    <string name="pdf_report_medication_details">Dosage: %1$s · Every %2$d minutes · First dose: %3$s</string>
     <string name="pdf_report_none">No records selected.</string>
 </resources>
