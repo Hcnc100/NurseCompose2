@@ -103,6 +103,7 @@ private fun eventLabel(eventType: String): String = when (eventType) {
     AlarmLogEvent.REMINDER_DELETED -> "Reminder deleted"
     AlarmLogEvent.ALARM_LAUNCHED -> "Alarm launched"
     AlarmLogEvent.FULL_SCREEN_ACTIVITY_OPENED -> "Full-screen alarm opened"
+    AlarmLogEvent.FOREGROUND_ALARM_ACTIVITY_REQUESTED -> "Foreground alarm screen requested"
     AlarmLogEvent.ALARM_SCHEDULED -> "Alarm scheduled"
     AlarmLogEvent.ALARM_SCHEDULE_FAILED -> "Alarm scheduling failed"
     AlarmLogEvent.ALARM_FAILED -> "Alarm failed"

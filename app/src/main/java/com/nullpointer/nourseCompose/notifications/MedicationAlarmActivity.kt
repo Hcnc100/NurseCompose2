@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.os.Build
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.asImageBitmap
@@ -47,6 +49,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MedicationAlarmActivity : ComponentActivity() {
     @Inject lateinit var alarmLogRepository: AlarmLogRepository
+    private var alarmRingtone: Ringtone? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -54,6 +58,10 @@ class MedicationAlarmActivity : ComponentActivity() {
             setTurnScreenOn(true)
         }
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        alarmRingtone = RingtoneManager.getRingtone(this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))?.also {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.isLooping = true
+            it.play()
+        }
         val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
         val name = intent.getStringExtra("reminder_name").orEmpty()
         val dosage = intent.getStringExtra("reminder_dosage").orEmpty()
@@ -77,6 +85,12 @@ class MedicationAlarmActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        alarmRingtone?.stop()
+        alarmRingtone = null
+        super.onDestroy()
     }
 
     private fun logEvent(eventType: String, details: String) {

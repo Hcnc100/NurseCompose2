@@ -13,6 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,6 +47,21 @@ class MedicationReminderReceiver : BroadcastReceiver() {
                         val details = notificationResult.exceptionOrNull()?.message
                             ?: result.details
                         alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = if (shown) AlarmLogEvent.ALARM_LAUNCHED else AlarmLogEvent.ALARM_FAILED, success = shown, details = details, severity = if (shown) "INFO" else "ERROR"))
+                        if (shown && reminder.fullScreenAlarm &&
+                            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+                        ) {
+                            alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = AlarmLogEvent.FOREGROUND_ALARM_ACTIVITY_REQUESTED, success = true, details = "Opening alarm activity because NurseApp is foreground"))
+                            withContext(Dispatchers.Main) {
+                                context.startActivity(
+                                    Intent(context, MedicationAlarmActivity::class.java)
+                                        .putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
+                                        .putExtra("reminder_name", reminder.name)
+                                        .putExtra("reminder_dosage", reminder.dosage)
+                                        .putExtra("reminder_photo", reminder.photoUri)
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                                )
+                            }
+                        }
                         scheduler.schedule(reminder)
                     }
                 } else repository.observeActive().first().forEach(scheduler::schedule)
