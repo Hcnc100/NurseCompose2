@@ -58,6 +58,7 @@ class MedicationAlarmActivity : ComponentActivity() {
         val name = intent.getStringExtra("reminder_name").orEmpty()
         val dosage = intent.getStringExtra("reminder_dosage").orEmpty()
         val photo = intent.getStringExtra("reminder_photo")
+        logEvent(AlarmLogEvent.FULL_SCREEN_ACTIVITY_OPENED, "type=MEDICATION; fullScreenActivityOpened=true; showWhenLocked=true; turnScreenOn=true")
         setContent {
             val context = LocalContext.current
             val bitmap = photo?.let { runCatching { contentResolver.openInputStream(Uri.parse(it))?.use(BitmapFactory::decodeStream) }.getOrNull() }

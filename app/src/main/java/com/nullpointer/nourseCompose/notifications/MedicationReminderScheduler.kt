@@ -29,6 +29,11 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
 
+data class NotificationDispatchResult(
+    val posted: Boolean,
+    val details: String,
+)
+
 @Singleton
 class MedicationReminderScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -82,12 +87,30 @@ class MedicationReminderScheduler @Inject constructor(
         }
     }
 
-    fun showNotification(reminder: MedicationReminderEntity): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) return false
+    fun showNotification(reminder: MedicationReminderEntity): NotificationDispatchResult {
+        val notificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+        val postPermissionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val deliveryMode = if (reminder.fullScreenAlarm) "FULL_SCREEN_ALARM" else "STANDARD_NOTIFICATION"
+        if (!postPermissionGranted || !notificationsEnabled) {
+            return NotificationDispatchResult(
+                posted = false,
+                details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=false; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; reason=${if (!postPermissionGranted) "POST_NOTIFICATIONS denied" else "notifications disabled"}",
+            )
+        }
         val contentIntent = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val fullScreenIntent = PendingIntent.getActivity(context, reminder.id.toInt(), Intent(context, MedicationAlarmActivity::class.java).putExtra(EXTRA_REMINDER_ID, reminder.id).putExtra("reminder_name", reminder.name).putExtra("reminder_dosage", reminder.dosage).putExtra("reminder_photo", reminder.photoUri), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val channelId = channelId(reminder)
         ensureChannel(channelId, reminder)
+        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.getSystemService(context, NotificationManager::class.java)?.getNotificationChannel(channelId)
+        } else null
+        val fullScreenAccess = when {
+            !reminder.fullScreenAlarm -> "not_requested"
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "not_required"
+            ContextCompat.getSystemService(context, NotificationManager::class.java)?.canUseFullScreenIntent() == true -> "granted"
+            else -> "denied"
+        }
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(context.getString(R.string.notification_medication_title, reminder.name))
@@ -100,7 +123,10 @@ class MedicationReminderScheduler @Inject constructor(
         if (reminder.soundEnabled) builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
         if (reminder.fullScreenAlarm) builder.setFullScreenIntent(fullScreenIntent, true)
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), builder.build())
-        return NotificationManagerCompat.from(context).areNotificationsEnabled()
+        return NotificationDispatchResult(
+            posted = true,
+            details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; channelId=$channelId; channelImportance=${channel?.importance ?: "pre-O"}; channelSound=${channel?.sound != null}; channelVibration=${channel?.shouldVibrate() ?: reminder.vibrationEnabled}; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",
+        )
     }
 
     private fun channelId(reminder: MedicationReminderEntity) = "medication_${if (reminder.soundEnabled) "sound" else "silent"}_${if (reminder.vibrationEnabled) "vibrate" else "still"}_${if (reminder.fullScreenAlarm) "alarm" else "notice"}"

@@ -99,6 +99,7 @@
     <string name="intro_allow_notifications">Permitir notificaciones</string>
     <string name="intro_exact_alarms">Configurar alarmas exactas</string>
     <string name="intro_full_screen_permission">Las alarmas en pantalla completa pueden aparecer sobre la pantalla bloqueada cuando las habilites. Android puede permitir administrar este permiso desde los ajustes del sistema.</string>
+    <string name="action_enable_full_screen_permission">Habilitar alarmas en pantalla completa</string>
     <string name="intro_notification_settings">Revisar ajustes de notificaciones</string>
     <string name="intro_disclaimer_title">Tus datos no son un diagnóstico</string>
     <string name="intro_skip">Omitir</string>

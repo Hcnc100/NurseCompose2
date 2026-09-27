@@ -125,6 +125,7 @@
     <string name="intro_allow_notifications">Allow notifications</string>
     <string name="intro_exact_alarms">Configure exact alarms</string>
     <string name="intro_full_screen_permission">Full-screen alarms can appear over the lock screen when you enable them for a reminder. Android may let you manage this permission in system settings.</string>
+    <string name="action_enable_full_screen_permission">Enable full-screen alarms</string>
     <string name="intro_notification_settings">Review notification settings</string>
     <string name="intro_disclaimer_title">Your data is not a diagnosis</string>
     <string name="intro_skip">Skip</string>

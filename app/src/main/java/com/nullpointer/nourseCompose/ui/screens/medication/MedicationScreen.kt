@@ -1,8 +1,11 @@
 package com.nullpointer.nourseCompose.ui.screens.medication
 
 import android.content.Intent
+import android.app.NotificationManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.core.content.FileProvider
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -388,6 +391,17 @@ fun MedicationReminderEditor(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(checked = fullScreenAlarm, onCheckedChange = { fullScreenAlarm = it })
                 Text(stringResource(R.string.option_full_screen_alarm), modifier = Modifier.padding(start = 8.dp))
+            }
+            if (fullScreenAlarm && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+                !context.getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
+            ) {
+                Text(stringResource(R.string.intro_full_screen_permission))
+                TextButton(onClick = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
+                            .setData(Uri.parse("package:${context.packageName}"))
+                    )
+                }) { Text(stringResource(R.string.action_enable_full_screen_permission)) }
             }
             EndModeSelector(endMode, { endMode = it })
             if (endMode == EndMode.RANGE) DateTimeButton(

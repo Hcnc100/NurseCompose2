@@ -34,9 +34,15 @@ class MedicationReminderReceiver : BroadcastReceiver() {
                         alarmLogRepository.record(AlarmLogEntity(reminderId = reminderId, reminderName = "Unknown", eventType = AlarmLogEvent.ALARM_FAILED, success = false, details = "Reminder not found", severity = "ERROR"))
                     } else {
                         val notificationResult = runCatching { scheduler.showNotification(reminder) }
-                        val shown = notificationResult.getOrDefault(false)
+                        val result = notificationResult.getOrElse {
+                            NotificationDispatchResult(
+                                posted = false,
+                                details = "type=MEDICATION; notificationPosted=false; dispatchException=${it.javaClass.simpleName}: ${it.message}",
+                            )
+                        }
+                        val shown = result.posted
                         val details = notificationResult.exceptionOrNull()?.message
-                            ?: if (shown) "Notification dispatched" else "Notification permission disabled"
+                            ?: result.details
                         alarmLogRepository.record(AlarmLogEntity(reminderId = reminder.id, reminderName = reminder.name, eventType = if (shown) AlarmLogEvent.ALARM_LAUNCHED else AlarmLogEvent.ALARM_FAILED, success = shown, details = details, severity = if (shown) "INFO" else "ERROR"))
                         scheduler.schedule(reminder)
                     }
