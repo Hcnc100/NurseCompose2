@@ -102,9 +102,13 @@ class MedicationReminderScheduler @Inject constructor(
         val fullScreenIntent = PendingIntent.getActivity(context, reminder.id.toInt(), Intent(context, MedicationAlarmActivity::class.java).putExtra(EXTRA_REMINDER_ID, reminder.id).putExtra("reminder_name", reminder.name).putExtra("reminder_dosage", reminder.dosage).putExtra("reminder_photo", reminder.photoUri), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val channelId = channelId(reminder)
         ensureChannel(channelId, reminder)
-        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ContextCompat.getSystemService(context, NotificationManager::class.java)?.getNotificationChannel(channelId)
-        } else null
+        val channelDetails = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = ContextCompat.getSystemService(context, NotificationManager::class.java)
+                ?.getNotificationChannel(channelId)
+            "channelId=$channelId; channelImportance=${channel?.importance ?: "unknown"}; channelSound=${channel?.sound != null}; channelVibration=${channel?.shouldVibrate() ?: reminder.vibrationEnabled}"
+        } else {
+            "channelId=$channelId; channelImportance=pre-O; channelSound=${reminder.soundEnabled}; channelVibration=${reminder.vibrationEnabled}"
+        }
         val fullScreenAccess = when {
             !reminder.fullScreenAlarm -> "not_requested"
             Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "not_required"
@@ -125,7 +129,7 @@ class MedicationReminderScheduler @Inject constructor(
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), builder.build())
         return NotificationDispatchResult(
             posted = true,
-            details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; channelId=$channelId; channelImportance=${channel?.importance ?: "pre-O"}; channelSound=${channel?.sound != null}; channelVibration=${channel?.shouldVibrate() ?: reminder.vibrationEnabled}; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",
+            details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; $channelDetails; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",
         )
     }
 
