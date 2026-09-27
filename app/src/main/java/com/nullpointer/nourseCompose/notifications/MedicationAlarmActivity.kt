@@ -19,6 +19,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -90,6 +95,11 @@ class MedicationAlarmActivity : ComponentActivity() {
                 infiniteRepeatable(tween(900), RepeatMode.Reverse),
                 label = "alarm_scale",
             )
+            val clockComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.clock))
+            val clockProgress by animateLottieCompositionAsState(
+                composition = clockComposition,
+                iterations = LottieConstants.IterateForever,
+            )
             MaterialTheme {
                 Box(
                     Modifier
@@ -147,11 +157,10 @@ class MedicationAlarmActivity : ComponentActivity() {
                                         contentScale = ContentScale.Crop,
                                     )
                                 } else {
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_alarm_24),
-                                        contentDescription = null,
-                                        tint = Color(0xFFFFB1C4),
-                                        modifier = Modifier.size(88.dp),
+                                    LottieAnimation(
+                                        composition = clockComposition,
+                                        progress = { clockProgress },
+                                        modifier = Modifier.size(150.dp),
                                     )
                                 }
                             }
