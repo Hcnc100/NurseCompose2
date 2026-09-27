@@ -2,6 +2,7 @@ package com.nullpointer.nourseCompose.notifications
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.KeyguardManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,9 +11,12 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.nullpointer.nourseCompose.MainActivity
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.domain.medication.ReminderSchedule
@@ -105,10 +109,17 @@ class MedicationReminderScheduler @Inject constructor(
         val postPermissionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED
         val deliveryMode = if (reminder.fullScreenAlarm) "FULL_SCREEN_ALARM" else "STANDARD_NOTIFICATION"
+        val appForeground = ProcessLifecycleOwner.get().lifecycle.currentState
+            .isAtLeast(Lifecycle.State.STARTED)
+        val keyguardLocked = (context.getSystemService(Context.KEYGUARD_SERVICE)
+            as? KeyguardManager)?.isKeyguardLocked
+        val screenInteractive = (context.getSystemService(Context.POWER_SERVICE)
+            as? PowerManager)?.isInteractive
+        val deliveryContext = "deviceLocked=$keyguardLocked; screenInteractive=$screenInteractive; appForeground=$appForeground"
         if (!postPermissionGranted || !notificationsEnabled) {
             return NotificationDispatchResult(
                 posted = false,
-                details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=false; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; reason=${if (!postPermissionGranted) "POST_NOTIFICATIONS denied" else "notifications disabled"}",
+                details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=false; fullScreenRequestAttempted=${reminder.fullScreenAlarm}; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; $deliveryContext; reason=${if (!postPermissionGranted) "POST_NOTIFICATIONS denied" else "notifications disabled"}",
             )
         }
         val contentIntent = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
@@ -142,7 +153,7 @@ class MedicationReminderScheduler @Inject constructor(
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), builder.build())
         return NotificationDispatchResult(
             posted = true,
-            details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; $channelDetails; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",
+            details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; fullScreenRequestAttempted=${reminder.fullScreenAlarm}; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; $deliveryContext; $channelDetails; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",
         )
     }
 
