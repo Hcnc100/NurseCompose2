@@ -3,6 +3,7 @@ package com.nullpointer.nourseCompose.ui.screens.diagnostics
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nullpointer.nourseCompose.BuildConfig
 import com.nullpointer.nourseCompose.domain.alarm.AlarmLogRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +36,7 @@ class DiagnosticsViewModel @Inject constructor(
         report.bufferedWriter().use { writer ->
             writer.appendLine("NurseApp diagnostics")
             writer.appendLine("Generated: ${dateFormat.format(Date())}")
+            writer.appendLine("Build: versionName=${BuildConfig.VERSION_NAME}; versionCode=${BuildConfig.VERSION_CODE}; package=${BuildConfig.APPLICATION_ID}")
             writer.appendLine("Logs: user-exported local diagnostics; Crashlytics remains the production crash source.")
             writer.appendLine()
             repository.observeAll().first().asReversed().forEach { log ->
