@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import androidx.core.graphics.ColorUtils
 import android.net.Uri
 import com.nullpointer.nourseCompose.R
 import com.nullpointer.nourseCompose.models.data.MeasureData
@@ -23,7 +24,15 @@ object HealthDataPdfExporter {
         val muted = Paint(1).apply { textSize = 9f; color = 0xff746b78.toInt() }
         fun newPage() { page?.let { document.finishPage(it) }; page = document.startPage(PdfDocument.PageInfo.Builder(595, 842, ++pageNo).create()); y = 42f }
         fun text(value: String, paint: Paint = body, gap: Float = 16f) { if (y > 790f) newPage(); page!!.canvas.drawText(value.take(98), 42f, y, paint); y += gap }
-        fun section(label: String, color: Int) { if (y > 750f) newPage(); val bar = Paint(1).apply { this.color = color }; page!!.canvas.drawRoundRect(RectF(42f, y - 17f, 553f, y + 12f), 6f, 6f, bar); val white = Paint(heading).apply { this.color = android.graphics.Color.WHITE; textSize = 13f }; page!!.canvas.drawText(label, 54f, y + 2f, white); y += 35f }
+        fun section(label: String, color: Int) {
+            if (y > 750f) newPage()
+            val bar = Paint(1).apply { this.color = color }
+            page!!.canvas.drawRoundRect(RectF(42f, y - 17f, 553f, y + 12f), 6f, 6f, bar)
+            val foreground = if (ColorUtils.calculateLuminance(color) > 0.18) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+            val labelPaint = Paint(heading).apply { this.color = foreground; textSize = 13f }
+            page!!.canvas.drawText(label, 54f, y + 2f, labelPaint)
+            y += 35f
+        }
         newPage(); text(context.getString(R.string.pdf_report_title), title, 30f); text(context.getString(R.string.pdf_report_date, DateFormat.getDateTimeInstance().format(Date())), muted); text(context.getString(R.string.pdf_report_app_version, context.getString(R.string.app_name), context.packageManager.getPackageInfo(context.packageName, 0).versionName), muted, 22f); text(context.getString(R.string.pdf_report_disclaimer), muted, 28f)
         section(context.getString(R.string.pdf_report_medications), 0xffb34766.toInt())
         reminders.forEach { reminder -> text(reminder.name, heading, 15f); text(context.getString(R.string.pdf_report_medication_details, reminder.dosage ?: context.getString(R.string.pdf_no_dosage), reminder.intervalMinutes, DateFormat.getDateTimeInstance().format(Date(reminder.startAt))), body, 14f); reminder.photoUri?.let { uri -> runCatching { context.contentResolver.openInputStream(Uri.parse(uri))?.use(BitmapFactory::decodeStream) }.getOrNull()?.let { bitmap -> if (y > 680f) newPage(); page!!.canvas.drawBitmap(bitmap, null, RectF(42f, y, 134f, y + 92f), body); y += 104f } }; y += 5f }

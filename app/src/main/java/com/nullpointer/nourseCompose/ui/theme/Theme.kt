@@ -12,7 +12,8 @@ private val Material3DarkColorScheme = darkColorScheme(
     background = androidx.compose.ui.graphics.Color(0xFF15131A),
     surface = androidx.compose.ui.graphics.Color(0xFF24212A),
     surfaceVariant = androidx.compose.ui.graphics.Color(0xFF35313D),
-    onPrimary = androidx.compose.ui.graphics.Color.White,
+    // #FF6680 needs a dark foreground to meet the 4.5:1 contrast target for normal text.
+    onPrimary = androidx.compose.ui.graphics.Color(0xFF3B0715),
     onSecondary = androidx.compose.ui.graphics.Color.White,
     onSurface = androidx.compose.ui.graphics.Color(0xFFF1EDF4)
 )
@@ -21,7 +22,8 @@ private val Material3LightColorScheme = lightColorScheme(
     primary = Primary,
     secondary = Secondary,
     tertiary = PrimaryVariant,
-    onPrimary = androidx.compose.ui.graphics.Color.White,
+    // Keep foregrounds consistent with the dark scheme and avoid white on the pink primary.
+    onPrimary = androidx.compose.ui.graphics.Color(0xFF3B0715),
     onSecondary = androidx.compose.ui.graphics.Color.White
 )
 

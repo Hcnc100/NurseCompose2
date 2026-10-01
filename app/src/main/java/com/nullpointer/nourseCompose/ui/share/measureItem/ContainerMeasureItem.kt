@@ -23,6 +23,7 @@ fun ContainerMeasureItem(
     )
     Surface(
         color = backgroundColor,
+        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
         shape = RoundedCornerShape(10.dp),
         shadowElevation = 10.dp,
         modifier = modifier,

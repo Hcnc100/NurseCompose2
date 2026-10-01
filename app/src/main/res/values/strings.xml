@@ -112,6 +112,7 @@
     <string name="label_active">Active</string>
     <string name="label_inactive">Inactive</string>
     <string name="error_medication_name">Enter the medication name.</string>
+    <string name="error_medication_interval">Enter an interval greater than 0 minutes.</string>
     <string name="title_medication_collision">Overlapping schedule</string>
     <string name="message_medication_collision">This overlaps with: %1$s. Review the schedule or save anyway.</string>
     <string name="action_save_anyway">Save anyway</string>

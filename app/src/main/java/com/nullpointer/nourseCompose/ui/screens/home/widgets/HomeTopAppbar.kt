@@ -13,7 +13,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -31,15 +30,22 @@ fun HomeTopAppbar(
 
     val menuIcon = @Composable { getNavigationIcon(openDrawer) }
 
+    val isSelectionMode = countSelected != 0
     val backgroundColor by animateColorAsState(
-        if (countSelected == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+        if (!isSelectionMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
         label = "ANIMATION_CHANGE_COLOR_TOOLBAR",
         animationSpec = tween(durationMillis = 300)
     )
+    val contentColor = if (!isSelectionMode) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
 
     TopAppBar(
         windowInsets = WindowInsets.statusBars,
-        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor, titleContentColor = Color.White, navigationIconContentColor = Color.White, actionIconContentColor = Color.White),
+        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+            containerColor = backgroundColor,
+            titleContentColor = contentColor,
+            navigationIconContentColor = contentColor,
+            actionIconContentColor = contentColor
+        ),
         navigationIcon = if (countSelected == 0) menuIcon else { {} },
         title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
         actions = {

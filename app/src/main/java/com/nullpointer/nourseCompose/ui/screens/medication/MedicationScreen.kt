@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
@@ -58,6 +60,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -184,7 +187,7 @@ private fun MedicationReminderCard(reminder: MedicationReminderEntity, onClick: 
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .clickable(role = Role.Button, onClick = onClick),
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -230,6 +233,7 @@ fun MedicationReminderEditor(
     var soundEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.soundEnabled ?: false) }
     var fullScreenAlarm by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.fullScreenAlarm ?: false) }
     var nameError by remember { mutableStateOf(false) }
+    var intervalError by remember { mutableStateOf(false) }
     var showPhotoSheet by rememberSaveable { mutableStateOf(false) }
     var cameraUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     LaunchedEffect(startAt) {
@@ -270,8 +274,10 @@ fun MedicationReminderEditor(
 
     val saveReminder = {
         val interval = intervalText.toIntOrNull()
-        if (name.isBlank() || interval == null || interval <= 0) nameError = name.isBlank()
-        else onSave(
+        if (name.isBlank() || interval == null || interval <= 0) {
+            nameError = name.isBlank()
+            intervalError = interval == null || interval <= 0
+        } else onSave(
             MedicationReminderEntity(
                 id = reminder?.id ?: 0,
                 name = name.trim(),
@@ -333,13 +339,11 @@ fun MedicationReminderEditor(
                 { name = it; nameError = false },
                 label = { Text(stringResource(R.string.label_medication_name)) },
                 isError = nameError,
+                supportingText = {
+                    if (nameError) Text(stringResource(R.string.error_medication_name))
+                },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
-            )
-            if (nameError) Text(
-                stringResource(R.string.error_medication_name),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall
             )
             OutlinedTextField(
                 dosage,
@@ -376,22 +380,41 @@ fun MedicationReminderEditor(
                 onChange = { startAt = it })
             OutlinedTextField(
                 intervalText,
-                { intervalText = it.filter(Char::isDigit) },
+                { intervalText = it.filter(Char::isDigit); intervalError = false },
                 label = { Text(stringResource(R.string.label_interval_hours)) },
+                isError = intervalError,
+                supportingText = {
+                    if (intervalError) Text(stringResource(R.string.error_medication_interval))
+                },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(stringResource(R.string.label_notification_behavior), style = MaterialTheme.typography.titleMedium)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Switch(checked = soundEnabled, onCheckedChange = { soundEnabled = it })
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(
+                    value = soundEnabled, role = Role.Switch, onValueChange = { soundEnabled = it }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Switch(checked = soundEnabled, onCheckedChange = null)
                 Text(stringResource(R.string.option_notification_sound), modifier = Modifier.padding(start = 8.dp))
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Switch(checked = vibrationEnabled, onCheckedChange = { vibrationEnabled = it })
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(
+                    value = vibrationEnabled, role = Role.Switch, onValueChange = { vibrationEnabled = it }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Switch(checked = vibrationEnabled, onCheckedChange = null)
                 Text(stringResource(R.string.option_notification_vibration), modifier = Modifier.padding(start = 8.dp))
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Switch(checked = fullScreenAlarm, onCheckedChange = { fullScreenAlarm = it })
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(
+                    value = fullScreenAlarm, role = Role.Switch, onValueChange = { fullScreenAlarm = it }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Switch(checked = fullScreenAlarm, onCheckedChange = null)
                 Text(stringResource(R.string.option_full_screen_alarm), modifier = Modifier.padding(start = 8.dp))
             }
             if (fullScreenAlarm && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&

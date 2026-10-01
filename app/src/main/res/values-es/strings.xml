@@ -9,6 +9,8 @@
     <string name="error_paginate_measure">Error al paginar las medidas de %s</string>
     <string name="error_get_last_measure">Error al obtener las últimas medidas de %s</string>
     <string name="message_empty_measure">Sin datos de %s</string>
+    <string name="app_name">NurseApp</string>
+    <string name="message_accept_dialog" translatable="false">Aceptar</string>
     <string name="button_save_title">Guardar</string>
     <string name="button_calcel_title">Cancelar</string>
     <string name="title_dialog_add_measure">Agregar nueva medida de %s</string>
@@ -45,7 +47,7 @@
     <string name="message_cancel_dialog">Cancelar</string>
 
     <string name="error_export_measure">Error al exportar sus datos, reintente más tarde</string>
-    <string name="error_import_measure">Error al exportar sus datos, intente más tarde</string>
+    <string name="error_import_measure">Error al importar sus datos. Revise el archivo e inténtelo de nuevo.</string>
     <string name="error_deleter_all_data">Error al eliminar sus datos, intente más tarde</string>
     <string name="button_cancel_title">Cancelar</string>
     <string name="action_back">Regresar</string>
@@ -53,7 +55,7 @@
     <string name="title_medications">Recordatorios</string>
     <string name="action_add_medication">Agregar recordatorio</string>
     <string name="message_empty_medications">Aún no hay recordatorios</string>
-    <string name="message_empty_medications_description">Agrega un medicamento para organizar sus tomas.</string>
+    <string name="message_empty_medications_description">Agregue un medicamento para organizar sus tomas.</string>
     <string name="title_add_medication">Nuevo recordatorio</string>
     <string name="title_edit_medication">Editar recordatorio</string>
     <string name="label_medication_name">Medicamento</string>
@@ -66,7 +68,7 @@
     <string name="option_choose_gallery">Elegir de la galería</string>
     <string name="description_choose_gallery">Seleccionar una imagen existente</string>
     <string name="label_start_time">Primera toma</string>
-    <string name="label_interval_hours">Cada cuántos minutos</string>
+    <string name="label_interval_hours">Intervalo (minutos)</string>
     <string name="label_schedule">Duración</string>
     <string name="schedule_one_day">Un solo día</string>
     <string name="schedule_date_range">Rango de fechas</string>
@@ -82,7 +84,8 @@
     <string name="action_taken_alarm">Marcar como tomada</string>
     <string name="message_no_upcoming_doses">No hay tomas próximas en las siguientes 48 horas.</string>
     <string name="label_active">Activo</string><string name="label_inactive">Inactivo</string>
-    <string name="error_medication_name">Escribe el nombre del medicamento.</string>
+    <string name="error_medication_name">Ingrese el nombre del medicamento.</string>
+    <string name="error_medication_interval">Ingrese un intervalo mayor que 0 minutos.</string>
     <string name="title_medication_collision">Horario coincidente</string>
     <string name="message_medication_collision">Coincide con: %1$s. Revisa el horario o guarda de todos modos.</string>
     <string name="action_save_anyway">Guardar de todos modos</string>
