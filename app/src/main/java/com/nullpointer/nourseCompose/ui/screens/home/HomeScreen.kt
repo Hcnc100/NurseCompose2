@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -96,9 +97,9 @@ fun HomeScreen(
         enabled = listSelected.isNotEmpty() || selectedDrawerActionDialog != null || drawerState.isOpen
     ) {
         when {
+            drawerState.isOpen -> homeState.closeDrawer()
             listSelected.isNotEmpty() -> selectViewModel.clearSelection()
             selectedDrawerActionDialog != null -> changeSelectDrawerActions(null)
-            drawerState.isOpen -> homeState.closeDrawer()
         }
     }
 
@@ -108,7 +109,6 @@ fun HomeScreen(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = listSelected.isEmpty(),
         drawerContent = {
             ModalDrawerSheet {
             DrawerContent(
@@ -145,7 +145,12 @@ fun HomeScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = { }
     ) {
-        Box(Modifier.padding(it).consumeWindowInsets(it).fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier.padding(it).consumeWindowInsets(it)
+                .padding(top = if (destination != null) 16.dp else 0.dp)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
                 DestinationsNavHost(navController = navHostController, navGraph = NavGraphs.homeGraph, modifier = Modifier.fillMaxSize(), dependenciesContainerBuilder = { dependency(selectViewModel) })
                 if (isLoading) CircularProgressIndicator()
             }

@@ -11,6 +11,8 @@ Do not introduce screen-local palettes or rely on unconfigured Material defaults
 - Cards, primary buttons, FABs and fields share `MaterialTheme.shapes.medium` (16dp).
   Dialogs/sheets use `extraLarge` (24dp); circular switches/radio indicators retain native semantics.
 - Back navigation uses `AppTopBar`. The Home toolbar/bottom navigation only appear on main tabs;
+  the drawer menu remains available even during measurement selection. Main tab content reserves
+  16dp below the toolbar. Keep all drawer actions scrollable for large fonts and landscape.
   child screens own their toolbar and system insets. The reminder editor is a root-graph sibling of Home,
   opened through `LocalRootNavController` for both adding and editing; its back/Save actions pop the
   root stack and reveal the retained reminders tab. It reserves bottom space for Save.

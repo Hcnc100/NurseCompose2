@@ -47,7 +47,8 @@ fun HomeTopAppbar(
             navigationIconContentColor = contentColor,
             actionIconContentColor = contentColor
         ),
-        navigationIcon = if (countSelected == 0) menuIcon else { {} },
+        // Keep the drawer reachable even when measurements are selected.
+        navigationIcon = menuIcon,
         title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
         actions = {
             if (countSelected != 0) {

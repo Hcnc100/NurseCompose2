@@ -29,8 +29,8 @@ fun ContainerDrawer() {
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(10.dp)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -43,7 +43,7 @@ fun ContainerDrawer() {
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = stringResource(id = R.string.app_name),
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.Bold
             )
         }
