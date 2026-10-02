@@ -13,18 +13,21 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nullpointer.nourseCompose.R
+import com.nullpointer.nourseCompose.ui.share.AppTopBar
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.nullpointer.nourseCompose.ui.theme.SuccessDark
+import com.nullpointer.nourseCompose.ui.theme.SuccessLight
 import com.nullpointer.nourseCompose.domain.alarm.AlarmLogEvent
 import com.nullpointer.nourseCompose.models.entity.AlarmLogEntity
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
@@ -47,9 +50,9 @@ fun AlarmLogScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.title_alarm_logs)) },
-                navigationIcon = { TextButton(onClick = destinationsNavigator::popBackStack) { Text(stringResource(R.string.action_back)) } },
+            AppTopBar(
+                title = stringResource(R.string.title_alarm_logs),
+                onBack = { destinationsNavigator.popBackStack() },
             )
         },
     ) { padding ->
@@ -78,9 +81,15 @@ fun AlarmLogScreen(
 @Composable
 private fun AlarmLogRow(log: AlarmLogEntity) {
     val event = eventLabel(log.eventType)
-    val statusColor = if (log.success) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error
-    Card {
+    val statusColor = if (log.success) {
+        if (isSystemInDarkTheme()) SuccessDark else SuccessLight
+    } else MaterialTheme.colorScheme.error
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    ) {
         ListItem(
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             headlineContent = { Text(event) },
             supportingContent = {
                 Column {

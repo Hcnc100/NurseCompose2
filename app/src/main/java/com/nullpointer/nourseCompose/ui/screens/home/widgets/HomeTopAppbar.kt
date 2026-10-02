@@ -32,16 +32,17 @@ fun HomeTopAppbar(
 
     val isSelectionMode = countSelected != 0
     val backgroundColor by animateColorAsState(
-        if (!isSelectionMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+        if (!isSelectionMode) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.primaryContainer,
         label = "ANIMATION_CHANGE_COLOR_TOOLBAR",
         animationSpec = tween(durationMillis = 300)
     )
-    val contentColor = if (!isSelectionMode) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+    val contentColor = if (!isSelectionMode) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimaryContainer
 
     TopAppBar(
         windowInsets = WindowInsets.statusBars,
         colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
             containerColor = backgroundColor,
+            scrolledContainerColor = backgroundColor,
             titleContentColor = contentColor,
             navigationIconContentColor = contentColor,
             actionIconContentColor = contentColor
@@ -61,7 +62,7 @@ fun getNavigationIcon(openDrawer: () -> Unit) {
     IconButton(onClick = openDrawer) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_dehaze_24),
-            contentDescription = null
+            contentDescription = stringResource(R.string.action_open_menu)
         )
     }
 }
@@ -71,7 +72,7 @@ fun getClearIcon(clearSelected: () -> Unit) {
     IconButton(onClick = clearSelected) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_clear_24),
-            contentDescription = null
+            contentDescription = stringResource(R.string.action_clear_selection)
         )
     }
 }

@@ -10,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nullpointer.nourseCompose.R
+import com.nullpointer.nourseCompose.ui.share.AppTopBar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -51,16 +53,16 @@ fun DiagnosticsScreen(
     val errorCount = logs.count { it.severity == "ERROR" }
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.title_diagnostics)) },
-                navigationIcon = { androidx.compose.material3.TextButton(onClick = destinationsNavigator::popBackStack) { Text(stringResource(R.string.action_back)) } },
+            AppTopBar(
+                title = stringResource(R.string.title_diagnostics),
+                onBack = { destinationsNavigator.popBackStack() },
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.message_diagnostics_description), style = MaterialTheme.typography.bodyLarge)
             Text(stringResource(R.string.label_diagnostics_count, logs.size, errorCount), style = MaterialTheme.typography.bodyMedium)
-            Button(onClick = viewModel::exportLogs, enabled = logs.isNotEmpty()) { Text(stringResource(R.string.action_export_diagnostics)) }
+            Button(onClick = viewModel::exportLogs, enabled = logs.isNotEmpty(), shape = MaterialTheme.shapes.medium) { Text(stringResource(R.string.action_export_diagnostics)) }
             Text(stringResource(R.string.message_diagnostics_privacy), style = MaterialTheme.typography.bodySmall)
         }
     }

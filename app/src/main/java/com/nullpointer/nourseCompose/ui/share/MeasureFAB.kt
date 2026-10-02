@@ -44,8 +44,9 @@ fun MeasureFAB(
         FloatingActionButton(
             onClick = showDialogAdd,
             modifier = Modifier.scale(scale),
-            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
-            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSecondary
+            shape = androidx.compose.material3.MaterialTheme.shapes.medium,
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_24),
@@ -72,8 +73,9 @@ fun MeasureFAB(
         FloatingActionButton(
             onClick = deleterMeasureSelected,
             modifier = Modifier.scale(scaleDelete.value),
-            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.error,
-            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onError
+            shape = androidx.compose.material3.MaterialTheme.shapes.medium,
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.errorContainer,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onErrorContainer
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_24),

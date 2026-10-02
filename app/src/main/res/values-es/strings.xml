@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_open_menu">Abrir menú</string>
+    <string name="action_clear_selection">Quitar selección</string>
     <string name="title_selected_measure">Seleccionado(s) (%1$s)</string>
     <string name="title_temperature">Temperatura</string>
     <string name="title_glucose">Glucosa</string>

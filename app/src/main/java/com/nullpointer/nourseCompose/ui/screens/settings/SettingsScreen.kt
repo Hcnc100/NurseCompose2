@@ -37,7 +37,7 @@ fun SettingsScreen(
                 settingsData = settingsData,
                 updateMeasureGraph = settingsViewModel::updateNumberMeasureGraph
             )
-            androidx.compose.material3.Button(onClick = { destinationsNavigator.navigate(DiagnosticsScreenDestination) }) {
+            androidx.compose.material3.Button(shape = androidx.compose.material3.MaterialTheme.shapes.medium, onClick = { destinationsNavigator.navigate(DiagnosticsScreenDestination) }) {
                 androidx.compose.material3.Text(stringResource(com.nullpointer.nourseCompose.R.string.title_diagnostics))
             }
         }

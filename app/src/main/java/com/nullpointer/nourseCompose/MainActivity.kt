@@ -2,6 +2,11 @@ package com.nullpointer.nourseCompose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
+import androidx.compose.ui.graphics.toArgb
+import com.nullpointer.nourseCompose.ui.theme.AppLightColorScheme
+import com.nullpointer.nourseCompose.ui.theme.AppDarkColorScheme
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -39,6 +44,12 @@ class MainActivity : ComponentActivity() {
     private val settingsViewModel by viewModels<SettingsViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Match system bars to the same neutral chrome in both appearance modes.
+        val systemBarStyle = SystemBarStyle.auto(
+            AppLightColorScheme.surfaceContainer.toArgb(),
+            AppDarkColorScheme.surfaceContainer.toArgb(),
+        )
+        enableEdgeToEdge(statusBarStyle = systemBarStyle, navigationBarStyle = systemBarStyle)
         var showSplash = true
         installSplashScreen().setKeepOnScreenCondition { showSplash }
         lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.CREATED) { delay(1500); showSplash = false } }

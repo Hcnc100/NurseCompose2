@@ -61,6 +61,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.material3.Surface
+import androidx.compose.material3.CardDefaults
+import com.nullpointer.nourseCompose.ui.share.AppTopBar
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -111,8 +118,9 @@ fun MedicationScreen(
                 onClick = {
                     destinationsNavigator.navigate(MedicationReminderEditorScreenDestination.route)
                 },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                shape = MaterialTheme.shapes.medium,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) { Icon(painterResource(R.drawable.baseline_add_24), contentDescription = stringResource(R.string.action_add_medication)) }
         },
     ) { padding ->
@@ -188,7 +196,9 @@ private fun MedicationReminderCard(reminder: MedicationReminderEntity, onClick: 
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(role = Role.Button, onClick = onClick),
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -301,30 +311,27 @@ fun MedicationReminderEditor(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                windowInsets = WindowInsets.statusBars,
-                title = { Text(stringResource(if (reminder == null) R.string.title_add_medication else R.string.title_edit_medication)) },
-                navigationIcon = {
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            painter = painterResource(com.nullpointer.nourseCompose.R.drawable.baseline_arrow_back_24),
-                            contentDescription = stringResource(R.string.action_back)
-                        )
-                    }
-                },
+            AppTopBar(
+                title = stringResource(if (reminder == null) R.string.title_add_medication else R.string.title_edit_medication),
+                onBack = onDismiss,
             )
         },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(stringResource(R.string.action_save)) },
-                icon = {
+        bottomBar = {
+            // Reserve space for Save instead of floating over the fields and dose preview.
+            Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
+                Button(
+                    onClick = saveReminder,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(16.dp),
+                ) {
                     Icon(
                         painterResource(R.drawable.baseline_check_24),
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp),
                     )
-                },
-                onClick = saveReminder
-            )
+                    Text(stringResource(R.string.action_save))
+                }
+            }
         }
     ) { padding ->
         Column(
@@ -358,7 +365,7 @@ fun MedicationReminderEditor(
                 label = { Text(stringResource(R.string.label_comment_optional)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            Button(onClick = { showPhotoSheet = true }) { Text(stringResource(R.string.action_select_photo)) }
+            Button(onClick = { showPhotoSheet = true }, shape = MaterialTheme.shapes.medium) { Text(stringResource(R.string.action_select_photo)) }
             photoUri?.let {
                 val previewBitmap = remember(it) {
                     runCatching {
@@ -549,17 +556,25 @@ private enum class EndMode { ONE_DAY, RANGE, INDEFINITE }
 
 @Composable
 private fun EndModeSelector(selected: EndMode, onSelected: (EndMode) -> Unit) {
-    Text(stringResource(R.string.label_schedule))
-    EndMode.entries.forEach { mode ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = selected == mode, onClick = { onSelected(mode) })
-            TextButton(onClick = { onSelected(mode) }) {
+    Text(stringResource(R.string.label_schedule), style = MaterialTheme.typography.titleMedium)
+    Column(Modifier.selectableGroup()) {
+        EndMode.entries.forEach { mode ->
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).selectable(
+                    selected = selected == mode,
+                    role = Role.RadioButton,
+                    onClick = { onSelected(mode) },
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RadioButton(selected = selected == mode, onClick = null)
                 Text(
                     stringResource(
                         when (mode) {
                             EndMode.ONE_DAY -> R.string.schedule_one_day; EndMode.RANGE -> R.string.schedule_date_range; EndMode.INDEFINITE -> R.string.schedule_indefinite
                         }
-                    )
+                    ),
+                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
         }

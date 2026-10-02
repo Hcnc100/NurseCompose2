@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -127,17 +129,23 @@ fun HomeScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(homeState.snackbarHostState) },
         topBar = {
+            if (destination != null) {
             HomeTopAppbar(
                 currentTitle = destination?.title,
                 openDrawer = homeState::openDrawer,
                 countSelected = listSelected.size,
                 clearSelected = selectViewModel::clearSelection,
             )
+            }
         },
-        bottomBar = { HomeBottomNavBar(navHostController, currentDestination, selectViewModel::clearSelection) },
+        bottomBar = {
+            if (destination != null) HomeBottomNavBar(navHostController, currentDestination, selectViewModel::clearSelection)
+        },
+        // Child screens own their Scaffold and system-bar insets.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = { }
     ) {
-        Box(Modifier.padding(it).fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(Modifier.padding(it).consumeWindowInsets(it).fillMaxSize(), contentAlignment = Alignment.Center) {
                 DestinationsNavHost(navController = navHostController, navGraph = NavGraphs.homeGraph, modifier = Modifier.fillMaxSize(), dependenciesContainerBuilder = { dependency(selectViewModel) })
                 if (isLoading) CircularProgressIndicator()
             }

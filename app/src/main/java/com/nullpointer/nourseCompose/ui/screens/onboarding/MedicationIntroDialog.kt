@@ -53,7 +53,7 @@ fun MedicationIntroDialog(onComplete: () -> Unit) {
                         1 -> {
                             IntroPage(stringResource(R.string.intro_permissions_title), stringResource(R.string.intro_permissions_body))
                             Spacer(Modifier.height(16.dp))
-                            Button(onClick = {
+                            Button(shape = MaterialTheme.shapes.medium, onClick = {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                             }) { Text(stringResource(R.string.intro_allow_notifications)) }
                             TextButton(onClick = {
@@ -84,7 +84,7 @@ fun MedicationIntroDialog(onComplete: () -> Unit) {
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onClick = onComplete) { Text(stringResource(R.string.intro_skip)) }
-                Button(onClick = { if (pagerState.currentPage == 2) onComplete() else scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }) { Text(stringResource(if (pagerState.currentPage == 2) R.string.intro_start else R.string.intro_next)) }
+                Button(shape = MaterialTheme.shapes.medium, onClick = { if (pagerState.currentPage == 2) onComplete() else scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }) { Text(stringResource(if (pagerState.currentPage == 2) R.string.intro_start else R.string.intro_next)) }
             }
         }
     }

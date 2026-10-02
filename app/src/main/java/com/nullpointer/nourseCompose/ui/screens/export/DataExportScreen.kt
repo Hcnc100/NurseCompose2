@@ -28,6 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nullpointer.nourseCompose.R
+import com.nullpointer.nourseCompose.ui.share.AppTopBar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import com.nullpointer.nourseCompose.models.types.MeasureType
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -49,8 +52,8 @@ fun DataExportScreen(
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
         uri?.let { context.contentResolver.openOutputStream(it)?.use { output -> viewModel.writePdf(selectedTypes, includeReminders, output) } }
     }
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_data_export)) }, navigationIcon = { IconButton(onClick = { destinationsNavigator.popBackStack() }) { Icon(painterResource(R.drawable.baseline_arrow_back_24), stringResource(R.string.action_back)) } }) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Scaffold(topBar = { AppTopBar(stringResource(R.string.title_data_export), onBack = { destinationsNavigator.popBackStack() }) }) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.message_data_export_disclaimer), style = MaterialTheme.typography.bodyLarge)
             Text(stringResource(R.string.message_data_export_contents, count), style = MaterialTheme.typography.bodyMedium)
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -63,7 +66,7 @@ fun DataExportScreen(
                     Text(stringResource(type.titleMeasure))
                 }
             }
-            Button(enabled = includeReminders || selectedTypes.isNotEmpty(), onClick = { launcher.launch("nurseapp_health_data.pdf") }) { Text(stringResource(R.string.action_export_all_pdf)) }
+            Button(enabled = includeReminders || selectedTypes.isNotEmpty(), shape = MaterialTheme.shapes.medium, onClick = { launcher.launch("nurseapp_health_data.pdf") }) { Text(stringResource(R.string.action_export_all_pdf)) }
         }
     }
 }

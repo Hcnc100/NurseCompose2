@@ -1,7 +1,6 @@
 package com.nullpointer.nourseCompose.ui.share.measureItem
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -18,14 +17,14 @@ fun ContainerMeasureItem(
 ) {
 
     val backgroundColor: Color by animateColorAsState(
-        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+        if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
         label = "MEASURE_ANIMATION_SELECT"
     )
     Surface(
         color = backgroundColor,
-        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-        shape = RoundedCornerShape(10.dp),
-        shadowElevation = 10.dp,
+        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+        shape = MaterialTheme.shapes.medium,
+        shadowElevation = 0.dp,
         modifier = modifier,
         content = content
     )
