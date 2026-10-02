@@ -38,7 +38,7 @@ class MedicationAlarmService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) { stopSelf(); return START_NOT_STICKY }
         val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
-        if (intent.action == STOP || intent.action == SNOOZE) {
+        if (intent.action == STOP || intent.action == SNOOZE || intent.action == DISMISS_NOTIFICATION) {
             if (id == reminderId || reminderId == -1L) {
                 if (intent.action == SNOOZE) scheduler.snooze(id)
                 log("ALARM_RINGING_STOPPED", "action=${intent.action}")
@@ -104,6 +104,7 @@ class MedicationAlarmService : Service() {
 
     companion object {
         const val STOP = "com.nullpointer.nourseCompose.STOP_RINGING"
+        const val DISMISS_NOTIFICATION = "com.nullpointer.nourseCompose.DISMISS_ALARM_NOTIFICATION"
         const val SNOOZE = "com.nullpointer.nourseCompose.SNOOZE_RINGING"
     }
 }
