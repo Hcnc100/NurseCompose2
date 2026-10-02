@@ -61,6 +61,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -100,6 +103,14 @@ fun MedicationScreen(
     viewModel: MedicationReminderViewModel = hiltViewModel()
 ) {
     val reminders by viewModel.reminders.collectAsState()
+    val nextAlarmTimes by viewModel.nextAlarmTimes.collectAsState()
+    var now by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            now = System.currentTimeMillis()
+            kotlinx.coroutines.delay(1_000)
+        }
+    }
     val rootNavController = LocalRootNavController.current
     val context = LocalContext.current
     var pendingReminder by remember { mutableStateOf<MedicationReminderEntity?>(null) }
@@ -129,9 +140,9 @@ fun MedicationScreen(
         if (reminders.isEmpty()) {
             EmptyMedicationState(modifier = Modifier.padding(padding).fillMaxSize())
         } else {
-            Column(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
+            Column(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 88.dp)) {
                 reminders.forEach { reminder ->
-                    MedicationReminderCard(reminder = reminder, onClick = {
+                    MedicationReminderCard(reminder = reminder, now = now, scheduledAt = nextAlarmTimes[reminder.id], onClick = {
                         rootNavController.navigate(
                             MedicationReminderEditorScreenDestination(reminderId = reminder.id).route
                         )
@@ -192,7 +203,10 @@ private fun EmptyMedicationState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MedicationReminderCard(reminder: MedicationReminderEntity, onClick: () -> Unit, onActiveChange: (Boolean) -> Unit, onDelete: () -> Unit) {
+internal fun MedicationReminderCard(reminder: MedicationReminderEntity, now: Long, scheduledAt: Long?, onClick: () -> Unit, onActiveChange: (Boolean) -> Unit, onDelete: () -> Unit) {
+    val locale = androidx.core.os.ConfigurationCompat.getLocales(
+        androidx.compose.ui.platform.LocalConfiguration.current,
+    )[0] ?: java.util.Locale.getDefault()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,17 +228,39 @@ private fun MedicationReminderCard(reminder: MedicationReminderEntity, onClick: 
                 IconButton(onClick = onDelete) { Icon(painterResource(R.drawable.baseline_delete_24), contentDescription = stringResource(R.string.action_delete)) }
             }
         }
+        // Full card width, rather than the narrow column beside the controls: allow
+        // both translated labels and large system text to wrap without clipping.
+        val nextAt = com.nullpointer.nourseCompose.domain.medication.ReminderNextAlarm.at(reminder, now, scheduledAt)
+        Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+            Text(stringResource(if (reminder.isActive && nextAt != null && scheduledAt != nextAt)
+                R.string.label_next_reminder_dose else R.string.label_next_reminder_alarm), style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                when {
+                    !reminder.isActive -> stringResource(R.string.label_reminder_alarm_paused)
+                    nextAt == null -> stringResource(R.string.label_reminder_alarm_finished)
+                    else -> DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale).format(Date(nextAt))
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 fun MedicationReminderEditor(
     reminder: MedicationReminderEntity?,
     onDismiss: () -> Unit,
     onSave: (MedicationReminderEntity) -> Unit,
+    isSaving: Boolean = false,
+    saveError: Boolean = false,
 ) {
     val context = LocalContext.current
+    val dateTimeFormatter = reminderDateTimeFormatter()
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+    val keyboardController = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
     var name by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.name.orEmpty()) }
     var dosage by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.dosage.orEmpty()) }
     var comment by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.comment.orEmpty()) }
@@ -234,7 +270,12 @@ fun MedicationReminderEditor(
             reminder?.startAt ?: System.currentTimeMillis()
         )
     }
-    var endMode by rememberSaveable(reminder?.id) { mutableStateOf(if (reminder?.endAt == null) EndMode.INDEFINITE else if (reminder.endAt == reminder.startAt) EndMode.ONE_DAY else EndMode.RANGE) }
+    var endMode by rememberSaveable(reminder?.id) { mutableStateOf(when {
+        reminder?.endAt == null -> EndMode.INDEFINITE
+        reminder.endAt == reminder.startAt -> EndMode.SINGLE_DOSE
+        reminder.endAt == com.nullpointer.nourseCompose.domain.medication.ReminderDuration.endOfStartDay(reminder.startAt) -> EndMode.ONE_DAY
+        else -> EndMode.RANGE
+    }) }
     var endAt by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.endAt ?: startAt) }
     var intervalText by rememberSaveable(reminder?.id) {
         mutableStateOf(
@@ -244,8 +285,21 @@ fun MedicationReminderEditor(
     var vibrationEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.vibrationEnabled ?: false) }
     var soundEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.soundEnabled ?: false) }
     var fullScreenAlarm by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.fullScreenAlarm ?: false) }
+    val draft = listOf(name, dosage, comment, photoUri.orEmpty(), startAt.toString(), endMode.name,
+        endAt.toString(), intervalText, vibrationEnabled.toString(), soundEnabled.toString(), fullScreenAlarm.toString())
+    val originalDraft = rememberSaveable(reminder?.id) { draft }
+    var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    val requestLeave: () -> Unit = {
+        if (!isSaving) {
+            if (draft != originalDraft) showDiscardDialog = true else onDismiss()
+        }
+    }
+    androidx.activity.compose.BackHandler { requestLeave() }
     var nameError by remember { mutableStateOf(false) }
     var intervalError by remember { mutableStateOf(false) }
+    var startError by remember { mutableStateOf(false) }
+    val startBringIntoView = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
+    LaunchedEffect(startError) { if (startError) startBringIntoView.bringIntoView() }
     var showPhotoSheet by rememberSaveable { mutableStateOf(false) }
     var cameraUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     LaunchedEffect(startAt) {
@@ -274,7 +328,10 @@ fun MedicationReminderEditor(
                     name = "preview",
                     startAt = startAt,
                     endAt = when (endMode) {
-                        EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> normalizedEndAt
+                        EndMode.INDEFINITE -> null
+                        EndMode.SINGLE_DOSE -> startAt
+                        EndMode.ONE_DAY -> com.nullpointer.nourseCompose.domain.medication.ReminderDuration.endOfStartDay(startAt)
+                        EndMode.RANGE -> normalizedEndAt
                     },
                     intervalHours = maxOf(1, interval / 60),
                     intervalMinutes = interval,
@@ -285,10 +342,18 @@ fun MedicationReminderEditor(
     }
 
     val saveReminder = {
-        val interval = intervalText.toIntOrNull()
-        if (name.isBlank() || interval == null || interval <= 0) {
+        // A hidden recurrence field must not prevent a single-dose reminder from saving.
+        // Keep valid stored/draft values; the fallback is unused by its one-occurrence schedule.
+        val interval = if (endMode == EndMode.SINGLE_DOSE) {
+            intervalText.toIntOrNull()?.takeIf { it > 0 } ?: 60
+        } else intervalText.toIntOrNull()
+        val invalidSingleDoseTime = endMode == EndMode.SINGLE_DOSE &&
+            com.nullpointer.nourseCompose.domain.medication.ReminderDuration.requiresFutureTime(
+                startAt, reminder?.startAt, reminder?.endAt, System.currentTimeMillis())
+        if (name.isBlank() || interval == null || interval <= 0 || invalidSingleDoseTime) {
             nameError = name.isBlank()
             intervalError = interval == null || interval <= 0
+            startError = invalidSingleDoseTime
         } else onSave(
             MedicationReminderEntity(
                 id = reminder?.id ?: 0,
@@ -298,7 +363,10 @@ fun MedicationReminderEditor(
                 photoUri = photoUri,
                 startAt = startAt,
                 endAt = when (endMode) {
-                    EndMode.INDEFINITE -> null; EndMode.ONE_DAY -> startAt; EndMode.RANGE -> endAt.coerceAtLeast(startAt)
+                    EndMode.INDEFINITE -> null
+                    EndMode.SINGLE_DOSE -> startAt
+                    EndMode.ONE_DAY -> com.nullpointer.nourseCompose.domain.medication.ReminderDuration.endOfStartDay(startAt)
+                    EndMode.RANGE -> endAt.coerceAtLeast(startAt)
                 },
                 intervalHours = maxOf(1, interval / 60),
                 intervalMinutes = interval,
@@ -315,7 +383,7 @@ fun MedicationReminderEditor(
         topBar = {
             AppTopBar(
                 title = stringResource(if (reminder == null) R.string.title_add_medication else R.string.title_edit_medication),
-                onBack = onDismiss,
+                onBack = requestLeave,
             )
         },
         bottomBar = {
@@ -323,6 +391,7 @@ fun MedicationReminderEditor(
             Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
                 Button(
                     onClick = saveReminder,
+                    enabled = !isSaving,
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(16.dp),
                 ) {
@@ -331,7 +400,11 @@ fun MedicationReminderEditor(
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp),
                     )
-                    Text(stringResource(R.string.action_save))
+                    Text(
+                        stringResource(if (isSaving) R.string.reminder_saving else R.string.action_save),
+                        modifier = Modifier.weight(1f),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    )
                 }
             }
         }
@@ -343,14 +416,17 @@ fun MedicationReminderEditor(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (saveError) Text(stringResource(R.string.reminder_save_failed), color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite })
             OutlinedTextField(
                 name,
                 { name = it; nameError = false },
                 label = { Text(stringResource(R.string.label_medication_name)) },
                 isError = nameError,
-                supportingText = {
-                    if (nameError) Text(stringResource(R.string.error_medication_name))
-                },
+                supportingText = if (nameError) { { Text(stringResource(R.string.error_medication_name)) } } else null,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Next,
+                ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -358,6 +434,9 @@ fun MedicationReminderEditor(
                 dosage,
                 { dosage = it },
                 label = { Text(stringResource(R.string.label_dosage_optional)) },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Next,
+                ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -383,21 +462,46 @@ fun MedicationReminderEditor(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+            Column(Modifier.fillMaxWidth().bringIntoViewRequester(startBringIntoView)) {
             DateTimeButton(
                 stringResource(R.string.label_start_time),
                 startAt,
-                onChange = { startAt = it })
+                onChange = { startAt = it; startError = false })
+            if (startError) Text(
+                stringResource(R.string.error_single_dose_time),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite },
+            )
+            }
+            EndModeSelector(endMode, {
+                endMode = it
+                intervalError = false
+                startError = false
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            })
+            ReminderConditionalSection(endMode == EndMode.ONE_DAY) {
+                Text(stringResource(R.string.description_schedule_one_day), style = MaterialTheme.typography.bodySmall)
+            }
+            ReminderConditionalSection(endMode == EndMode.RANGE) {
+                DateTimeButton(stringResource(R.string.label_end_date), endAt.coerceAtLeast(startAt),
+                    onChange = { endAt = it })
+            }
+            ReminderConditionalSection(endMode != EndMode.SINGLE_DOSE) {
             OutlinedTextField(
                 intervalText,
                 { intervalText = it.filter(Char::isDigit); intervalError = false },
                 label = { Text(stringResource(R.string.label_interval_hours)) },
                 isError = intervalError,
-                supportingText = {
-                    if (intervalError) Text(stringResource(R.string.error_medication_interval))
-                },
+                supportingText = if (intervalError) { { Text(stringResource(R.string.error_medication_interval)) } } else null,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Number,
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+                ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+            }
             Text(stringResource(R.string.label_notification_behavior), style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(
@@ -426,7 +530,7 @@ fun MedicationReminderEditor(
                 Switch(checked = fullScreenAlarm, onCheckedChange = null)
                 Text(stringResource(R.string.option_full_screen_alarm), modifier = Modifier.padding(start = 8.dp))
             }
-            if (fullScreenAlarm && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            ReminderConditionalSection(fullScreenAlarm && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
                 !context.getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
             ) {
                 Text(stringResource(R.string.intro_full_screen_permission))
@@ -437,21 +541,15 @@ fun MedicationReminderEditor(
                     )
                 }) { Text(stringResource(R.string.action_enable_full_screen_permission)) }
             }
-            EndModeSelector(endMode, { endMode = it })
-            if (endMode == EndMode.RANGE) DateTimeButton(
-                stringResource(R.string.label_end_date),
-                endAt.coerceAtLeast(startAt),
-                onChange = { endAt = it })
+            ReminderConditionalSection(endMode != EndMode.SINGLE_DOSE) {
             Text(
                 stringResource(R.string.label_next_doses),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(preview.joinToString("\n") {
-                DateFormat.getDateTimeInstance(
-                    DateFormat.SHORT,
-                    DateFormat.SHORT
-                ).format(Date(it))
+                dateTimeFormatter.format(Date(it))
             }.ifBlank { stringResource(R.string.message_no_upcoming_doses) })
+            }
         }
     }
 
@@ -482,27 +580,48 @@ fun MedicationReminderEditor(
             Spacer(Modifier.height(16.dp))
         }
     }
+
+    if (showDiscardDialog) AlertDialog(
+        onDismissRequest = { showDiscardDialog = false },
+        title = { Text(stringResource(R.string.reminder_discard_title)) },
+        text = { Text(stringResource(R.string.reminder_discard_message)) },
+        confirmButton = { TextButton(onClick = { showDiscardDialog = false; onDismiss() }) {
+            Text(stringResource(R.string.reminder_discard_action))
+        } },
+        dismissButton = { TextButton(onClick = { showDiscardDialog = false }) {
+            Text(stringResource(R.string.reminder_keep_editing))
+        } },
+    )
+    if (isSaving) AlertDialog(
+        onDismissRequest = {},
+        text = { Text(stringResource(R.string.reminder_saving)) },
+        confirmButton = {},
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTimeButton(label: String, value: Long, onChange: (Long) -> Unit) {
+    val dateTimeFormatter = reminderDateTimeFormatter()
     val calendar = remember(value) { Calendar.getInstance().apply { timeInMillis = value } }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var showTimePicker by rememberSaveable { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = value)
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = ReminderDateSelection.pickerDate(value))
     val timePickerState = rememberTimePickerState(
         initialHour = calendar.get(Calendar.HOUR_OF_DAY),
         initialMinute = calendar.get(Calendar.MINUTE),
-        is24Hour = false
+        is24Hour = android.text.format.DateFormat.is24HourFormat(LocalContext.current)
     )
 
     TextButton(onClick = {
+        datePickerState.selectedDateMillis = ReminderDateSelection.pickerDate(value)
+        timePickerState.hour = calendar.get(Calendar.HOUR_OF_DAY)
+        timePickerState.minute = calendar.get(Calendar.MINUTE)
         showDatePicker = true
     }) {
         Text(
             "$label: ${
-                DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+                dateTimeFormatter
                     .format(Date(value))
             }"
         )
@@ -526,26 +645,16 @@ private fun DateTimeButton(label: String, value: Long, onChange: (Long) -> Unit)
     if (showTimePicker) {
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
-            title = { Text(stringResource(R.string.label_start_time)) },
+            title = { Text(label) },
             text = { TimePicker(state = timePickerState) },
             confirmButton = {
                 TextButton(onClick = {
-                    val selectedDate = Calendar.getInstance().apply {
-                        timeInMillis = datePickerState.selectedDateMillis ?: value
-                    }
-                    onChange(Calendar.getInstance().apply {
-                        set(
-                            selectedDate.get(Calendar.YEAR),
-                            selectedDate.get(Calendar.MONTH),
-                            selectedDate.get(Calendar.DAY_OF_MONTH),
-                            timePickerState.hour,
-                            timePickerState.minute,
-                            0
-                        )
-                        set(Calendar.MILLISECOND, 0)
-                    }.timeInMillis)
+                    onChange(ReminderDateSelection.localDateTime(
+                        datePickerState.selectedDateMillis ?: ReminderDateSelection.pickerDate(value),
+                        timePickerState.hour, timePickerState.minute,
+                    ))
                     showTimePicker = false
-                }) { Text(stringResource(R.string.action_save)) }
+                }) { Text(stringResource(R.string.action_confirm_time)) }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.button_cancel_title)) }
@@ -554,7 +663,22 @@ private fun DateTimeButton(label: String, value: Long, onChange: (Long) -> Unit)
     }
 }
 
-private enum class EndMode { ONE_DAY, RANGE, INDEFINITE }
+private enum class EndMode { SINGLE_DOSE, ONE_DAY, RANGE, INDEFINITE }
+
+@Composable
+private fun ReminderConditionalSection(visible: Boolean, content: @Composable () -> Unit) {
+    androidx.compose.animation.AnimatedVisibility(
+        visible = visible,
+        enter = androidx.compose.animation.expandVertically(
+            animationSpec = androidx.compose.animation.core.tween(200)
+        ) + androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(200)),
+        exit = androidx.compose.animation.shrinkVertically(
+            animationSpec = androidx.compose.animation.core.tween(200)
+        ) + androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(200)),
+    ) {
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) { content() }
+    }
+}
 
 @Composable
 private fun EndModeSelector(selected: EndMode, onSelected: (EndMode) -> Unit) {
@@ -573,12 +697,27 @@ private fun EndModeSelector(selected: EndMode, onSelected: (EndMode) -> Unit) {
                 Text(
                     stringResource(
                         when (mode) {
-                            EndMode.ONE_DAY -> R.string.schedule_one_day; EndMode.RANGE -> R.string.schedule_date_range; EndMode.INDEFINITE -> R.string.schedule_indefinite
+                            EndMode.SINGLE_DOSE -> R.string.schedule_single_dose
+                            EndMode.ONE_DAY -> R.string.schedule_one_day
+                            EndMode.RANGE -> R.string.schedule_date_range
+                            EndMode.INDEFINITE -> R.string.schedule_indefinite
                         }
                     ),
-                    modifier = Modifier.padding(start = 8.dp),
+                    modifier = Modifier.weight(1f).padding(start = 8.dp),
                 )
             }
         }
     }
+}
+
+@Composable
+private fun reminderDateTimeFormatter(): java.text.DateFormat {
+    val locale = androidx.core.os.ConfigurationCompat.getLocales(
+        androidx.compose.ui.platform.LocalConfiguration.current
+    )[0] ?: java.util.Locale.getDefault()
+    val use24Hour = android.text.format.DateFormat.is24HourFormat(LocalContext.current)
+    return java.text.SimpleDateFormat(
+        android.text.format.DateFormat.getBestDateTimePattern(locale, if (use24Hour) "yMdHm" else "yMdhm"),
+        locale,
+    )
 }

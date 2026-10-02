@@ -32,6 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class NotificationDispatchResult(
     val posted: Boolean,
@@ -43,14 +45,30 @@ class MedicationReminderScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val alarmLogRepository: AlarmLogRepository,
 ) {
+    private val alarmTimes = context.getSharedPreferences("medication_alarm_times", Context.MODE_PRIVATE)
+    private val _nextAlarmTimes = MutableStateFlow(alarmTimes.all.mapNotNull { (key, value) ->
+        key.toLongOrNull()?.let { id -> (value as? Long)?.let { id to it } }
+    }.toMap())
+    val nextAlarmTimes = _nextAlarmTimes.asStateFlow()
+
+    private fun rememberAlarmTime(id: Long, time: Long?) {
+        if (time == null) alarmTimes.edit().remove(id.toString()).apply()
+        else alarmTimes.edit().putLong(id.toString(), time).apply()
+        _nextAlarmTimes.value = alarmTimes.all.mapNotNull { (key, value) ->
+            key.toLongOrNull()?.let { savedId -> (value as? Long)?.let { savedId to it } }
+        }.toMap()
+    }
     private val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
         ?: error("AlarmManager is not available")
 
     fun schedule(reminder: MedicationReminderEntity) {
-        if (!reminder.isActive) return
+        if (!reminder.isActive) {
+            cancel(reminder.id)
+            return
+        }
         val now = System.currentTimeMillis()
-        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, now + reminder.intervalMinutes * 60L * 1_000L + 60_000L).firstOrNull()
-            ?: return
+        val triggerAt = ReminderSchedule.occurrencesBetween(reminder, now, maxOf(now, reminder.startAt) + reminder.intervalMinutes * 60L * 1_000L + 60_000L).firstOrNull()
+            ?: run { cancel(reminder.id); return }
         val pendingIntent = reminderPendingIntent(reminder.id)
         alarmManager.cancel(pendingIntent)
         val exactPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
@@ -80,6 +98,7 @@ class MedicationReminderScheduler @Inject constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
             else alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
         }
+        rememberAlarmTime(reminder.id, triggerAt)
         CoroutineScope(Dispatchers.IO).launch {
             alarmLogRepository.record(
                 AlarmLogEntity(
@@ -93,15 +112,30 @@ class MedicationReminderScheduler @Inject constructor(
         }
     }
 
-    fun cancel(reminderId: Long) = alarmManager.cancel(reminderPendingIntent(reminderId))
+    fun cancel(reminderId: Long) {
+        alarmManager.cancel(reminderPendingIntent(reminderId))
+        rememberAlarmTime(reminderId, null)
+    }
     fun snooze(reminderId: Long, minutes: Long = 10) {
         val triggerAt = System.currentTimeMillis() + minutes * 60_000L
         val pendingIntent = reminderPendingIntent(reminderId)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        val exactPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+        val scheduledExact = exactPermission && runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+            }
+            true
+        }.getOrDefault(false)
+        if (!scheduledExact) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+            }
         }
+        rememberAlarmTime(reminderId, triggerAt)
     }
 
     fun showNotification(reminder: MedicationReminderEntity): NotificationDispatchResult {
@@ -126,6 +160,15 @@ class MedicationReminderScheduler @Inject constructor(
         val fullScreenIntent = PendingIntent.getActivity(context, reminder.id.toInt(), Intent(context, MedicationAlarmActivity::class.java).putExtra(EXTRA_REMINDER_ID, reminder.id).putExtra("reminder_name", reminder.name).putExtra("reminder_dosage", reminder.dosage).putExtra("reminder_photo", reminder.photoUri), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val channelId = channelId(reminder)
         ensureChannel(channelId, reminder)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            ContextCompat.getSystemService(context, NotificationManager::class.java)
+                ?.getNotificationChannel(channelId)?.importance == NotificationManager.IMPORTANCE_NONE
+        ) {
+            return NotificationDispatchResult(
+                posted = false,
+                details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=false; channelId=$channelId; reason=channel blocked; $deliveryContext",
+            )
+        }
         val channelDetails = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = ContextCompat.getSystemService(context, NotificationManager::class.java)
                 ?.getNotificationChannel(channelId)
@@ -161,7 +204,8 @@ class MedicationReminderScheduler @Inject constructor(
             for ((action, label) in listOf(MedicationAlarmService.STOP to "Detener", MedicationAlarmService.SNOOZE to context.getString(R.string.action_snooze_alarm))) {
                 val actionIntent = PendingIntent.getService(context, reminder.id.toInt(),
                     Intent(context, MedicationAlarmService::class.java).setAction(action)
-                        .putExtra(EXTRA_REMINDER_ID, reminder.id),
+                        .putExtra(EXTRA_REMINDER_ID, reminder.id)
+                        .putExtra("reminder_name", reminder.name),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
                 builder.addAction(0, label, actionIntent)
             }

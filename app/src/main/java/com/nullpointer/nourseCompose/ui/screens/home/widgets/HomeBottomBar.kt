@@ -34,7 +34,8 @@ fun HomeBottomNavBar(
     ) {
             HomeNavItems.entries.forEach { it ->
                 NavigationBarItem(
-                    label = { Text(text = stringResource(id = it.title), textAlign = TextAlign.Center) },
+                    label = { Text(text = stringResource(id = it.title), textAlign = TextAlign.Center,
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         selectedTextColor = MaterialTheme.colorScheme.onSurface,

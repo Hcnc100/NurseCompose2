@@ -1,4 +1,8 @@
 <resources>
+    <string name="error_single_dose_time">Choose a future date and time for this dose.</string>
+    <string name="schedule_single_dose">One dose only</string>
+    <string name="description_schedule_one_day">Repeat at the selected interval until the end of the first dose’s day.</string>
+    <string name="action_confirm_time">Confirm time</string>
     <string name="action_open_menu">Open menu</string>
     <string name="action_clear_selection">Clear selection</string>
     <string name="app_name" translatable="false">NurseApp</string>
@@ -63,7 +67,7 @@
 
     <!-- settings value -->
     <string name="title_settings">Settings</string>
-    <string name="message_number_items_graph">Number measure items to show in graph:</string>
+    <string name="message_number_items_graph">Measurements shown on the graph</string>
 
     <!-- general message dialogs-->
     <string name="message_accept_dialog" translatable="false">OK</string>
@@ -95,7 +99,7 @@
     <string name="label_photo_selected">Photo selected</string>
     <string name="label_start_time">First dose</string>
     <string name="label_end_date">Last dose</string>
-    <string name="label_interval_hours">Every how many minutes</string>
+    <string name="label_interval_hours">Repeat every (minutes)</string>
     <string name="label_every_minutes">Every %1$d minutes</string>
     <string name="label_schedule">Duration</string>
     <string name="schedule_one_day">One day</string>
@@ -154,4 +158,15 @@
     <string name="pdf_report_measurements">Measurements</string>
     <string name="pdf_report_medication_details">Dosage: %1$s · Every %2$d minutes · First dose: %3$s</string>
     <string name="pdf_report_none">No records selected.</string>
+    <string name="reminder_saving">Saving…</string>
+    <string name="reminder_save_failed">Could not finish saving and scheduling the reminder. Please try again.</string>
+    <string name="label_next_reminder_alarm">Next scheduled alarm</string>
+    <string name="label_reminder_alarm_paused">Paused</string>
+    <string name="label_reminder_alarm_finished">No upcoming alarms</string>
+    <string name="reminder_discard_title">Discard changes?</string>
+    <string name="reminder_discard_message">Your changes have not been saved.</string>
+    <string name="reminder_discard_action">Discard</string>
+    <string name="reminder_keep_editing">Keep editing</string>
+    <string name="reminder_not_found">This reminder is no longer available.</string>
+    <string name="label_next_reminder_dose">Next planned dose</string>
 </resources>

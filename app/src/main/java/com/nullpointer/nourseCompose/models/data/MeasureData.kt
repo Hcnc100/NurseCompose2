@@ -15,10 +15,11 @@ data class MeasureData(
 
 
     val showValue
-        get() = when (type) {
-            MeasureType.PRESSURE -> "$value1/$value2 ${type.suffix}"
-            else -> "$value1 ${type.suffix}"
-        }
+        get() = formattedValue(java.util.Locale.getDefault())
+
+    fun formattedValue(locale: java.util.Locale): String = MeasureValueFormatter.format(
+        value1, value2, type == MeasureType.PRESSURE, type.suffix, locale
+    )
 
     companion object {
 

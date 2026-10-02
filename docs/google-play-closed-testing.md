@@ -2,6 +2,12 @@
 
 ## Release checklist
 
+### Workflow safety
+
+Pushes to `feature/closed-testing-pipeline` run validation and generate the bundle; they do not publish to Google Play.
+Manual workflow runs also do not publish by default. Publication requires explicitly enabling the `publish_to_play` input and configuring the Play service-account secret.
+That optional upload targets **Internal testing**, not Closed testing. For Closed testing, use the generated AAB and the corresponding Play Console track.
+
 1. Configure the four signing secrets used by `.github/workflows/closed-testing.yml`.
 2. Run the workflow manually and upload the generated AAB to **Testing > Closed testing**.
 3. Complete **App content > Health apps declaration** and the Data safety form.

@@ -29,6 +29,7 @@ class MedicationAlarmService : Service() {
     private var player: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private var reminderId = -1L
+    private var activeNotification: Notification? = null
     private val handler = Handler(Looper.getMainLooper())
     private val timeout = Runnable { log("ALARM_RINGING_TIMEOUT", "Maximum ringing duration reached: 5 minutes"); stopSelf() }
 
@@ -39,7 +40,20 @@ class MedicationAlarmService : Service() {
         if (intent == null) { stopSelf(); return START_NOT_STICKY }
         val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
         if (intent.action == STOP || intent.action == SNOOZE || intent.action == DISMISS_NOTIFICATION) {
+            // Superseded reminders retain independent controls. Acting on one must not
+            // silence the different occurrence currently owned by this service.
+            if (id >= 0 && id != reminderId && reminderId >= 0) {
+                if (intent.action == SNOOZE) scheduler.snooze(id)
+                NotificationManagerCompat.from(this).cancel(id.toInt())
+                log("ALARM_RINGING_STOPPED", "action=${intent.action}; anotherReminderStillRinging=$reminderId",
+                    id = id, name = intent.getStringExtra("reminder_name").orEmpty())
+                return START_NOT_STICKY
+            }
             if (id == reminderId || reminderId == -1L) {
+                if (reminderId == -1L) {
+                    reminderId = id
+                    reminderName = intent.getStringExtra("reminder_name").orEmpty()
+                }
                 if (intent.action == SNOOZE) scheduler.snooze(id)
                 log("ALARM_RINGING_STOPPED", "action=${intent.action}")
                 stopSelf()
@@ -48,11 +62,26 @@ class MedicationAlarmService : Service() {
         }
         val notification = intent.getParcelableExtra<Notification>("notification")
         if (notification == null || id < 0) { stopSelf(); return START_NOT_STICKY }
+        val previousId = reminderId
+        val previousNotification = activeNotification
         releaseRinging()
-        if (reminderId >= 0 && reminderId != id) NotificationManagerCompat.from(this).cancel(reminderId.toInt())
+        if (previousId >= 0 && previousId != id) {
+            log("ALARM_RINGING_REPLACED", "Audio transferred to reminderId=$id; previous reminder controls retained")
+        }
         reminderId = id
         reminderName = intent.getStringExtra("reminder_name").orEmpty()
+        activeNotification = notification
         startForeground(id.toInt(), notification)
+        if (previousId >= 0 && previousId != id && previousNotification != null) {
+            val retained = androidx.core.app.NotificationCompat.Builder(this, previousNotification)
+                .setOngoing(false).setOnlyAlertOnce(true).setFullScreenIntent(null, false).build()
+            retained.flags = retained.flags and Notification.FLAG_FOREGROUND_SERVICE.inv()
+            try {
+                NotificationManagerCompat.from(this).notify(previousId.toInt(), retained)
+            } catch (denied: SecurityException) {
+                log("ALARM_NOTIFICATION_PERMISSION_DENIED", "Could not retain previous alarm controls", id = previousId)
+            }
+        }
         if (intent.getBooleanExtra("sound", true)) {
             val candidate = MediaPlayer()
             player = candidate
@@ -84,9 +113,8 @@ class MedicationAlarmService : Service() {
         vibrator = null
     }
 
-    private fun log(event: String, details: String, success: Boolean = true) {
-        val id = reminderId
-        val name = reminderName
+    private fun log(event: String, details: String, success: Boolean = true,
+        id: Long = reminderId, name: String = reminderName) {
         CoroutineScope(Dispatchers.IO).launch {
             alarmLogRepository.record(AlarmLogEntity(reminderId = id, reminderName = name,
                 eventType = event, success = success, details = details,

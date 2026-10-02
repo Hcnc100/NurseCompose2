@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error_single_dose_time">Elige una fecha y hora futuras para esta toma.</string>
+    <string name="schedule_single_dose">Una sola toma</string>
+    <string name="description_schedule_one_day">Repetir con el intervalo elegido hasta el final del día de la primera toma.</string>
+    <string name="action_confirm_time">Confirmar hora</string>
     <string name="action_open_menu">Abrir menú</string>
     <string name="action_clear_selection">Quitar selección</string>
     <string name="title_selected_measure">Seleccionado(s) (%1$s)</string>
     <string name="title_temperature">Temperatura</string>
     <string name="title_glucose">Glucosa</string>
-    <string name="title_oxygen">Oxigeno</string>
+    <string name="title_oxygen">Oxígeno</string>
     <string name="title_pressure">Presión</string>
     <string name="today_indicator_measure">Hoy %1$s</string>
     <string name="error_paginate_measure">Error al paginar las medidas de %s</string>
@@ -45,7 +49,7 @@
     <string name="label_diagnostics_count">Eventos locales: %1$d · Errores: %2$d</string>
     <string name="message_diagnostics_privacy">El reporte puede incluir nombres de medicamentos y trazas técnicas. Compártelo solo con alguien de confianza.</string>
     <string name="title_settings">Ajustes</string>
-    <string name="message_number_items_graph">Número los elementos que se mostrarán en el gráfico:</string>
+    <string name="message_number_items_graph">Mediciones que se muestran en el gráfico</string>
     <string name="message_cancel_dialog">Cancelar</string>
 
     <string name="error_export_measure">Error al exportar sus datos, reintente más tarde</string>
@@ -131,4 +135,15 @@
     <string name="pdf_report_measurements">Mediciones</string>
     <string name="pdf_report_medication_details">Dosis: %1$s · Cada %2$d minutos · Primera toma: %3$s</string>
     <string name="pdf_report_none">No hay registros seleccionados.</string>
+    <string name="reminder_saving">Guardando…</string>
+    <string name="reminder_save_failed">No se pudo completar el guardado y la programación del recordatorio. Inténtalo de nuevo.</string>
+    <string name="label_next_reminder_alarm">Próxima alarma programada</string>
+    <string name="label_reminder_alarm_paused">En pausa</string>
+    <string name="label_reminder_alarm_finished">Sin próximas alarmas</string>
+    <string name="reminder_discard_title">¿Descartar los cambios?</string>
+    <string name="reminder_discard_message">Tus cambios todavía no se han guardado.</string>
+    <string name="reminder_discard_action">Descartar</string>
+    <string name="reminder_keep_editing">Seguir editando</string>
+    <string name="reminder_not_found">Este recordatorio ya no está disponible.</string>
+    <string name="label_next_reminder_dose">Próxima toma prevista</string>
 </resources>

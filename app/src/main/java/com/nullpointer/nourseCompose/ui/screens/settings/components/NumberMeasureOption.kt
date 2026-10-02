@@ -45,37 +45,21 @@ fun NumberMeasureOption(
         true -> R.drawable.baseline_arrow_drop_up_24
         false -> R.drawable.baseline_arrow_drop_down_24
     }
-    Row(
-        modifier = Modifier.padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(50.dp)
+    androidx.compose.foundation.layout.Column(
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = stringResource(R.string.message_number_items_graph),
-            modifier = Modifier.weight(3f),
-            fontSize = 12.sp
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
         )
 
-        Box(
-            modifier = Modifier.weight(2f)
-        ) {
+        Box {
 
-            OutlinedTextField(
-                value = selectedValue.toString(),
-                onValueChange = {},
-                enabled = false,
-                modifier = Modifier.clickable { expanded = true },
-                textStyle = TextStyle(
-                    textAlign = TextAlign.End
-                ),
-                leadingIcon = {
-
-                    Icon(
-                        imageVector = ImageVector.vectorResource(iconDropdown),
-                        contentDescription = null
-                    )
-                }
-            )
+            androidx.compose.material3.OutlinedButton(onClick = { expanded = true }) {
+                Text(selectedValue.toString())
+                Icon(imageVector = ImageVector.vectorResource(iconDropdown), contentDescription = null)
+            }
 
             DropdownMenu(
                 expanded = expanded,

@@ -35,6 +35,7 @@ fun MeasureItem(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
                         if (isSelectedEnable) {
@@ -49,21 +50,22 @@ fun MeasureItem(
                 )
                 .padding(10.dp)
         ) {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = stringResource(id = measureData.type.titleMeasure),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
                 )
                 TimeMeasureIndicator(createAt = measureData.createAt)
             }
             Text(
-                text = measureData.showValue,
+                text = measureData.formattedValue(
+                    androidx.core.os.ConfigurationCompat.getLocales(
+                        androidx.compose.ui.platform.LocalConfiguration.current
+                    )[0] ?: java.util.Locale.getDefault()
+                ),
                 modifier = Modifier.padding(top = 5.dp)
             )
         }

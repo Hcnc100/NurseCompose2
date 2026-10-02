@@ -34,8 +34,8 @@ fun MeasureGridList(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        columns = GridCells.Adaptive(175.dp),
-        contentPadding = PaddingValues(10.dp)
+        columns = GridCells.Adaptive(175.dp * androidx.compose.ui.platform.LocalDensity.current.fontScale.coerceAtLeast(1f)),
+        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 88.dp)
     ) {
         items(
             measureList.itemCount,

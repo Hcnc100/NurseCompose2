@@ -26,7 +26,7 @@ enum class MeasureType(
     GLUCOSE(
         maxValue1 = 120.0f,
         minValue1 = 80.0f,
-        suffix = "mg/dl",
+        suffix = "mg/dL",
         color1 = Color.parseColor("#673ab7"),
         titleMeasure = R.string.title_glucose
     ),

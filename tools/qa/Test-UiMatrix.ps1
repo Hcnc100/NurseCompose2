@@ -1,9 +1,22 @@
 param(
+    [Parameter(Mandatory = $true)]
+    [string]$Serial,
     [switch]$ExtendedOnly,
     [string]$Adb = "$env:LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe",
     [string]$OutputDirectory = "D:/Documents/Projects/Android/NurseCompose2/.codex-qa/ui-matrix"
 )
 $ErrorActionPreference = 'Stop'
+$script:AdbExecutable = $Adb
+$script:QaSerial = $Serial
+function Invoke-QaAdb {
+    & $script:AdbExecutable -s $script:QaSerial @args
+}
+# Every command is bound to one explicitly selected disposable QA emulator.
+$avdName = (& $script:AdbExecutable -s $Serial emu avd name) -join ' '
+if ($avdName -notmatch '^Codex_') {
+    throw "UI matrix requires a Codex_ QA AVD; selected: $Serial ($avdName)"
+}
+$Adb = 'Invoke-QaAdb'
 $package = 'com.nullpointer.nourseCompose'
 $originalLocale = (& $Adb shell cmd locale get-app-locales $package) -join ''
 $originalNight = (& $Adb shell cmd uimode night) -join ''
@@ -12,8 +25,12 @@ $results = [System.Collections.Generic.List[object]]::new()
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 
 function Get-Ui {
-    & $Adb shell uiautomator dump /sdcard/nurse-ui-qa.xml | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw 'UI dump failed' }
+    for ($attempt = 0; $attempt -lt 3; $attempt++) {
+        & $Adb shell uiautomator dump /sdcard/nurse-ui-qa.xml | Out-Null
+        if ($LASTEXITCODE -eq 0) { break }
+        Start-Sleep -Seconds 1
+    }
+    if ($LASTEXITCODE -ne 0) { throw 'UI dump failed after three attempts' }
     [xml]$xml = (& $Adb shell cat /sdcard/nurse-ui-qa.xml) -join ''
     return $xml
 }
@@ -30,10 +47,26 @@ function Tap-Label([string]$label) {
     if ($matches.Count -eq 0) { throw "Missing label: $label" }
     Tap-Node $matches[-1]
 }
+function Tap-ScrolledLabel([string]$label, [switch]$Up) {
+    for ($attempt = 0; $attempt -lt 5; $attempt++) {
+        $ui = Get-Ui
+        $nodes = @($ui.SelectNodes('//node') | Where-Object { $_.text -eq $label -or $_.'content-desc' -eq $label })
+        if ($nodes.Count -gt 0) { Tap-Node $nodes[-1]; return }
+        if ($Up) { & $Adb shell input swipe 540 650 540 1550 450 }
+        else { & $Adb shell input swipe 540 1550 540 650 450 }
+    }
+    throw "Missing scrollable label: $label"
+}
 function Reset-App {
     & $Adb shell am force-stop $package
     & $Adb shell am start -n "$package/.MainActivity" | Out-Null
     Start-Sleep -Seconds 2
+    $ui = Get-Ui
+    $skip = @($ui.SelectNodes('//node') | Where-Object { $_.text -eq $strings['intro_skip'] })
+    if ($skip.Count -gt 0) {
+        Tap-Node $skip[-1]
+        Start-Sleep -Seconds 1
+    }
 }
 function Tap-Prefix([string]$label) {
     $ui = Get-Ui
@@ -93,7 +126,7 @@ try {
                 Tap-Node (@($ui.SelectNodes('//node') | Where-Object { $_.class -eq 'android.widget.EditText' })[0])
                 Capture 'name-keyboard'
                 & $Adb shell input keyevent 4
-                Tap-Label '60'
+                Tap-ScrolledLabel '60'
                 Capture 'interval-keyboard'
                 & $Adb shell input keyevent 123
                 & $Adb shell input keyevent 67 67
@@ -104,8 +137,7 @@ try {
                 Tap-Label $strings['action_save']
                 Assert-Label $strings['error_medication_interval']
                 Capture 'invalid-interval'
-                & $Adb shell input swipe 540 1550 540 500 500
-                Tap-Label $strings['schedule_date_range']
+                Tap-ScrolledLabel $strings['schedule_date_range'] -Up
                 Capture 'duration-range'
                 Tap-Prefix $strings['label_end_date']
                 Capture 'end-date-dialog'
