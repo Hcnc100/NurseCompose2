@@ -83,6 +83,7 @@ import com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity
 import com.nullpointer.nourseCompose.navigation.graph.HomeGraph
 import com.nullpointer.nourseCompose.reports.MedicationReportExporter
 import com.nullpointer.nourseCompose.ui.screens.destinations.MedicationReminderEditorScreenDestination
+import com.nullpointer.nourseCompose.navigation.LocalRootNavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.text.DateFormat
@@ -99,6 +100,7 @@ fun MedicationScreen(
     viewModel: MedicationReminderViewModel = hiltViewModel()
 ) {
     val reminders by viewModel.reminders.collectAsState()
+    val rootNavController = LocalRootNavController.current
     val context = LocalContext.current
     var pendingReminder by remember { mutableStateOf<MedicationReminderEntity?>(null) }
     var reminderToDelete by remember { mutableStateOf<MedicationReminderEntity?>(null) }
@@ -116,7 +118,7 @@ fun MedicationScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    destinationsNavigator.navigate(MedicationReminderEditorScreenDestination.route)
+                    rootNavController.navigate(MedicationReminderEditorScreenDestination().route)
                 },
                 shape = MaterialTheme.shapes.medium,
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -130,8 +132,8 @@ fun MedicationScreen(
             Column(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
                 reminders.forEach { reminder ->
                     MedicationReminderCard(reminder = reminder, onClick = {
-                        destinationsNavigator.navigate(
-                            MedicationReminderEditorScreenDestination(reminderId = reminder.id)
+                        rootNavController.navigate(
+                            MedicationReminderEditorScreenDestination(reminderId = reminder.id).route
                         )
                     }, onActiveChange = { viewModel.setActive(reminder, it) }, onDelete = { reminderToDelete = reminder })
                 }
