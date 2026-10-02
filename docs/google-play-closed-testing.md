@@ -4,9 +4,8 @@
 
 ### Workflow safety
 
-Pushes to `feature/closed-testing-pipeline` run validation and generate the bundle; they do not publish to Google Play.
-Manual workflow runs also do not publish by default. Publication requires explicitly enabling the `publish_to_play` input and configuring the Play service-account secret.
-That optional upload targets **Internal testing**, not Closed testing. For Closed testing, use the generated AAB and the corresponding Play Console track.
+Pushes to `feature/closed-testing-pipeline` and manual workflow runs validate and generate the bundle, then upload it to **Internal testing** when the Play service-account secret is configured. This is the intended device-testing workflow.
+This upload does not target Production or Closed testing. For Closed testing, use the generated AAB and the corresponding Play Console track.
 
 1. Configure the four signing secrets used by `.github/workflows/closed-testing.yml`.
 2. Run the workflow manually and upload the generated AAB to **Testing > Closed testing**.

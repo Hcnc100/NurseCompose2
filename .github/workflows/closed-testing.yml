@@ -4,12 +4,6 @@ on:
   push:
     branches: [feature/closed-testing-pipeline]
   workflow_dispatch:
-    inputs:
-      publish_to_play:
-        description: Publish the validated bundle to Google Play internal testing
-        type: boolean
-        required: false
-        default: false
 
 concurrency:
   group: closed-testing
@@ -137,12 +131,12 @@ jobs:
           retention-days: 14
 
       - name: Decode Play service account
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_to_play && env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
         run: |
           printf '%s' "$GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" | base64 --decode > "$RUNNER_TEMP/service-account.json"
 
       - name: Publish to Google Play closed testing track
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_to_play && env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJson: ${{ runner.temp }}/service-account.json
