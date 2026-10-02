@@ -143,19 +143,37 @@ class MedicationReminderScheduler @Inject constructor(
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(context.getString(R.string.notification_medication_title, reminder.name))
             .setContentText(reminder.dosage ?: context.getString(R.string.notification_medication_take_now))
-            .setContentIntent(contentIntent)
+            .setContentIntent(if (reminder.fullScreenAlarm) fullScreenIntent else contentIntent)
             .setAutoCancel(!reminder.fullScreenAlarm)
             .setPriority(if (reminder.fullScreenAlarm) NotificationCompat.PRIORITY_MAX else NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
         if (reminder.vibrationEnabled) builder.setVibrate(longArrayOf(0, 500, 250, 500))
         if (reminder.soundEnabled) builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
-        if (reminder.fullScreenAlarm) builder.setFullScreenIntent(fullScreenIntent, true)
+        if (reminder.fullScreenAlarm) {
+            builder.setFullScreenIntent(fullScreenIntent, true).setOngoing(true)
+            for ((action, label) in listOf(MedicationAlarmService.STOP to "Detener", MedicationAlarmService.SNOOZE to context.getString(R.string.action_snooze_alarm))) {
+                val actionIntent = PendingIntent.getService(context, reminder.id.toInt(),
+                    Intent(context, MedicationAlarmService::class.java).setAction(action)
+                        .putExtra(EXTRA_REMINDER_ID, reminder.id),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                builder.addAction(0, label, actionIntent)
+            }
+        }
         val notificationManager = NotificationManagerCompat.from(context)
         // A full-screen alarm remains posted when Android shows it as a heads-up notification.
         // Clear that stale instance so each alarm occurrence is treated as a new alert instead of
         // a quiet update to the prior notification.
         if (reminder.fullScreenAlarm) notificationManager.cancel(reminder.id.toInt())
         notificationManager.notify(reminder.id.toInt(), builder.build())
+        if (reminder.fullScreenAlarm) {
+            ContextCompat.startForegroundService(context,
+                Intent(context, MedicationAlarmService::class.java)
+                    .putExtra(EXTRA_REMINDER_ID, reminder.id)
+                    .putExtra("notification", builder.build())
+                    .putExtra("reminder_name", reminder.name)
+                    .putExtra("sound", reminder.soundEnabled)
+                    .putExtra("vibrate", reminder.vibrationEnabled))
+        }
         return NotificationDispatchResult(
             posted = true,
             details = "type=MEDICATION; deliveryMode=$deliveryMode; notificationPosted=true; previousFullScreenNotificationCleared=${reminder.fullScreenAlarm}; fullScreenRequestAttempted=${reminder.fullScreenAlarm}; fullScreenIntentAttached=${reminder.fullScreenAlarm}; fullScreenAccess=$fullScreenAccess; postNotificationsPermission=$postPermissionGranted; notificationsEnabled=$notificationsEnabled; $deliveryContext; $channelDetails; requestedSound=${reminder.soundEnabled}; requestedVibration=${reminder.vibrationEnabled}; priority=${if (reminder.fullScreenAlarm) "MAX" else "HIGH"}; category=ALARM",

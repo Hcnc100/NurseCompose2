@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.os.Build
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.media.Ringtone
-import android.media.RingtoneManager
 import android.net.Uri
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.border
@@ -66,7 +64,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MedicationAlarmActivity : ComponentActivity() {
     @Inject lateinit var alarmLogRepository: AlarmLogRepository
-    private var alarmRingtone: Ringtone? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,10 +72,6 @@ class MedicationAlarmActivity : ComponentActivity() {
             setTurnScreenOn(true)
         }
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        alarmRingtone = RingtoneManager.getRingtone(this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))?.also {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.isLooping = true
-            it.play()
-        }
         val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
         val name = intent.getStringExtra("reminder_name").orEmpty()
         val dosage = intent.getStringExtra("reminder_dosage").orEmpty()
@@ -190,6 +183,9 @@ class MedicationAlarmActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 logEvent(AlarmLogEvent.ALARM_DISMISSED, "Alarm marked as taken")
+                                startService(Intent(context, MedicationAlarmService::class.java)
+                                    .setAction(MedicationAlarmService.STOP)
+                                    .putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id))
                                 NotificationManagerCompat.from(context).cancel(id.toInt())
                                 finishAndRemoveTask()
                             },
@@ -206,9 +202,9 @@ class MedicationAlarmActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 logEvent(AlarmLogEvent.ALARM_SNOOZED, "Alarm snoozed for 10 minutes")
-                                sendBroadcast(
-                                    Intent(this@MedicationAlarmActivity, MedicationReminderReceiver::class.java)
-                                        .setAction(MedicationReminderScheduler.ACTION_SNOOZE)
+                                startService(
+                                    Intent(this@MedicationAlarmActivity, MedicationAlarmService::class.java)
+                                        .setAction(MedicationAlarmService.SNOOZE)
                                         .putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id),
                                 )
                                 finishAndRemoveTask()
@@ -220,12 +216,6 @@ class MedicationAlarmActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        alarmRingtone?.stop()
-        alarmRingtone = null
-        super.onDestroy()
     }
 
     private fun logEvent(eventType: String, details: String) {
