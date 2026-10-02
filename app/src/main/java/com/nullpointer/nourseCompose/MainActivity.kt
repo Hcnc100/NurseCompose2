@@ -43,6 +43,9 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val settingsViewModel by viewModels<SettingsViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply postSplashScreenTheme before Activity installs its window/decor.
+        // Otherwise Android keeps its native title bar instead of our Compose toolbar.
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         // Match system bars to the same neutral chrome in both appearance modes.
         val systemBarStyle = SystemBarStyle.auto(
@@ -51,7 +54,7 @@ class MainActivity : ComponentActivity() {
         )
         enableEdgeToEdge(statusBarStyle = systemBarStyle, navigationBarStyle = systemBarStyle)
         var showSplash = true
-        installSplashScreen().setKeepOnScreenCondition { showSplash }
+        splashScreen.setKeepOnScreenCondition { showSplash }
         lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.CREATED) { delay(1500); showSplash = false } }
         setContent {
             MyApplicationTheme {
