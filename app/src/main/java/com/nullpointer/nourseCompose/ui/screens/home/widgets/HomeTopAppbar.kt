@@ -16,6 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
 import com.nullpointer.nourseCompose.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,8 +31,6 @@ fun HomeTopAppbar(
     openDrawer: () -> Unit,
     clearSelected: () -> Unit
 ) {
-
-    val menuIcon = @Composable { getNavigationIcon(openDrawer) }
 
     val isSelectionMode = countSelected != 0
     val backgroundColor by animateColorAsState(
@@ -48,7 +50,7 @@ fun HomeTopAppbar(
             actionIconContentColor = contentColor
         ),
         // Keep the drawer reachable even when measurements are selected.
-        navigationIcon = menuIcon,
+        navigationIcon = { getNavigationIcon(openDrawer) },
         title = { Text(text = getAppBarTitle(countSelected, currentTitle)) },
         actions = {
             if (countSelected != 0) {
@@ -63,7 +65,9 @@ fun getNavigationIcon(openDrawer: () -> Unit) {
     IconButton(onClick = openDrawer) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_dehaze_24),
-            contentDescription = stringResource(R.string.action_open_menu)
+            contentDescription = stringResource(R.string.action_open_menu),
+            tint = LocalContentColor.current,
+            modifier = Modifier.size(24.dp),
         )
     }
 }

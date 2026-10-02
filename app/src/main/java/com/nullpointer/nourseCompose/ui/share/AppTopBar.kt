@@ -4,6 +4,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -20,7 +24,12 @@ fun AppTopBar(title: String, onBack: () -> Unit) {
         title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(painterResource(R.drawable.baseline_arrow_back_24), stringResource(R.string.action_back))
+                Icon(
+                    painter = painterResource(R.drawable.baseline_arrow_back_24),
+                    contentDescription = stringResource(R.string.action_back),
+                    tint = LocalContentColor.current,
+                    modifier = Modifier.size(24.dp),
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
