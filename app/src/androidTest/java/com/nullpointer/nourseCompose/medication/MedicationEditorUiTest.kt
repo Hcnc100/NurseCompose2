@@ -25,9 +25,9 @@ class MedicationEditorUiTest {
         restoration.setContent { MyApplicationTheme { MedicationReminderEditor(reminder, {}, { saved = it }) } }
         compose.onNodeWithText(text(R.string.interval_unit_hours)).performScrollTo().assertIsSelected()
         compose.onNodeWithText(text(R.string.interval_unit_minutes)).performClick()
-        compose.onNodeWithText("480").assertIsDisplayed()
-        compose.onNodeWithText(text(R.string.interval_unit_hours)).performClick()
-        compose.onNodeWithText(text(R.string.label_interval_in_hours)).performTextReplacement("1,5")
+        compose.onNodeWithText("480").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(text(R.string.interval_unit_hours)).performScrollTo().performClick()
+        compose.onNodeWithText(text(R.string.label_interval_in_hours)).performScrollTo().performTextReplacement("1,5")
         Espresso.closeSoftKeyboard()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText(text(R.string.label_interval_in_hours)).performScrollTo().assertIsDisplayed()
