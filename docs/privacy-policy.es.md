@@ -1,4 +1,6 @@
-# Política de privacidad de NurseApp — BORRADOR
+# Política de privacidad de NurseApp — BORRADOR HISTÓRICO
+
+> Sustituido por `privacy-policy.es.html`, preparado el 3 de octubre de 2026 con la retención comprobada en Analytics y la audiencia y exclusiones de backup aprobadas. No publicar este borrador histórico. El HTML conserva las clases del sitio existente; su publicación en Firebase sigue pendiente del titular.
 
 **Preparado el 3 de octubre de 2026. No publicar todavía:** confirmar la retención y configuración de Firebase, la audiencia objetivo y las declaraciones de Play Console. La fecha de entrada en vigor será la fecha de publicación aprobada, no la de este borrador. Este texto describe la implementación revisada; no promete controles que la aplicación aún no tiene.
 

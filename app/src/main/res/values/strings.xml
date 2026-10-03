@@ -202,7 +202,7 @@
     <string name="title_delete_reminder">Delete reminder?</string>
     <string name="message_delete_reminder">Delete “%1$s” and cancel its scheduled alarms?</string>
     <string name="intro_welcome_title">Welcome</string>
-    <string name="intro_welcome_body">Organize your medication reminders privately and offline.</string>
+    <string name="intro_welcome_body">Keep your records and organize medication reminders on your device.</string>
     <string name="intro_permissions_title">Permissions when you choose</string>
     <string name="intro_permissions_body">Notifications are needed for reminders. Exact alarms are optional and improve timing accuracy. Full-screen alarms may require system permission on some Android versions.</string>
     <string name="intro_allow_notifications">Allow notifications</string>
@@ -245,4 +245,8 @@
     <string name="reminder_keep_editing">Keep editing</string>
     <string name="reminder_not_found">This reminder is no longer available.</string>
     <string name="label_next_reminder_dose">Next planned dose</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_privacy_summary">Records are stored on your device. Firebase may send usage and crash data. Health records are excluded from new automatic Android backups and device transfers.</string>
+    <string name="privacy_policy_open_failed">Could not open the policy. Visit ricardopajarocoatl.com or try another browser.</string>
+    <string name="privacy_policy_url" translatable="false">https://ricardopajarocoatl.com/terms-and-conditions/C2TnDWRQv5eNTCcMkLUt</string>
 </resources>

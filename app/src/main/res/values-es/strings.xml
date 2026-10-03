@@ -178,7 +178,7 @@
     <string name="label_end_date">Última toma</string>
     <string name="label_every_minutes">Cada %1$d minutos</string>
     <string name="intro_welcome_title">Bienvenido</string>
-    <string name="intro_welcome_body">Organiza tus recordatorios de medicamentos de forma privada y sin conexión.</string>
+    <string name="intro_welcome_body">Guarda tus registros y organiza los recordatorios de medicamentos en tu dispositivo.</string>
     <string name="intro_permissions_title">Permisos cuando tú decidas</string>
     <string name="intro_permissions_body">Las notificaciones son necesarias para los recordatorios. Las alarmas exactas son opcionales y mejoran la precisión. En algunas versiones de Android, las alarmas en pantalla completa requieren permiso del sistema.</string>
     <string name="intro_allow_notifications">Permitir notificaciones</string>
@@ -222,4 +222,7 @@
     <string name="reminder_keep_editing">Seguir editando</string>
     <string name="reminder_not_found">Este recordatorio ya no está disponible.</string>
     <string name="label_next_reminder_dose">Próxima toma prevista</string>
+    <string name="settings_privacy_policy">Política de privacidad</string>
+    <string name="settings_privacy_summary">Los registros se guardan en tu dispositivo. Firebase puede enviar datos de uso y de errores. Los registros de salud se excluyen de nuevas copias automáticas y transferencias de Android.</string>
+    <string name="privacy_policy_open_failed">No se pudo abrir la política. Visita ricardopajarocoatl.com o prueba otro navegador.</string>
 </resources>

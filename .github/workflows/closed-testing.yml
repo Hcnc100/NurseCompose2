@@ -44,7 +44,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.nullpointer.nourseCompose.medication.MedicationEditorUiTest,com.nullpointer.nourseCompose.medication.MedicationCardLayoutTest --stacktrace
+          script: ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.nullpointer.nourseCompose.medication.MedicationEditorUiTest,com.nullpointer.nourseCompose.medication.MedicationCardLayoutTest,com.nullpointer.nourseCompose.medication.PrivacyConfigurationTest --stacktrace
       - name: Upload editor test reports
         if: always()
         uses: actions/upload-artifact@v4

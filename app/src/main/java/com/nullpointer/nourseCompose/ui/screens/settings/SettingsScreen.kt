@@ -1,5 +1,9 @@
 package com.nullpointer.nourseCompose.ui.screens.settings
 
+import android.content.Intent
+import android.net.Uri
+import kotlinx.coroutines.launch
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -39,6 +43,7 @@ fun SettingsScreen(
     val settingsData by settingsViewModel.settingsData.collectAsState()
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     var confirmation by rememberSaveable { mutableStateOf<String?>(null) }
     val importFile = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -75,6 +80,15 @@ fun SettingsScreen(
             }
             HorizontalDivider()
             SettingsHeading(stringResource(R.string.settings_help_support))
+            SettingsAction(R.string.settings_privacy_policy, R.drawable.outline_privacy_24) {
+                runCatching {
+                    context.startActivity(Intent(Intent.ACTION_VIEW,
+                        Uri.parse(context.getString(R.string.privacy_policy_url))))
+                }.onFailure {
+                    scope.launch { snackbar.showSnackbar(context.getString(R.string.privacy_policy_open_failed)) }
+                }
+            }
+            Text(stringResource(R.string.settings_privacy_summary), style = MaterialTheme.typography.bodyMedium)
             Text(stringResource(R.string.settings_support_description), style = MaterialTheme.typography.bodyMedium)
             SettingsAction(R.string.title_diagnostics, R.drawable.baseline_build_24) {
                 destinationsNavigator.navigate(DiagnosticsScreenDestination)
