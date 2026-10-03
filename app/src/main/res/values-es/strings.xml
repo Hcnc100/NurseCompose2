@@ -163,7 +163,11 @@
     <string name="message_no_upcoming_doses">No hay tomas próximas en las siguientes 48 horas.</string>
     <string name="label_active">Activo</string><string name="label_inactive">Inactivo</string>
     <string name="error_medication_name">Ingrese el nombre del medicamento.</string>
-    <string name="error_medication_interval">Ingrese un intervalo mayor que 0 minutos.</string>
+    <string name="interval_unit_minutes">Minutos</string>
+    <string name="interval_unit_hours">Horas</string>
+    <string name="label_interval_in_hours">Intervalo (horas)</string>
+    <string name="interval_hours_hint">Puedes usar decimales. Las horas se redondean al minuto más cercano.</string>
+    <string name="error_medication_interval">Introduce un intervalo válido de al menos 1 minuto.</string>
     <string name="title_medication_collision">Horario coincidente</string>
     <string name="message_medication_collision">Coincide con: %1$s. Revisa el horario o guarda de todos modos.</string>
     <string name="action_save_anyway">Guardar de todos modos</string>

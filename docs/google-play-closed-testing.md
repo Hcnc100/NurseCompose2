@@ -16,6 +16,8 @@ This upload does not target Production or Closed testing. For Closed testing, us
 
 ## Suggested store description
 
+**Actualización del 3 de octubre de 2026:** usar los textos revisados en [google-play-store-listing.md](google-play-store-listing.md). El párrafo histórico siguiente no debe copiarse a Console. Consultar primero la [auditoría de producción](qa/GOOGLE_PLAY_PRODUCTION_AUDIT_2026-10-03.md) y resolver los pendientes del [borrador de privacidad](privacy-policy.es.md).
+
 **NurseApp helps you record health measurements and organize medication reminders on your device.** Track temperature, blood glucose, blood pressure, and oxygen saturation with simple visual history. Create medication reminders with dose, schedule, optional photo, sound, vibration, or full-screen alarm behavior, and review a local activity log with dates, outcomes, registrations, cancellations, and deletions. Export selected reminders and measurements to a PDF for your own records.
 
 The app is a personal record-keeping tool. It does not diagnose conditions, interpret results, replace professional medical advice, or connect to a medical device. Data is entered by the user. Review the generated PDF before sharing it and protect it as sensitive information.

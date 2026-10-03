@@ -126,6 +126,7 @@ try {
                 Tap-Node (@($ui.SelectNodes('//node') | Where-Object { $_.class -eq 'android.widget.EditText' })[0])
                 Capture 'name-keyboard'
                 & $Adb shell input keyevent 4
+                Tap-ScrolledLabel $strings['interval_unit_minutes']
                 Tap-ScrolledLabel '60'
                 Capture 'interval-keyboard'
                 & $Adb shell input keyevent 123

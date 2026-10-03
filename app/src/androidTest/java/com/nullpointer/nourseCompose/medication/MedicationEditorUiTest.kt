@@ -17,6 +17,27 @@ class MedicationEditorUiTest {
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private fun text(id: Int) = context.getString(id)
 
+    @Test fun intervalUnitsPreserveScheduleAndSaveDecimalHours() {
+        val reminder = com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity(
+            name = "Units test", startAt = 1_900_000_000_000L, intervalHours = 8)
+        var saved: com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity? = null
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent { MyApplicationTheme { MedicationReminderEditor(reminder, {}, { saved = it }) } }
+        compose.onNodeWithText(text(R.string.interval_unit_hours)).performScrollTo().assertIsSelected()
+        compose.onNodeWithText(text(R.string.interval_unit_minutes)).performClick()
+        compose.onNodeWithText("480").assertIsDisplayed()
+        compose.onNodeWithText(text(R.string.interval_unit_hours)).performClick()
+        compose.onNodeWithText(text(R.string.label_interval_in_hours)).performTextReplacement("1,5")
+        Espresso.closeSoftKeyboard()
+        restoration.emulateSavedInstanceStateRestore()
+        compose.onNodeWithText(text(R.string.label_interval_in_hours)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(text(R.string.action_save)).performClick()
+        compose.runOnIdle { assertEquals(90, saved?.intervalMinutes) }
+        compose.onNodeWithText(text(R.string.schedule_single_dose)).performScrollTo().performClick()
+        compose.onNodeWithText(text(R.string.interval_unit_minutes)).assertDoesNotExist()
+        compose.onNodeWithText(text(R.string.interval_unit_hours)).assertDoesNotExist()
+    }
+
     @Test fun newSingleDoseWithElapsedTimeShowsErrorInsteadOfSaving() {
         var saved = 0
         compose.setContent { MyApplicationTheme { MedicationReminderEditor(null, {}, { saved++ }) } }
@@ -34,10 +55,10 @@ class MedicationEditorUiTest {
             name = "Conditional draft", startAt = start, intervalHours = 1)
         var saved: com.nullpointer.nourseCompose.models.entity.MedicationReminderEntity? = null
         compose.setContent { MyApplicationTheme { MedicationReminderEditor(reminder, {}, { saved = it }) } }
-        compose.onNodeWithText(text(R.string.label_interval_hours)).performScrollTo().performTextReplacement("0")
+        compose.onNodeWithText(text(R.string.label_interval_in_hours)).performScrollTo().performTextReplacement("0")
         Espresso.closeSoftKeyboard()
         compose.onNodeWithText(text(R.string.schedule_single_dose)).performScrollTo().performClick()
-        compose.onNodeWithText(text(R.string.label_interval_hours)).assertDoesNotExist()
+        compose.onNodeWithText(text(R.string.label_interval_in_hours)).assertDoesNotExist()
         compose.onNodeWithText(text(R.string.label_next_doses)).assertDoesNotExist()
         compose.onNodeWithText(text(R.string.label_end_date), substring = true).assertDoesNotExist()
         compose.onNodeWithText(text(R.string.action_save)).performClick()

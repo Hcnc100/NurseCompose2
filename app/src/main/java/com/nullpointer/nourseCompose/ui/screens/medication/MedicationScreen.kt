@@ -1,6 +1,7 @@
 package com.nullpointer.nourseCompose.ui.screens.medication
 
 import android.content.Intent
+import com.nullpointer.nourseCompose.domain.medication.ReminderIntervalUnit
 import android.app.NotificationManager
 import android.graphics.Color
 import android.net.Uri
@@ -277,16 +278,19 @@ fun MedicationReminderEditor(
         else -> EndMode.RANGE
     }) }
     var endAt by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.endAt ?: startAt) }
+    var intervalUnit by rememberSaveable(reminder?.id) {
+        mutableStateOf(ReminderIntervalUnit.forMinutes(reminder?.intervalMinutes ?: 60))
+    }
     var intervalText by rememberSaveable(reminder?.id) {
         mutableStateOf(
-            (reminder?.intervalMinutes ?: 60).toString()
+            intervalUnit.format(reminder?.intervalMinutes ?: 60)
         )
     }
     var vibrationEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.vibrationEnabled ?: false) }
     var soundEnabled by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.soundEnabled ?: false) }
     var fullScreenAlarm by rememberSaveable(reminder?.id) { mutableStateOf(reminder?.fullScreenAlarm ?: false) }
     val draft = listOf(name, dosage, comment, photoUri.orEmpty(), startAt.toString(), endMode.name,
-        endAt.toString(), intervalText, vibrationEnabled.toString(), soundEnabled.toString(), fullScreenAlarm.toString())
+        endAt.toString(), intervalText, intervalUnit.name, vibrationEnabled.toString(), soundEnabled.toString(), fullScreenAlarm.toString())
     val originalDraft = rememberSaveable(reminder?.id) { draft }
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val requestLeave: () -> Unit = {
@@ -320,9 +324,9 @@ fun MedicationReminderEditor(
                 photoUri = it.toString()
             }
         }
-    val preview = remember(startAt, endMode, endAt, intervalText) {
+    val preview = remember(startAt, endMode, endAt, intervalText, intervalUnit) {
         val normalizedEndAt = endAt.coerceAtLeast(startAt)
-        intervalText.toIntOrNull()?.takeIf { it > 0 }?.let { interval ->
+        intervalUnit.toMinutes(intervalText)?.let { interval ->
             ReminderSchedule.occurrencesBetween(
                 MedicationReminderEntity(
                     name = "preview",
@@ -345,8 +349,8 @@ fun MedicationReminderEditor(
         // A hidden recurrence field must not prevent a single-dose reminder from saving.
         // Keep valid stored/draft values; the fallback is unused by its one-occurrence schedule.
         val interval = if (endMode == EndMode.SINGLE_DOSE) {
-            intervalText.toIntOrNull()?.takeIf { it > 0 } ?: 60
-        } else intervalText.toIntOrNull()
+            intervalUnit.toMinutes(intervalText) ?: 60
+        } else intervalUnit.toMinutes(intervalText)
         val invalidSingleDoseTime = endMode == EndMode.SINGLE_DOSE &&
             com.nullpointer.nourseCompose.domain.medication.ReminderDuration.requiresFutureTime(
                 startAt, reminder?.startAt, reminder?.endAt, System.currentTimeMillis())
@@ -488,14 +492,36 @@ fun MedicationReminderEditor(
                     onChange = { endAt = it })
             }
             ReminderConditionalSection(endMode != EndMode.SINGLE_DOSE) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ReminderIntervalUnit.values().forEach { unit ->
+                    androidx.compose.material3.FilterChip(
+                        selected = intervalUnit == unit,
+                        onClick = {
+                            if (intervalUnit != unit) {
+                                intervalUnit.toMinutes(intervalText)?.let { intervalText = unit.format(it) }
+                                intervalUnit = unit
+                                intervalError = false
+                            }
+                        },
+                        label = { Text(stringResource(if (unit == ReminderIntervalUnit.MINUTES)
+                            R.string.interval_unit_minutes else R.string.interval_unit_hours)) },
+                    )
+                }
+            }
             OutlinedTextField(
                 intervalText,
-                { intervalText = it.filter(Char::isDigit); intervalError = false },
-                label = { Text(stringResource(R.string.label_interval_hours)) },
+                { intervalText = it; intervalError = false },
+                label = { Text(stringResource(if (intervalUnit == ReminderIntervalUnit.MINUTES)
+                    R.string.label_interval_hours else R.string.label_interval_in_hours)) },
                 isError = intervalError,
-                supportingText = if (intervalError) { { Text(stringResource(R.string.error_medication_interval)) } } else null,
+                supportingText = when {
+                    intervalError -> { { Text(stringResource(R.string.error_medication_interval)) } }
+                    intervalUnit == ReminderIntervalUnit.HOURS -> { { Text(stringResource(R.string.interval_hours_hint)) } }
+                    else -> null
+                },
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Number,
+                    keyboardType = if (intervalUnit == ReminderIntervalUnit.HOURS)
+                        androidx.compose.ui.text.input.KeyboardType.Decimal else androidx.compose.ui.text.input.KeyboardType.Number,
                     imeAction = androidx.compose.ui.text.input.ImeAction.Done,
                 ),
                 singleLine = true,

@@ -190,7 +190,11 @@
     <string name="label_active">Active</string>
     <string name="label_inactive">Inactive</string>
     <string name="error_medication_name">Enter the medication name.</string>
-    <string name="error_medication_interval">Enter an interval greater than 0 minutes.</string>
+    <string name="interval_unit_minutes">Minutes</string>
+    <string name="interval_unit_hours">Hours</string>
+    <string name="label_interval_in_hours">Repeat every (hours)</string>
+    <string name="interval_hours_hint">You can use decimals. Hours are rounded to the nearest minute.</string>
+    <string name="error_medication_interval">Enter a valid interval of at least 1 minute.</string>
     <string name="title_medication_collision">Overlapping schedule</string>
     <string name="message_medication_collision">This overlaps with: %1$s. Review the schedule or save anyway.</string>
     <string name="action_save_anyway">Save anyway</string>
