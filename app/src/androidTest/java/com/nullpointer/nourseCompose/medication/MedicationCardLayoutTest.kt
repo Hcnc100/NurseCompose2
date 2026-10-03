@@ -135,6 +135,38 @@ class MedicationCardLayoutTest(private val language: String, private val dark: B
         }
     }
 
+    @Test fun singleDoseCardDoesNotDescribeARepeatingInterval() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val configuration = Configuration(context.resources.configuration).apply {
+            setLocale(Locale.forLanguageTag(language))
+        }
+        val localized = context.createConfigurationContext(configuration)
+        val at = 864_000_000L
+        compose.setContent {
+            val density = LocalDensity.current.density
+            CompositionLocalProvider(LocalContext provides localized, LocalConfiguration provides configuration,
+                LocalDensity provides Density(density, fontScale)) {
+                MyApplicationTheme(darkTheme = dark) {
+                    Box(Modifier.width(320.dp)) {
+                        MedicationReminderCard(
+                            MedicationReminderEntity(name = "Demo single dose", startAt = at,
+                                endAt = at, intervalHours = 1),
+                            now = 0, scheduledAt = at, onClick = {}, onActiveChange = {}, onDelete = {},
+                        )
+                    }
+                }
+            }
+        }
+        val node = compose.onNodeWithText(localized.getString(com.nullpointer.nourseCompose.R.string.schedule_single_dose),
+            useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithText(localized.getString(com.nullpointer.nourseCompose.R.string.label_every_minutes, 60),
+            useUnmergedTree = true).assertDoesNotExist()
+        val layouts = mutableListOf<TextLayoutResult>()
+        node.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        assertTrue("Single-dose label must be measured and fit: ${layouts.map { "size=${it.size}, width=${it.didOverflowWidth}, height=${it.didOverflowHeight}, lines=${it.lineCount}" }}",
+            layouts.isNotEmpty() && layouts.none { it.hasVisualOverflow })
+    }
+
     @Test fun nextAlarmFitsCardWithLargeTextAndTranslations() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val locale = Locale.forLanguageTag(language)
@@ -154,6 +186,8 @@ class MedicationCardLayoutTest(private val language: String, private val dark: B
                 }
             }
         }
+        compose.onNodeWithText(localized.getString(com.nullpointer.nourseCompose.R.string.label_every_minutes, 60),
+            useUnmergedTree = true).assertIsDisplayed()
         val node = compose.onNodeWithText(date, useUnmergedTree = true).assertIsDisplayed()
         val layouts = mutableListOf<TextLayoutResult>()
         node.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }

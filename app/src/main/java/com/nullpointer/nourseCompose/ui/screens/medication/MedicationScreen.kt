@@ -221,7 +221,11 @@ internal fun MedicationReminderCard(reminder: MedicationReminderEntity, now: Lon
             Column(Modifier.weight(1f)) {
                 Text(reminder.name, style = MaterialTheme.typography.titleLarge)
                 reminder.dosage?.takeIf(String::isNotBlank)?.let { Text(it) }
-                Text(stringResource(R.string.label_every_minutes, reminder.intervalMinutes))
+                if (reminder.endAt == reminder.startAt) {
+                    Text(stringResource(R.string.schedule_single_dose), modifier = Modifier.fillMaxWidth())
+                } else {
+                    Text(stringResource(R.string.label_every_minutes, reminder.intervalMinutes), modifier = Modifier.fillMaxWidth())
+                }
                 Text(if (reminder.isActive) stringResource(R.string.label_active) else stringResource(R.string.label_inactive), style = MaterialTheme.typography.labelSmall)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
