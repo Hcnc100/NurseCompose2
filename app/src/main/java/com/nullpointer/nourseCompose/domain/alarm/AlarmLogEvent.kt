@@ -1,6 +1,11 @@
 package com.nullpointer.nourseCompose.domain.alarm
 
 object AlarmLogEvent {
+    /** Explicit user confirmation; never infer this from dismissal or a timeout. */
+    const val MEDICATION_TAKEN = "MEDICATION_TAKEN"
+    /** Explicit user response for this alarm; never inferred from an absent confirmation. */
+    const val MEDICATION_NOT_TAKEN = "MEDICATION_NOT_TAKEN"
+    const val MEDICATION_RESPONSE_CORRECTED = "MEDICATION_RESPONSE_CORRECTED"
     const val REMINDER_CREATED = "REMINDER_CREATED"
     const val REMINDER_UPDATED = "REMINDER_UPDATED"
     const val REMINDER_ENABLED = "REMINDER_ENABLED"

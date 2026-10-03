@@ -112,9 +112,66 @@ class MedicationAlarmInstrumentedTest {
         assertAccessibleActions()
         capture("full-screen")
         click(context.getString(R.string.action_taken_alarm))
-        await("Taken action is recorded") { hasEvent(AlarmLogEvent.ALARM_DISMISSED) }
+        await("Taken action is recorded") { hasEvent(AlarmLogEvent.MEDICATION_TAKEN) }
         await("Ringing stops after Taken") { hasEvent("ALARM_RINGING_STOPPED", MedicationAlarmService.STOP) }
         await("Notification is removed") { notifications.activeNotifications.none { it.id == fixture!!.id.toInt() } }
+    }
+
+    @Test fun intakeSaveFailureKeepsAlarmActiveAndAllowsRetry() {
+        createFixture(fullScreen = true)
+        scheduler.schedule(fixture!!)
+        await("Alarm opens") { hasEvent(AlarmLogEvent.FULL_SCREEN_ACTIVITY_OPENED) }
+        await("Alarm rings") { hasEvent("ALARM_RINGING_STARTED") }
+        val allowSave = java.util.concurrent.atomic.AtomicBoolean(false)
+        instrumentation.runOnMainSync {
+            val activity = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                .filterIsInstance<MedicationAlarmActivity>().single()
+            activity.alarmLogRepository = object : com.nullpointer.nourseCompose.domain.alarm.AlarmLogRepository by logs {
+                override suspend fun record(log: com.nullpointer.nourseCompose.models.entity.AlarmLogEntity) {
+                    if (log.eventType == AlarmLogEvent.MEDICATION_TAKEN && !allowSave.get()) {
+                        throw java.io.IOException("QA simulated persistence failure")
+                    }
+                    logs.record(log)
+                }
+            }
+        }
+        click(context.getString(R.string.action_taken_alarm))
+        await("Retry error is visible") { find(context.getString(R.string.alarm_decision_save_failed)) != null }
+        assertFalse("A failed save is not a confirmed dose", hasEvent(AlarmLogEvent.MEDICATION_TAKEN))
+        assertFalse("Failed save must not stop ringing", hasEvent("ALARM_RINGING_STOPPED", MedicationAlarmService.STOP))
+        assertTrue("Alarm notification remains", notifications.activeNotifications.any { it.id == fixture!!.id.toInt() })
+        allowSave.set(true)
+        click(context.getString(R.string.action_taken_alarm))
+        await("Retry stores intake") { hasEvent(AlarmLogEvent.MEDICATION_TAKEN) }
+        await("Successful retry stops ringing") { hasEvent("ALARM_RINGING_STOPPED", MedicationAlarmService.STOP) }
+        assertEquals("One confirmed response", 1, runBlocking {
+            logs.observeAll().first().count { it.reminderId == fixture!!.id && it.eventType == AlarmLogEvent.MEDICATION_TAKEN }
+        })
+    }
+
+    @Test fun notTakenRequiresConfirmationAndDoesNotDisableFutureReminders() {
+        createFixture(fullScreen = true)
+        scheduler.schedule(fixture!!)
+        await("Alarm opens") { hasEvent(AlarmLogEvent.FULL_SCREEN_ACTIVITY_OPENED) }
+        await("Alarm rings") { hasEvent("ALARM_RINGING_STARTED") }
+        assertAccessibleActions()
+        click(context.getString(R.string.action_not_taken_alarm))
+        await("Not taken confirmation opens") { find(context.getString(R.string.alarm_not_taken_confirm)) != null }
+        capture("not-taken-confirmation")
+        click(context.getString(R.string.message_cancel_dialog))
+        assertFalse("Cancel must not record a decision", hasEvent(AlarmLogEvent.MEDICATION_NOT_TAKEN))
+        assertTrue("Cancel keeps notification", notifications.activeNotifications.any { it.id == fixture!!.id.toInt() })
+        click(context.getString(R.string.action_not_taken_alarm))
+        await("Confirmation opens again") { find(context.getString(R.string.alarm_not_taken_confirm)) != null }
+        click(context.getString(R.string.alarm_not_taken_confirm))
+        await("Explicit Not taken is stored") { hasEvent(AlarmLogEvent.MEDICATION_NOT_TAKEN) }
+        await("Current ringing stops") { hasEvent("ALARM_RINGING_STOPPED", MedicationAlarmService.STOP) }
+        await("Current notification closes") { notifications.activeNotifications.none { it.id == fixture!!.id.toInt() } }
+        assertFalse("Not taken must not become Taken", hasEvent(AlarmLogEvent.MEDICATION_TAKEN))
+        assertTrue("Reminder remains active", runBlocking { reminders.observeActive().first().any { it.id == fixture!!.id } })
+        await("Receiver scheduled the next occurrence") {
+            runBlocking { logs.observeAll().first().count { it.reminderId == fixture!!.id && it.eventType == AlarmLogEvent.ALARM_SCHEDULED && it.success } >= 2 }
+        }
     }
 
     @Test fun snoozeStopsRingingAndClosesAlarmScreen() {
@@ -151,10 +208,13 @@ class MedicationAlarmInstrumentedTest {
         await("Ringing started") { hasEvent("ALARM_RINGING_STARTED") }
         shell("input keyevent 4")
         await("Alarm screen closes on Back") { find(context.getString(R.string.action_snooze_alarm)) == null }
-        assertFalse("Back must not record a taken dose", hasEvent(AlarmLogEvent.ALARM_DISMISSED))
+        assertFalse("Back must not record a taken dose", hasEvent(AlarmLogEvent.MEDICATION_TAKEN))
         assertTrue("Notification controls must remain available", notifications.activeNotifications.any {
             it.id == fixture!!.id.toInt() && it.notification.actions?.size == 2
         })
+        val actions = notifications.activeNotifications.single { it.id == fixture!!.id.toInt() }.notification.actions
+        assertEquals(context.getString(R.string.action_stop_alarm), actions[0].title.toString())
+        assertEquals(context.getString(R.string.action_snooze_alarm), actions[1].title.toString())
         shell("cmd statusbar expand-notifications")
         SystemClock.sleep(700)
         capture("after-back-notification")
@@ -181,6 +241,14 @@ class MedicationAlarmInstrumentedTest {
             ?.toLongOrNull()?.coerceIn(0, 20_000) ?: 0
         SystemClock.sleep(holdMillis)
         capture("large-text-long-name")
+        click(context.getString(R.string.action_not_taken_alarm))
+        await("Confirmation remains reachable with enlarged text") {
+            find(context.getString(R.string.alarm_not_taken_confirm))?.isVisibleToUser == true &&
+                find(context.getString(R.string.message_cancel_dialog))?.isVisibleToUser == true
+        }
+        capture("large-text-not-taken-dialog")
+        click(context.getString(R.string.message_cancel_dialog))
+        assertFalse("Cancellation must not record Not taken", hasEvent(AlarmLogEvent.MEDICATION_NOT_TAKEN))
     }
 
     private fun createFixture(fullScreen: Boolean, delayMillis: Long = 4_000,
@@ -235,7 +303,8 @@ class MedicationAlarmInstrumentedTest {
     private fun find(label: String) = nodes().firstOrNull { it.text?.toString() == label || it.contentDescription?.toString() == label }
 
     private fun assertAccessibleActions() {
-        for (label in listOf(context.getString(R.string.action_taken_alarm), context.getString(R.string.action_snooze_alarm))) {
+        for (label in listOf(context.getString(R.string.action_taken_alarm), context.getString(R.string.action_snooze_alarm),
+            context.getString(R.string.action_not_taken_alarm))) {
             await("Accessible action exists: $label") { find(label) != null }
             var node = find(label)!!
             while (!node.isClickable && node.parent != null) node = node.parent

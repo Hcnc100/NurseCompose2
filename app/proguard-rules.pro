@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Códec JPX opcional de PDFBox-Android, no incluido por el proveedor.
+# Los informes crean imágenes desde Bitmap mediante LosslessFactory, no importan JPX.
+# https://github.com/TomRoush/PdfBox-Android#reading-jpx-images
+# Limitar la excepción a las dos clases opcionales; no ocultar errores de otras dependencias.
+-dontwarn com.gemalto.jp2.JP2Decoder
+-dontwarn com.gemalto.jp2.JP2Encoder

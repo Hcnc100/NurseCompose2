@@ -201,7 +201,7 @@ class MedicationReminderScheduler @Inject constructor(
                     .setAction(MedicationAlarmService.DISMISS_NOTIFICATION)
                     .putExtra(EXTRA_REMINDER_ID, reminder.id),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT))
-            for ((action, label) in listOf(MedicationAlarmService.STOP to "Detener", MedicationAlarmService.SNOOZE to context.getString(R.string.action_snooze_alarm))) {
+            for ((action, label) in listOf(MedicationAlarmService.STOP to context.getString(R.string.action_stop_alarm), MedicationAlarmService.SNOOZE to context.getString(R.string.action_snooze_alarm))) {
                 val actionIntent = PendingIntent.getService(context, reminder.id.toInt(),
                     Intent(context, MedicationAlarmService::class.java).setAction(action)
                         .putExtra(EXTRA_REMINDER_ID, reminder.id)

@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmLogRepository {
     fun observeAll(): Flow<List<AlarmLogEntity>>
     suspend fun record(log: AlarmLogEntity)
+    suspend fun correctResponse(id: Long, expectedEvent: String, replacementEvent: String): Boolean
     suspend fun deleteAll()
 }

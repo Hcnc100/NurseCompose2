@@ -106,7 +106,7 @@ class MedicationTalkBackTest {
 
     @Test fun swipeAndDoubleTapCanMarkTaken() {
         navigateAndDoubleTap(context.getString(R.string.action_taken_alarm), "taken")
-        await("TalkBack gesture marks the reminder as taken") { eventExists(AlarmLogEvent.ALARM_DISMISSED) }
+        await("TalkBack gesture marks the reminder as taken") { eventExists(AlarmLogEvent.MEDICATION_TAKEN) }
     }
 
     @Test fun swipeAndDoubleTapCanSnooze() {
@@ -116,7 +116,7 @@ class MedicationTalkBackTest {
 
     @Test fun keyboardCanMarkTaken() {
         navigateAndDoubleTap(context.getString(R.string.action_taken_alarm), "keyboard-taken", keyboard = true)
-        await("TalkBack keyboard activation marks the reminder as taken") { eventExists(AlarmLogEvent.ALARM_DISMISSED) }
+        await("TalkBack keyboard activation marks the reminder as taken") { eventExists(AlarmLogEvent.MEDICATION_TAKEN) }
     }
 
     @Test fun keyboardCanSnooze() {
@@ -127,7 +127,7 @@ class MedicationTalkBackTest {
     @Test fun externalKeyboardCanMarkTaken() {
         assumeTrue(InstrumentationRegistry.getArguments().getString("externalTalkBack") == "true")
         await("External TalkBack input must mark the ringing reminder as taken", timeout = 120_000) {
-            eventExists(AlarmLogEvent.ALARM_DISMISSED)
+            eventExists(AlarmLogEvent.MEDICATION_TAKEN)
         }
     }
 

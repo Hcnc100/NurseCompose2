@@ -28,7 +28,7 @@ fun ContainerDrawer() {
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(96.dp)
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(16.dp)
     ) {
@@ -36,7 +36,7 @@ fun ContainerDrawer() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(48.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.emergency_health),
                 contentDescription = null
             )

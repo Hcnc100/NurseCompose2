@@ -19,18 +19,18 @@ enum class DrawerActions(
         icon = R.drawable.baseline_cloud_download_24
     ),
     EXPORT_MEDICATION_PDF(
-        title = R.string.title_export_medication_pdf_option,
-        icon = R.drawable.baseline_backup_24
+        title = R.string.title_reports,
+        icon = R.drawable.outline_report_24
     ),
 
     ALARM_LOGS(
-        title = R.string.title_alarm_logs,
+        title = R.string.title_medication_history,
         icon = R.drawable.baseline_history_24
     ),
 
     SETTINGS(
         title = R.string.title_settings_option,
-        icon = R.drawable.baseline_build_24
+        icon = R.drawable.outline_settings_24
     ),
     CLEAR_DATA(
         title = R.string.title_clear_all_data_option,

@@ -10,5 +10,7 @@ class AlarmLogRepoImpl @Inject constructor(
 ) : AlarmLogRepository {
     override fun observeAll(): Flow<List<AlarmLogEntity>> = dao.observeAll()
     override suspend fun record(log: AlarmLogEntity) = dao.insert(log)
+    override suspend fun correctResponse(id: Long, expectedEvent: String, replacementEvent: String): Boolean =
+        dao.correctResponse(id, expectedEvent, replacementEvent)
     override suspend fun deleteAll() = dao.deleteAll()
 }

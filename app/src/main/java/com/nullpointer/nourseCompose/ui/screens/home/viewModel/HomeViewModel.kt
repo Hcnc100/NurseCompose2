@@ -29,6 +29,8 @@ class HomeViewModel @Inject constructor(
 
     private val _message = Channel<Int>()
     val message = _message.receiveAsFlow()
+    fun reportImportError() { _message.trySend(R.string.error_import_measure) }
+    fun reportExportError() { _message.trySend(R.string.error_export_measure) }
 
     fun exportMeasureDatabase(outputStream: OutputStream) = viewModelScope.launch {
         isLoading = true

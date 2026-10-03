@@ -100,6 +100,8 @@ android {
 }
 
 dependencies {
+    // Apache-2.0 Android port; tagged PDF structure and embedded Unicode text.
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")

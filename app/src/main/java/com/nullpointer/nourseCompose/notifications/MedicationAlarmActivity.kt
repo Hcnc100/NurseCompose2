@@ -15,6 +15,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.activity.compose.BackHandler
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -23,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +45,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -64,6 +73,21 @@ class MedicationAlarmActivity : ComponentActivity() {
             "type=MEDICATION; fullScreenActivityOpened=true; showWhenLocked=true; turnScreenOn=true")
         setContent {
             MyApplicationTheme {
+                var confirmNotTaken by rememberSaveable { mutableStateOf(false) }
+                var decisionPending by remember { mutableStateOf(false) }
+                var decisionFailed by remember { mutableStateOf(false) }
+                // Do not abandon the confirmation while Room is committing it.
+                BackHandler(enabled = decisionPending) { }
+                fun saveDecision(event: String) {
+                    if (decisionPending) return
+                    decisionPending = true
+                    decisionFailed = false
+                    confirmNotTaken = false
+                    recordDecisionAndStop(event) {
+                        decisionPending = false
+                        decisionFailed = true
+                    }
+                }
                 val bitmap = remember(photo) {
                     photo?.let {
                         runCatching {
@@ -119,13 +143,9 @@ class MedicationAlarmActivity : ComponentActivity() {
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                                 shape = MaterialTheme.shapes.medium,
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                                enabled = !decisionPending,
                                 onClick = {
-                                    logEvent(AlarmLogEvent.ALARM_DISMISSED, "Alarm marked as taken")
-                                    startService(Intent(this@MedicationAlarmActivity, MedicationAlarmService::class.java)
-                                        .setAction(MedicationAlarmService.STOP)
-                                        .putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id))
-                                    NotificationManagerCompat.from(this@MedicationAlarmActivity).cancel(id.toInt())
-                                    finishAndRemoveTask()
+                                    saveDecision(AlarmLogEvent.MEDICATION_TAKEN)
                                 },
                             ) {
                                 Text(stringResource(R.string.action_taken_alarm), textAlign = TextAlign.Center)
@@ -134,6 +154,7 @@ class MedicationAlarmActivity : ComponentActivity() {
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                                 shape = MaterialTheme.shapes.medium,
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                                enabled = !decisionPending,
                                 onClick = {
                                     logEvent(AlarmLogEvent.ALARM_SNOOZED, "Alarm snoozed for 10 minutes")
                                     startService(Intent(this@MedicationAlarmActivity, MedicationAlarmService::class.java)
@@ -144,11 +165,57 @@ class MedicationAlarmActivity : ComponentActivity() {
                             ) {
                                 Text(stringResource(R.string.action_snooze_alarm), textAlign = TextAlign.Center)
                             }
+                            TextButton(onClick = { confirmNotTaken = true }, enabled = !decisionPending,
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)) {
+                                Text(stringResource(R.string.action_not_taken_alarm), textAlign = TextAlign.Center)
+                            }
+                            if (decisionPending) LinearProgressIndicator(Modifier.fillMaxWidth())
+                            if (decisionFailed) Text(stringResource(R.string.alarm_decision_save_failed),
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.semantics { liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite })
                         }
                     }
                     }
                 }
+                if (confirmNotTaken) AlertDialog(
+                    onDismissRequest = { confirmNotTaken = false },
+                    title = { Text(stringResource(R.string.alarm_not_taken_title)) },
+                    text = { Text(stringResource(R.string.alarm_not_taken_message),
+                        modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())) },
+                    confirmButton = { TextButton(onClick = { saveDecision(AlarmLogEvent.MEDICATION_NOT_TAKEN) }) {
+                        Text(stringResource(R.string.alarm_not_taken_confirm))
+                    } },
+                    dismissButton = { TextButton(onClick = { confirmNotTaken = false }) {
+                        Text(stringResource(R.string.message_cancel_dialog))
+                    } },
+                )
             }
+        }
+    }
+
+    private fun recordDecisionAndStop(eventType: String, onFailure: () -> Unit) {
+        lifecycleScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    alarmLogRepository.record(AlarmLogEntity(
+                        reminderId = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1),
+                        reminderName = intent.getStringExtra("reminder_name").orEmpty(),
+                        eventType = eventType, success = true, details = "Explicit user response to this alarm",
+                    ))
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                onFailure()
+                return@launch
+            }
+            val id = intent.getLongExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, -1)
+            startService(Intent(this@MedicationAlarmActivity, MedicationAlarmService::class.java)
+                .setAction(MedicationAlarmService.STOP)
+                .putExtra(MedicationReminderScheduler.EXTRA_REMINDER_ID, id))
+            NotificationManagerCompat.from(this@MedicationAlarmActivity).cancel(id.toInt())
+            finishAndRemoveTask()
         }
     }
 

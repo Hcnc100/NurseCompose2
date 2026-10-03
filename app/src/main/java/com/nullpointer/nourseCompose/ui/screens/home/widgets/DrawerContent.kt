@@ -24,7 +24,7 @@ fun DrawerContent(
     Column(Modifier.verticalScroll(rememberScrollState())) {
         ContainerDrawer()
 
-        DrawerActions.values().map {
+        listOf(DrawerActions.ALARM_LOGS, DrawerActions.EXPORT_MEDICATION_PDF, DrawerActions.SETTINGS).forEach {
             ListItem(
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 modifier = Modifier

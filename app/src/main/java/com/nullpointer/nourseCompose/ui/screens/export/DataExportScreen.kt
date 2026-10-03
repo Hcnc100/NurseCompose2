@@ -52,7 +52,7 @@ fun DataExportScreen(
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
         uri?.let { context.contentResolver.openOutputStream(it)?.use { output -> viewModel.writePdf(selectedTypes, includeReminders, output) } }
     }
-    Scaffold(topBar = { AppTopBar(stringResource(R.string.title_data_export), onBack = { destinationsNavigator.popBackStack() }) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringResource(R.string.title_reports), onBack = { destinationsNavigator.popBackStack() }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.message_data_export_disclaimer), style = MaterialTheme.typography.bodyLarge)
             Text(stringResource(R.string.message_data_export_contents, count), style = MaterialTheme.typography.bodyMedium)

@@ -117,7 +117,7 @@ fun HomeScreen(
                     when (drawerAction) {
                         EXPORT -> homeState.selectExportFile()
                         DrawerActions.EXPORT_MEDICATION_PDF -> destinationsNavigator.navigate(DataExportScreenDestination)
-                        ALARM_LOGS -> destinationsNavigator.navigate(AlarmLogScreenDestination)
+                        ALARM_LOGS -> destinationsNavigator.navigate(AlarmLogScreenDestination())
                         SETTINGS -> destinationsNavigator.navigate(SettingsScreenDestination)
                         else -> changeSelectDrawerActions(drawerAction)
                     }
