@@ -249,4 +249,6 @@
     <string name="settings_privacy_summary">Records are stored on your device. Firebase may send usage and crash data. Health records are excluded from new automatic Android backups and device transfers.</string>
     <string name="privacy_policy_open_failed">Could not open the policy. Visit ricardopajarocoatl.com or try another browser.</string>
     <string name="privacy_policy_url" translatable="false">https://ricardopajarocoatl.com/terms-and-conditions/C2TnDWRQv5eNTCcMkLUt</string>
+    <string name="settings_review_introduction">Review introduction and permissions</string>
+    <string name="settings_app_version">Version %1$s (build %2$d)</string>
 </resources>

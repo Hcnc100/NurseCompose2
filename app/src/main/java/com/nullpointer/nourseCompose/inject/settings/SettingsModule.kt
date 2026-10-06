@@ -1,6 +1,9 @@
 package com.nullpointer.nourseCompose.inject.settings
 
 import androidx.datastore.core.DataStore
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.File
 import androidx.datastore.preferences.core.Preferences
 import com.nullpointer.nourseCompose.data.settings.local.SettingsDataStore
 import com.nullpointer.nourseCompose.datasource.settings.local.SettingsLocalDataSource
@@ -20,9 +23,11 @@ object SettingsModule {
     @Provides
     @Singleton
     fun provideSettingsDataStore(
-        dataStore: DataStore<Preferences>
+        dataStore: DataStore<Preferences>,
+        @ApplicationContext context: Context,
     ): SettingsDataStore = SettingsDataStore(
-        dataStore = dataStore
+        dataStore = dataStore,
+        onboardingMarker = File(context.noBackupFilesDir, "onboarding_completed"),
     )
 
     @Provides

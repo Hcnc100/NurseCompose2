@@ -2,6 +2,10 @@ package com.nullpointer.nourseCompose.ui.screens.settings
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.text.selection.SelectionContainer
+import com.nullpointer.nourseCompose.BuildConfig
+import com.nullpointer.nourseCompose.ui.screens.onboarding.MedicationIntroDialog
 import kotlinx.coroutines.launch
 
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -45,6 +49,12 @@ fun SettingsScreen(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var confirmation by rememberSaveable { mutableStateOf<String?>(null) }
+    var reviewingIntroduction by rememberSaveable { mutableStateOf(false) }
+    if (reviewingIntroduction) {
+        BackHandler { reviewingIntroduction = false }
+        MedicationIntroDialog(onComplete = { reviewingIntroduction = false })
+        return
+    }
     val importFile = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             runCatching { context.contentResolver.openInputStream(it) }
@@ -80,6 +90,13 @@ fun SettingsScreen(
             }
             HorizontalDivider()
             SettingsHeading(stringResource(R.string.settings_help_support))
+            SettingsAction(R.string.settings_review_introduction, R.drawable.outline_privacy_24) {
+                reviewingIntroduction = true
+            }
+            SelectionContainer {
+                Text(stringResource(R.string.settings_app_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+                    style = MaterialTheme.typography.bodyMedium, modifier = Modifier.fillMaxWidth())
+            }
             SettingsAction(R.string.settings_privacy_policy, R.drawable.outline_privacy_24) {
                 runCatching {
                     context.startActivity(Intent(Intent.ACTION_VIEW,
